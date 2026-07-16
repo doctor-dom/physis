@@ -57,7 +57,7 @@ npm run deploy:pages
 ### Verify
 
 - `https://calc.dom.doctor` loads the home page
-- `https://calc.dom.doctor/growth` loads without 404 (SPA routing via `public/_redirects`)
+- `https://calc.dom.doctor/growth` loads without 404 (SPA routing via `wrangler.jsonc` `not_found_handling`)
 
 ## Android build
 

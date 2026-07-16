@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android",
-    "deploy:pages": "npm run build && npx wrangler pages deploy dist --project-name=physis-calc"
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name=physis-calc"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
@@ -34,6 +35,7 @@
     "typescript": "^5.7.0",
     "pngjs": "^7.0.0",
     "pdf-parse": "^2.4.5",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "wrangler": "^4.111.0"
   }
 }
