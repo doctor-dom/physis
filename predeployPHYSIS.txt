@@ -1,0 +1,41 @@
+Larger Tasks for Final Push:
+- [] add XR images from CHP database → see data/atlas/xr/README.md
+- [] make workflow pages more closely resemble mock-up images
+[] Make PHYSIS logo
+
+Calculators to Add:
+[] fix bone age calculator for improved speed for scoring
+    [] manually crop and replace images and stage text (posting as text file) for this step
+[] SPL-premie, SPL-child, and clitoral-normogram -- papers are saved in /reference
+    [] Confirm that graph logic works for all papers
+[] Make SPL calculator (Halil et al. 2017;59(3)269-273) --> also add OE reference
+[] Make clitoral len/wid for neonates (Alaei, et al: 2020; 11:297)
+[] Consider IGF1 Zscore calculator
+
+
+
+CHANGELOG:
+[x] MDI to ISS conversion
+[x] Avg glucose <> fructosamine <> A1c
+[x] mIVF calculations
+[x] Ca correction with albumin
+[x] Add to sodium calculations that "sNA should only rise by 0.5-1mEq/L per hours and < 10-12 mEq/L over first 24 hours
+[x] Free water deficit
+[x] Na correction for hyponatremia
+[x] Na correction with glucose
+[x] Pediatric age-based HTN guidenline calculator
+[x] CAH screening tool based on 17OHP and prematurity
+[x] Add steroid wean calculator/ converter
+[x] Make BSA calculator, add HY pediatric ones, and also add JW's kg-only BSA 
+[x] Add GIR calculator (both enteral/IV)
+[x] change standing/supine heights and other FYI information to "i: tooltips that only show on hover to make UI cleaner
+- [x] make ability for user to copy outputs for charting purposes and set parameters to of what is copied (include references to algorithms and TW3 atlas)
+[x] Add TW3 APH calculator from paper (with optional MPH adjustment, and optional menarche slider)
+- [x] fix age input so it stops auto-adding decimal and zeros until user clicks away
+- [X] change top banner accrediation since application is not a fork from /eatyourpeas/endocrinologist but a seperate app from scratch
+- [X] fix age inputs auto adding zeros for QOL
+- [X] fix CDC plotting logic
+- [X] add ability to calculate MPH within app (and differentiate between true MPS and parent average height)
+- [X] add CDC growth charts for app to plot height/ CA and BA/APH to show difference in trajectories
+- [X] remove original RWT and replace with Khamis-Roche method
+- [x] QC step → Core logic lives in src/core/showWork/buildShowWorkReport.ts; UI in src/components/ShowWorkSection.tsx.

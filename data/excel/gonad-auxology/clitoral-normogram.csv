@@ -1,0 +1,10 @@
+# Alaei M et al. The Nomogram of Clitoral Length and Width in Iranian Term and Preterm Neonates.
+# Front Endocrinol (Lausanne) 2020;11:297. Values are mean and mean + 1/2/3 SD.
+gaWeeks,n,meanWidthCm,widthP1SdCm,widthP2SdCm,widthP3SdCm,meanLengthCm,lengthP1SdCm,lengthP2SdCm,lengthP3SdCm
+28,30,3.28,3.87,4.46,5.05,5.03,5.91,6.79,7.67
+30,57,3.32,3.68,4.04,4.4,5.03,5.52,6.01,6.5
+32,74,3.41,3.77,4.13,4.49,5.14,5.65,6.16,6.67
+34,104,3.69,4.17,4.65,5.13,5.53,6.12,6.71,7.3
+36,128,4.08,4.5,4.92,5.34,5.83,6.29,6.75,7.21
+38,187,4.21,4.64,5.07,5.5,6.11,6.49,6.87,7.25
+42,187,4.21,4.64,5.07,5.5,6.11,6.49,6.87,7.25

@@ -1,0 +1,9 @@
+# Pode-Shakked et al. 2019 — Table 2 Israeli NBS Program Algorithm (nmol/L blood)
+# GA is rounded up to the next whole week for row matching (e.g. 36+1 d → 37 wk).
+# matches_unknown_ga: row used when gestational age is not provided.
+bw_min_g,bw_max_g,ga_min_weeks,ga_max_weeks,matches_unknown_ga,repeat_request_cutoff_nmol,first_sample_referral_cutoff_nmol,repeat_normal_rule,repeat_normal_absolute_nmol,reduction_min_pct,row_label
+0,2500,0,31,false,180,,reduction_gt_30,,30,≤2500 g and GA <32 wk
+0,2500,32,36,false,105,,reduction_gt_30,,30,≤2500 g and GA 32–36 wk
+0,2500,37,999,true,85,,reduction_gt_30,,30,≤2500 g and GA >36 or unknown
+2501,99999,0,37,false,70,90,absolute_lt,70,,>2500 g and GA ≤37 wk
+2501,99999,38,999,true,35,90,absolute_lt,35,,>2500 g and GA >37 or unknown

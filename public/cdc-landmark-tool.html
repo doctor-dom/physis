@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CDC chart landmark tool</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --teal-900: #134e4a;
+        --teal-700: #0f766e;
+        --teal-100: #ccfbf1;
+        --border: #99f6e4;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #f0fdfa;
+        color: var(--teal-900);
+      }
+      header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: white;
+      }
+      header h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.15rem;
+      }
+      header p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--teal-700);
+        max-width: 72rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        min-height: calc(100vh - 5rem);
+      }
+      aside {
+        padding: 1rem;
+        border-right: 1px solid var(--border);
+        background: white;
+        overflow: auto;
+      }
+      main {
+        padding: 1rem;
+        overflow: auto;
+      }
+      label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        width: 100%;
+        font: inherit;
+        margin-bottom: 0.75rem;
+      }
+      button {
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: var(--teal-100);
+        color: var(--teal-900);
+        border-radius: 0.5rem;
+        padding: 0.55rem 0.75rem;
+        font-weight: 600;
+      }
+      button.primary {
+        background: var(--teal-700);
+        color: white;
+        border-color: var(--teal-700);
+      }
+      button.danger {
+        background: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+      }
+      .hint {
+        font-size: 0.75rem;
+        color: var(--teal-700);
+        margin: -0.35rem 0 0.75rem;
+        line-height: 1.35;
+      }
+      .stage {
+        position: relative;
+        display: inline-block;
+        max-width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background: white;
+        overflow: hidden;
+        cursor: crosshair;
+      }
+      #chartImage {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        user-select: none;
+      }
+      #overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .landmark-group {
+        pointer-events: all;
+        cursor: help;
+      }
+      .landmark-group .landmark-hit {
+        fill: transparent;
+        stroke: none;
+      }
+      .landmark-group:hover .landmark-dot {
+        stroke-width: 0.22%;
+        filter: drop-shadow(0 0 0.25% rgba(0, 0, 0, 0.35));
+      }
+      .landmark-group.integrity-warn .landmark-dot {
+        stroke: #dc2626;
+        stroke-width: 0.2%;
+      }
+      #landmarkTooltip {
+        position: fixed;
+        z-index: 1000;
+        max-width: 22rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 8px 24px rgba(19, 78, 74, 0.15);
+        font-size: 0.72rem;
+        line-height: 1.4;
+        pointer-events: none;
+        display: none;
+      }
+      #landmarkTooltip.visible {
+        display: block;
+      }
+      #landmarkTooltip .tt-title {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      #landmarkTooltip .tt-row {
+        font-family: ui-monospace, monospace;
+        font-size: 0.68rem;
+        color: #334155;
+      }
+      #landmarkTooltip .tt-warn {
+        margin-top: 0.35rem;
+        color: #b91c1c;
+        font-weight: 600;
+      }
+      #landmarkTooltip .tt-ok {
+        margin-top: 0.35rem;
+        color: #047857;
+        font-weight: 600;
+      }
+      .toolbar {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+      .toolbar button {
+        width: auto;
+        margin: 0;
+      }
+      .stats {
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
+      }
+      .landmark-list {
+        max-height: 240px;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.35rem;
+        font-size: 0.72rem;
+        background: #fafafa;
+      }
+      #importArea.drag-over {
+        outline: 2px dashed var(--teal-700);
+        outline-offset: 2px;
+        background: #ecfdf5;
+      }
+      #importStatus.error {
+        color: #b91c1c;
+      }
+      #importStatus.ok {
+        color: #047857;
+      }
+      .landmark-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.25rem 0.15rem;
+        border-bottom: 1px solid #eee;
+      }
+      .landmark-item:last-child {
+        border-bottom: 0;
+      }
+      textarea {
+        min-height: 160px;
+        font-family: ui-monospace, monospace;
+        font-size: 0.7rem;
+      }
+      .checklist {
+        font-size: 0.75rem;
+        margin: 0 0 0.75rem;
+        padding-left: 1.1rem;
+      }
+      .checklist li.done {
+        color: #047857;
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>CDC chart landmark tool</h1>
+      <p>
+        Click the chart to record pixel anchors. Export JSON, save to
+        <code>data/cdc/landmarks/</code>, then run
+        <code>npm run apply:cdc-landmarks</code> to regenerate plotter coordinates.
+        Coordinates are in native PNG pixels (top-left origin).
+      </p>
+    </header>
+    <div class="layout">
+      <aside>
+        <label for="chartSelect">Chart PNG</label>
+        <select id="chartSelect">
+          <option value="/cdc/stature-weight-2-20-boys.png">Boys</option>
+          <option value="/cdc/stature-weight-2-20-girls.png">Girls</option>
+        </select>
+
+        <label for="categorySelect">Landmark category</label>
+        <select id="categorySelect"></select>
+        <p class="hint" id="categoryHint"></p>
+
+        <label for="valueInput">Clinical value</label>
+        <input id="valueInput" type="number" step="any" placeholder="e.g. 12 or 125 or 35" />
+        <p class="hint" id="valueHint"></p>
+
+        <div class="toolbar">
+          <button type="button" id="undoBtn">Undo last</button>
+          <button type="button" id="clearBtn" class="danger">Clear all</button>
+        </div>
+
+        <button type="button" id="downloadBtn" class="primary">Download landmarks JSON</button>
+        <button type="button" id="copyBtn">Copy JSON to clipboard</button>
+
+        <label for="importArea">Import / paste JSON</label>
+        <input id="importFile" type="file" accept=".json,application/json" hidden />
+        <textarea id="importArea" placeholder="Paste exported landmarks JSON, or use Choose file / drag a .json file here…"></textarea>
+        <div class="toolbar">
+          <button type="button" id="importFileBtn">Choose JSON file</button>
+          <button type="button" id="importBtn">Load pasted JSON</button>
+        </div>
+        <p class="hint" id="importStatus"></p>
+
+        <p class="stats" id="stats"></p>
+        <ul class="checklist" id="checklist"></ul>
+        <div class="landmark-list" id="landmarkList"></div>
+      </aside>
+      <main>
+        <div class="toolbar">
+          <button type="button" id="zoomOutBtn">Zoom −</button>
+          <button type="button" id="zoomInBtn">Zoom +</button>
+          <button type="button" id="zoomResetBtn">Fit width</button>
+          <span id="zoomLabel" class="stats"></span>
+        </div>
+        <div class="stage" id="stage">
+          <img id="chartImage" alt="CDC growth chart" draggable="false" />
+          <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div id="landmarkTooltip" role="tooltip" aria-hidden="true"></div>
+        <p class="hint">
+          Tip: zoom in before clicking. Place points at grid intersections (stature/weight
+          lines cross age columns). For age landmarks, click the vertical grid line under the
+          printed age label. Hover any anchor dot to see the logged JSON and x-order integrity.
+        </p>
+      </main>
+    </div>
+
+    <script>
+      const CATEGORIES = [
+        {
+          id: "stature-left-age",
+          label: "Stature — left age column (2–11 y)",
+          valueLabel: "Age in years (2–11)",
+          hint: "Click the vertical grid line for each age on the left stature panel (top age row).",
+          suggested: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        },
+        {
+          id: "stature-right-age",
+          label: "Stature — right age column (12–20 y)",
+          valueLabel: "Age in years (12–20)",
+          hint: "Click vertical grid lines on the upper-right stature panel age row.",
+          suggested: [12, 13, 14, 15, 16, 17, 18, 19, 20],
+        },
+        {
+          id: "stature-left-cm",
+          label: "Stature — left cm axis (80–165 cm)",
+          valueLabel: "Height in cm (80–165)",
+          hint: "Click where horizontal grid meets left cm scale (any column is fine). Mark several from 80 to 165.",
+          suggested: [80, 90, 100, 110, 120, 130, 140, 150, 160, 165],
+        },
+        {
+          id: "stature-right-cm",
+          label: "Stature — right cm axis (150–195/185 cm)",
+          valueLabel: "Height in cm (150+)",
+          hint: "Click horizontal grid lines on the right cm scale (boys up to 195, girls up to 185).",
+          suggested: [150, 160, 170, 180, 190, 195],
+        },
+        {
+          id: "weight-age",
+          label: "Weight — age column (2–20 y)",
+          valueLabel: "Age in years (2–20)",
+          hint: "Click vertical grid under printed ages on the weight panel (top border).",
+          suggested: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+        },
+        {
+          id: "weight-left-kg",
+          label: "Weight — left kg axis (10–45 kg)",
+          valueLabel: "Weight in kg (10–45)",
+          hint: "Click horizontal grid on left kg scale. Mark 10, 20, 30, 40, 45 at minimum.",
+          suggested: [10, 15, 20, 25, 30, 35, 40, 45],
+        },
+        {
+          id: "weight-right-kg",
+          label: "Weight — right kg axis (45–105 kg)",
+          valueLabel: "Weight in kg (45–105)",
+          hint: "Click horizontal grid on right kg scale.",
+          suggested: [45, 60, 75, 90, 105],
+        },
+        {
+          id: "verify-point",
+          label: "Verification — known clinical point",
+          valueLabel: "Optional label in notes",
+          hint: "Mark where a known (age, height/weight) SHOULD fall. Add age/height/weight in notes after export if needed.",
+          suggested: [],
+          extraFields: true,
+        },
+      ];
+
+      const state = {
+        landmarks: [],
+        zoom: 1,
+        naturalWidth: 0,
+        naturalHeight: 0,
+      };
+
+      const els = {
+        chartSelect: document.getElementById("chartSelect"),
+        categorySelect: document.getElementById("categorySelect"),
+        categoryHint: document.getElementById("categoryHint"),
+        valueInput: document.getElementById("valueInput"),
+        valueHint: document.getElementById("valueHint"),
+        chartImage: document.getElementById("chartImage"),
+        overlay: document.getElementById("overlay"),
+        stage: document.getElementById("stage"),
+        stats: document.getElementById("stats"),
+        checklist: document.getElementById("checklist"),
+        landmarkList: document.getElementById("landmarkList"),
+        importArea: document.getElementById("importArea"),
+        importFile: document.getElementById("importFile"),
+        importStatus: document.getElementById("importStatus"),
+        zoomLabel: document.getElementById("zoomLabel"),
+        tooltip: document.getElementById("landmarkTooltip"),
+      };
+
+      const AGE_X_CATEGORIES = new Set([
+        "stature-left-age",
+        "stature-right-age",
+        "weight-age",
+      ]);
+
+      const VALUE_Y_CATEGORIES = new Set([
+        "stature-left-cm",
+        "stature-right-cm",
+        "weight-left-kg",
+        "weight-right-kg",
+      ]);
+
+      function setImportStatus(message, kind = "") {
+        els.importStatus.textContent = message;
+        els.importStatus.className = kind ? kind : "";
+      }
+
+      /** Normalize pasted/dropped text before JSON.parse. */
+      function normalizeImportText(raw) {
+        let text = String(raw ?? "").replace(/^\uFEFF/, "").trim();
+        if (!text) return "";
+
+        const fence = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+        if (fence) text = fence[1].trim();
+
+        return text;
+      }
+
+      function looksLikeFilePath(text) {
+        return (
+          /^[A-Za-z]:\\/.test(text) ||
+          /^\\\\/.test(text) ||
+          (/\.json$/i.test(text) && !text.startsWith("{") && !text.startsWith("["))
+        );
+      }
+
+      function parseLandmarkImport(raw, sourceLabel = "input") {
+        const text = normalizeImportText(raw);
+        if (!text) {
+          throw new Error("Nothing to import. Paste JSON or choose a .json file.");
+        }
+        if (looksLikeFilePath(text)) {
+          throw new Error(
+            `That looks like a file path (${text.slice(0, 60)}…), not JSON. Use “Choose JSON file” or drag the file onto the text box.`,
+          );
+        }
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          const preview = text.slice(0, 40).replace(/\s+/g, " ");
+          throw new Error(
+            `${err.message} (from ${sourceLabel}; starts with “${preview}…”)`,
+          );
+        }
+        if (!Array.isArray(data.landmarks)) {
+          throw new Error("Missing landmarks array — export from this tool or check the file.");
+        }
+        return data;
+      }
+
+      function applyImportedData(data, sourceLabel) {
+        state.landmarks = data.landmarks;
+        if (data.filename && typeof data.filename === "string") {
+          const src = `/cdc/${data.filename}`;
+          const opt = [...els.chartSelect.options].find((o) => o.value === src);
+          if (opt) els.chartSelect.value = src;
+          loadChart(src);
+        }
+        renderAll();
+        setImportStatus(
+          `Loaded ${data.landmarks.length} landmarks from ${sourceLabel}.`,
+          "ok",
+        );
+      }
+
+      function importFromText(sourceLabel = "paste") {
+        try {
+          const data = parseLandmarkImport(els.importArea.value, sourceLabel);
+          applyImportedData(data, sourceLabel);
+        } catch (err) {
+          setImportStatus(err.message, "error");
+          alert(`Invalid JSON: ${err.message}`);
+        }
+      }
+
+      function readJsonFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result ?? ""));
+          reader.onerror = () => reject(reader.error ?? new Error("Could not read file"));
+          reader.readAsText(file);
+        });
+      }
+
+      async function importFromFile(file) {
+        if (!file) return;
+        try {
+          const text = await readJsonFile(file);
+          els.importArea.value = text;
+          const data = parseLandmarkImport(text, file.name);
+          applyImportedData(data, file.name);
+        } catch (err) {
+          setImportStatus(err.message, "error");
+          alert(`Invalid JSON: ${err.message}`);
+        }
+      }
+
+      function setupImportDropZone() {
+        const zone = els.importArea;
+        zone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          zone.classList.add("drag-over");
+        });
+        zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+        zone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          zone.classList.remove("drag-over");
+          const file = e.dataTransfer?.files?.[0];
+          if (file) {
+            importFromFile(file);
+            return;
+          }
+          setImportStatus(
+            "Drop a .json file here (not a file path).",
+            "error",
+          );
+        });
+      }
+
+      function categoryLabel(id) {
+        return CATEGORIES.find((c) => c.id === id)?.label ?? id;
+      }
+
+      function formatLandmarkJson(l) {
+        return JSON.stringify(
+          { category: l.category, value: l.value, x: l.x, y: l.y },
+          null,
+          2,
+        );
+      }
+
+      /** Age columns: x increases with age. cm/kg scales: y decreases as value increases. */
+      function integrityIssues(l) {
+        const issues = [];
+        const peers = state.landmarks
+          .filter((p) => p.category === l.category)
+          .sort((a, b) => Number(a.value) - Number(b.value));
+        const idx = peers.findIndex(
+          (p) => p.category === l.category && p.value === l.value && p.x === l.x && p.y === l.y,
+        );
+        if (idx < 0) return issues;
+
+        const prev = peers[idx - 1];
+        const next = peers[idx + 1];
+        const unit = l.category.includes("cm") ? "cm" : l.category.includes("kg") ? "kg" : "value";
+
+        if (AGE_X_CATEGORIES.has(l.category)) {
+          if (prev && l.x <= prev.x) {
+            issues.push(
+              `x=${l.x} is not right of age ${prev.value} (x=${prev.x})`,
+            );
+          }
+          if (next && l.x >= next.x) {
+            issues.push(
+              `x=${l.x} is not left of age ${next.value} (x=${next.x})`,
+            );
+          }
+        }
+
+        if (VALUE_Y_CATEGORIES.has(l.category)) {
+          if (prev && l.y >= prev.y) {
+            issues.push(
+              `y=${l.y} is not above ${unit} ${prev.value} (y=${prev.y})`,
+            );
+          }
+          if (next && l.y <= next.y) {
+            issues.push(
+              `y=${l.y} is not below ${unit} ${next.value} (y=${next.y})`,
+            );
+          }
+        }
+
+        return issues;
+      }
+
+      function showTooltip(l, clientX, clientY) {
+        const issues = integrityIssues(l);
+        const json = formatLandmarkJson(l);
+        els.tooltip.innerHTML = `
+          <div class="tt-title">${categoryLabel(l.category)}</div>
+          <div class="tt-row">logged value: <strong>${l.value}</strong></div>
+          <div class="tt-row">pixel (x, y): (${l.x}, ${l.y})</div>
+          <div class="tt-row" style="margin-top:0.35rem;white-space:pre-wrap">${json}</div>
+          ${
+            issues.length
+              ? `<div class="tt-warn">⚠ ${issues.join("<br>⚠ ")}</div>`
+              : AGE_X_CATEGORIES.has(l.category)
+                ? `<div class="tt-ok">✓ age x-order OK vs neighbors</div>`
+                : VALUE_Y_CATEGORIES.has(l.category)
+                  ? `<div class="tt-ok">✓ ${valueAxisLabel(l.category)} y-order OK vs neighbors</div>`
+                  : ""
+          }
+        `;
+        els.tooltip.classList.add("visible");
+        els.tooltip.setAttribute("aria-hidden", "false");
+        positionTooltip(clientX, clientY);
+      }
+
+      function positionTooltip(clientX, clientY) {
+        const pad = 12;
+        const rect = els.tooltip.getBoundingClientRect();
+        let left = clientX + pad;
+        let top = clientY + pad;
+        if (left + rect.width > window.innerWidth - pad) {
+          left = clientX - rect.width - pad;
+        }
+        if (top + rect.height > window.innerHeight - pad) {
+          top = clientY - rect.height - pad;
+        }
+        els.tooltip.style.left = `${Math.max(pad, left)}px`;
+        els.tooltip.style.top = `${Math.max(pad, top)}px`;
+      }
+
+      function hideTooltip() {
+        els.tooltip.classList.remove("visible");
+        els.tooltip.setAttribute("aria-hidden", "true");
+      }
+
+      function initCategories() {
+        els.categorySelect.innerHTML = CATEGORIES.map(
+          (c) => `<option value="${c.id}">${c.label}</option>`,
+        ).join("");
+        els.categorySelect.addEventListener("change", syncCategoryUi);
+        syncCategoryUi();
+      }
+
+      function currentCategory() {
+        return CATEGORIES.find((c) => c.id === els.categorySelect.value);
+      }
+
+      function syncCategoryUi() {
+        const cat = currentCategory();
+        els.categoryHint.textContent = cat.hint;
+        els.valueHint.textContent = cat.valueLabel;
+        if (cat.suggested.length) {
+          const next = cat.suggested.find(
+            (v) => !state.landmarks.some((l) => l.category === cat.id && l.value === v),
+          );
+          if (next !== undefined) els.valueInput.value = String(next);
+        }
+        renderChecklist();
+      }
+
+      function renderChecklist() {
+        els.checklist.innerHTML = CATEGORIES.filter((c) => c.suggested.length)
+          .map((cat) => {
+            const have = cat.suggested.filter((v) =>
+              state.landmarks.some((l) => l.category === cat.id && l.value === v),
+            ).length;
+            const done = have >= Math.min(3, cat.suggested.length);
+            return `<li class="${done ? "done" : ""}">${cat.label}: ${have}/${cat.suggested.length} suggested</li>`;
+          })
+          .join("");
+      }
+
+      function renderLandmarks() {
+        els.landmarkList.innerHTML = state.landmarks
+          .map((l, i) => {
+            const issues = integrityIssues(l);
+            const warn = issues.length ? " ⚠" : "";
+            return `<div class="landmark-item" data-i="${i}" title="Hover chart dot for full logged JSON"><span>${l.category} = ${l.value} → (${l.x}, ${l.y})${warn}</span><button type="button" data-i="${i}">×</button></div>`;
+          })
+          .join("");
+        els.landmarkList.querySelectorAll("button").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            state.landmarks.splice(Number(btn.dataset.i), 1);
+            renderAll();
+          });
+        });
+        els.landmarkList.querySelectorAll(".landmark-item").forEach((row) => {
+          row.addEventListener("mouseenter", () => {
+            const l = state.landmarks[Number(row.dataset.i)];
+            if (!l) return;
+            const cx = (l.x / state.naturalWidth) * els.chartImage.getBoundingClientRect().width + els.chartImage.getBoundingClientRect().left;
+            const cy = (l.y / state.naturalHeight) * els.chartImage.getBoundingClientRect().height + els.chartImage.getBoundingClientRect().top;
+            showTooltip(l, cx, cy);
+          });
+          row.addEventListener("mouseleave", hideTooltip);
+        });
+        els.stats.textContent = `${state.landmarks.length} landmarks · PNG ${state.naturalWidth}×${state.naturalHeight}`;
+        renderChecklist();
+        drawOverlay();
+      }
+
+      function drawOverlay() {
+        const svg = els.overlay;
+        svg.innerHTML = "";
+        hideTooltip();
+        const colors = {
+          "stature-left-age": "#2563eb",
+          "stature-right-age": "#1d4ed8",
+          "stature-left-cm": "#059669",
+          "stature-right-cm": "#047857",
+          "weight-age": "#d97706",
+          "weight-left-kg": "#ea580c",
+          "weight-right-kg": "#c2410c",
+          "verify-point": "#7c3aed",
+        };
+        for (const l of state.landmarks) {
+          const cx = (l.x / state.naturalWidth) * 100;
+          const cy = (l.y / state.naturalHeight) * 100;
+          const issues = integrityIssues(l);
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.setAttribute("class", "landmark-group" + (issues.length ? " integrity-warn" : ""));
+
+          const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          hit.setAttribute("class", "landmark-hit");
+          hit.setAttribute("cx", `${cx}%`);
+          hit.setAttribute("cy", `${cy}%`);
+          hit.setAttribute("r", "0.9%");
+
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("class", "landmark-dot");
+          circle.setAttribute("cx", `${cx}%`);
+          circle.setAttribute("cy", `${cy}%`);
+          circle.setAttribute("r", "0.35%");
+          circle.setAttribute("fill", colors[l.category] || "#111");
+          circle.setAttribute("stroke", "#fff");
+          circle.setAttribute("stroke-width", "0.12%");
+
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", `${cx}%`);
+          text.setAttribute("y", `${cy}%`);
+          text.setAttribute("fill", colors[l.category] || "#111");
+          text.setAttribute("font-size", "0.55%");
+          text.setAttribute("font-weight", "700");
+          text.setAttribute("pointer-events", "none");
+          text.setAttribute("transform", `translate(0.6, -0.6)`);
+          text.textContent = String(l.value);
+
+          g.appendChild(hit);
+          g.appendChild(circle);
+          g.appendChild(text);
+
+          g.addEventListener("mouseenter", (e) => showTooltip(l, e.clientX, e.clientY));
+          g.addEventListener("mousemove", (e) => positionTooltip(e.clientX, e.clientY));
+          g.addEventListener("mouseleave", hideTooltip);
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showTooltip(l, e.clientX, e.clientY);
+          });
+
+          svg.appendChild(g);
+        }
+      }
+
+      function renderAll() {
+        renderLandmarks();
+      }
+
+      function toNativeCoords(clientX, clientY) {
+        const rect = els.chartImage.getBoundingClientRect();
+        const relX = (clientX - rect.left) / rect.width;
+        const relY = (clientY - rect.top) / rect.height;
+        return {
+          x: Math.round(relX * state.naturalWidth),
+          y: Math.round(relY * state.naturalHeight),
+        };
+      }
+
+      function addLandmark(clientX, clientY) {
+        const cat = currentCategory();
+        const raw = els.valueInput.value.trim();
+        if (!raw && cat.id !== "verify-point") {
+          alert("Enter a clinical value before clicking.");
+          return;
+        }
+        const value = cat.id === "verify-point" ? raw || `point-${state.landmarks.length + 1}` : Number(raw);
+        if (cat.id !== "verify-point" && Number.isNaN(value)) {
+          alert("Clinical value must be a number.");
+          return;
+        }
+        const { x, y } = toNativeCoords(clientX, clientY);
+        state.landmarks = state.landmarks.filter(
+          (l) => !(l.category === cat.id && l.value === value),
+        );
+        state.landmarks.push({
+          category: cat.id,
+          value,
+          x,
+          y,
+        });
+        state.landmarks.sort((a, b) =>
+          a.category.localeCompare(b.category) || Number(a.value) - Number(b.value),
+        );
+        renderAll();
+        syncCategoryUi();
+      }
+
+      function exportJson() {
+        return {
+          version: 1,
+          filename: els.chartSelect.value.split("/").pop(),
+          imageWidth: state.naturalWidth,
+          imageHeight: state.naturalHeight,
+          markedAt: new Date().toISOString(),
+          landmarks: state.landmarks,
+        };
+      }
+
+      function loadChart(src) {
+        els.chartImage.src = src;
+      }
+
+      els.chartImage.addEventListener("load", () => {
+        state.naturalWidth = els.chartImage.naturalWidth;
+        state.naturalHeight = els.chartImage.naturalHeight;
+        renderAll();
+      });
+
+      els.stage.addEventListener("click", (e) => {
+        if (e.target === els.chartImage || e.target === els.overlay) {
+          addLandmark(e.clientX, e.clientY);
+        }
+      });
+
+      els.chartSelect.addEventListener("change", () => {
+        state.landmarks = [];
+        loadChart(els.chartSelect.value);
+      });
+
+      document.getElementById("undoBtn").addEventListener("click", () => {
+        state.landmarks.pop();
+        renderAll();
+      });
+
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        if (confirm("Clear all landmarks?")) {
+          state.landmarks = [];
+          renderAll();
+        }
+      });
+
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(exportJson(), null, 2)], {
+          type: "application/json",
+        });
+        const sex = els.chartSelect.value.includes("boys") ? "boys" : "girls";
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `cdc-landmarks-${sex}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      document.getElementById("copyBtn").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(JSON.stringify(exportJson(), null, 2));
+        alert("Copied to clipboard.");
+      });
+
+      document.getElementById("importBtn").addEventListener("click", () => {
+        importFromText("paste");
+      });
+
+      document.getElementById("importFileBtn").addEventListener("click", () => {
+        els.importFile.click();
+      });
+
+      els.importFile.addEventListener("change", () => {
+        const file = els.importFile.files?.[0];
+        importFromFile(file);
+        els.importFile.value = "";
+      });
+
+      setupImportDropZone();
+
+      function setZoom(z) {
+        state.zoom = Math.min(4, Math.max(0.25, z));
+        els.chartImage.style.width = `${state.zoom * 100}%`;
+        els.chartImage.style.maxWidth = "none";
+        els.zoomLabel.textContent = `Zoom ${Math.round(state.zoom * 100)}%`;
+      }
+
+      document.getElementById("zoomInBtn").addEventListener("click", () => setZoom(state.zoom * 1.25));
+      document.getElementById("zoomOutBtn").addEventListener("click", () => setZoom(state.zoom / 1.25));
+      document.getElementById("zoomResetBtn").addEventListener("click", () => setZoom(1));
+
+      initCategories();
+      loadChart(els.chartSelect.value);
+    </script>
+  </body>
+</html>

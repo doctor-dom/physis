@@ -1,0 +1,352 @@
+{
+  "version": 1,
+  "filename": "stature-weight-2-20-girls.png",
+  "imageWidth": 10200,
+  "imageHeight": 13200,
+  "markedAt": "2026-06-21T02:13:00.620Z",
+  "bootstrappedFrom": "stature-weight-2-20-boys.png",
+  "landmarks": [
+    {
+      "category": "stature-left-age",
+      "value": 2,
+      "x": 3021,
+      "y": 4813
+    },
+    {
+      "category": "stature-left-age",
+      "value": 3,
+      "x": 3242,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 4,
+      "x": 3480,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 5,
+      "x": 3710,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 6,
+      "x": 3939,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 7,
+      "x": 4169,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 8,
+      "x": 4407,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 9,
+      "x": 4637,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-age",
+      "value": 10,
+      "x": 4858,
+      "y": 4825
+    },
+    {
+      "category": "stature-left-age",
+      "value": 11,
+      "x": 5088,
+      "y": 4830
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 80,
+      "x": 3242,
+      "y": 8314
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 90,
+      "x": 3242,
+      "y": 7874
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 100,
+      "x": 3259,
+      "y": 7441
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 110,
+      "x": 3242,
+      "y": 7010
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 120,
+      "x": 3250,
+      "y": 6575
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 130,
+      "x": 3250,
+      "y": 6158
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 140,
+      "x": 3242,
+      "y": 5691
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 150,
+      "x": 3242,
+      "y": 5257
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 160,
+      "x": 3599,
+      "y": 4825
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 165,
+      "x": 3599,
+      "y": 4275
+    },
+    {
+      "category": "stature-right-age",
+      "value": 12,
+      "x": 5334,
+      "y": 4827
+    },
+    {
+      "category": "stature-right-age",
+      "value": 13,
+      "x": 5564,
+      "y": 4601
+    },
+    {
+      "category": "stature-right-age",
+      "value": 14,
+      "x": 5794,
+      "y": 4831
+    },
+    {
+      "category": "stature-right-age",
+      "value": 15,
+      "x": 6023,
+      "y": 4827
+    },
+    {
+      "category": "stature-right-age",
+      "value": 16,
+      "x": 6261,
+      "y": 4827
+    },
+    {
+      "category": "stature-right-age",
+      "value": 17,
+      "x": 6483,
+      "y": 4824
+    },
+    {
+      "category": "stature-right-age",
+      "value": 18,
+      "x": 6721,
+      "y": 4833
+    },
+    {
+      "category": "stature-right-age",
+      "value": 19,
+      "x": 6942,
+      "y": 4833
+    },
+    {
+      "category": "stature-right-age",
+      "value": 20,
+      "x": 7180,
+      "y": 4816
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 150,
+      "x": 6602,
+      "y": 5268
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 160,
+      "x": 6593,
+      "y": 4826
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 170,
+      "x": 6602,
+      "y": 4403
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 180,
+      "x": 6602,
+      "y": 3952
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 185,
+      "x": 6602,
+      "y": 3519
+    },
+    {
+      "category": "weight-age",
+      "value": 2,
+      "x": 3012,
+      "y": 9191
+    },
+    {
+      "category": "weight-age",
+      "value": 4,
+      "x": 3472,
+      "y": 9188
+    },
+    {
+      "category": "weight-age",
+      "value": 6,
+      "x": 3939,
+      "y": 9188
+    },
+    {
+      "category": "weight-age",
+      "value": 8,
+      "x": 4390,
+      "y": 9188
+    },
+    {
+      "category": "weight-age",
+      "value": 10,
+      "x": 4866,
+      "y": 9189
+    },
+    {
+      "category": "weight-age",
+      "value": 12,
+      "x": 5326,
+      "y": 9189
+    },
+    {
+      "category": "weight-age",
+      "value": 14,
+      "x": 5794,
+      "y": 9189
+    },
+    {
+      "category": "weight-age",
+      "value": 16,
+      "x": 6244,
+      "y": 9189
+    },
+    {
+      "category": "weight-age",
+      "value": 18,
+      "x": 6721,
+      "y": 9189
+    },
+    {
+      "category": "weight-age",
+      "value": 20,
+      "x": 7180,
+      "y": 9189
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 10,
+      "x": 3250,
+      "y": 9830
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 15,
+      "x": 3242,
+      "y": 9620
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 20,
+      "x": 3242,
+      "y": 9405
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 25,
+      "x": 3259,
+      "y": 9183
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 30,
+      "x": 3250,
+      "y": 8963
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 35,
+      "x": 3233,
+      "y": 8748
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 40,
+      "x": 6491,
+      "y": 8533
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 45,
+      "x": 6491,
+      "y": 8321
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 50,
+      "x": 6482,
+      "y": 8102
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 60,
+      "x": 6483,
+      "y": 7655
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 75,
+      "x": 6015,
+      "y": 6992
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 90,
+      "x": 6023,
+      "y": 6350
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 105,
+      "x": 6023,
+      "y": 5699
+    }
+  ]
+}

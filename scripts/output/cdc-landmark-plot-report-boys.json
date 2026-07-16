@@ -1,0 +1,1199 @@
+{
+  "calVersion": 5,
+  "source": "C:\\Users\\dfili\\HUB-projects\\peds-endo-calc\\data\\cdc\\landmarks\\cdc-landmarks-boys.json",
+  "markedAt": "2026-06-21T01:43:45.219Z",
+  "summary": {
+    "anchorPassed": 57,
+    "anchorFailed": 0,
+    "clinicalCases": 7
+  },
+  "anchorResults": [
+    {
+      "category": "stature-left-age",
+      "value": 2,
+      "expected": {
+        "x": 3021,
+        "y": 4813
+      },
+      "plotted": {
+        "x": 3021,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1762
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 3,
+      "expected": {
+        "x": 3242,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 3242,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 4,
+      "expected": {
+        "x": 3480,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 3480,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 5,
+      "expected": {
+        "x": 3710,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 3710,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 6,
+      "expected": {
+        "x": 3939,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 3939,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 7,
+      "expected": {
+        "x": 4169,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 4169,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 8,
+      "expected": {
+        "x": 4407,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 9,
+      "expected": {
+        "x": 4637,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 4637,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 10,
+      "expected": {
+        "x": 4858,
+        "y": 4822
+      },
+      "plotted": {
+        "x": 4858,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1753
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-age",
+      "value": 11,
+      "expected": {
+        "x": 5088,
+        "y": 4830
+      },
+      "plotted": {
+        "x": 5088,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1745
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 80,
+      "expected": {
+        "x": 3242,
+        "y": 8314
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 8314
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1165,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 90,
+      "expected": {
+        "x": 3242,
+        "y": 7874
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 7874
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1165,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 100,
+      "expected": {
+        "x": 3259,
+        "y": 7440
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 7440
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1148,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 110,
+      "expected": {
+        "x": 3242,
+        "y": 7010
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 7010
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1165,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 120,
+      "expected": {
+        "x": 3250,
+        "y": 6575
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 6575
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1157,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 130,
+      "expected": {
+        "x": 3250,
+        "y": 6158
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 6158
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1157,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 140,
+      "expected": {
+        "x": 3242,
+        "y": 5691
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 5691
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1165,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 150,
+      "expected": {
+        "x": 3242,
+        "y": 5257
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 5257
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 1165,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-left-cm",
+      "value": 160,
+      "expected": {
+        "x": 3599,
+        "y": 4825
+      },
+      "plotted": {
+        "x": 4407,
+        "y": 4825
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": 808,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 12,
+      "expected": {
+        "x": 5334,
+        "y": 4827
+      },
+      "plotted": {
+        "x": 5334,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1748
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 13,
+      "expected": {
+        "x": 5564,
+        "y": 4601
+      },
+      "plotted": {
+        "x": 5564,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1974
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 14,
+      "expected": {
+        "x": 5794,
+        "y": 4831
+      },
+      "plotted": {
+        "x": 5794,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1744
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 15,
+      "expected": {
+        "x": 6023,
+        "y": 4827
+      },
+      "plotted": {
+        "x": 6023,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1748
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 16,
+      "expected": {
+        "x": 6261,
+        "y": 4827
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1748
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 17,
+      "expected": {
+        "x": 6482,
+        "y": 4824
+      },
+      "plotted": {
+        "x": 6482,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1751
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 18,
+      "expected": {
+        "x": 6721,
+        "y": 4833
+      },
+      "plotted": {
+        "x": 6721,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1742
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 19,
+      "expected": {
+        "x": 6942,
+        "y": 4833
+      },
+      "plotted": {
+        "x": 6942,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1742
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-age",
+      "value": 20,
+      "expected": {
+        "x": 7180,
+        "y": 4816
+      },
+      "plotted": {
+        "x": 7180,
+        "y": 6575
+      },
+      "check": "x vs age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": 1759
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 150,
+      "expected": {
+        "x": 6602,
+        "y": 5268
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 5268
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -341,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 160,
+      "expected": {
+        "x": 6593,
+        "y": 4826
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 4826
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -332,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 170,
+      "expected": {
+        "x": 6602,
+        "y": 4403
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 4403
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -341,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 180,
+      "expected": {
+        "x": 6602,
+        "y": 3952
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 3952
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -341,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 190,
+      "expected": {
+        "x": 6602,
+        "y": 3519
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 3519
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -341,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "stature-right-cm",
+      "value": 195,
+      "expected": {
+        "x": 6602,
+        "y": 3301
+      },
+      "plotted": {
+        "x": 6261,
+        "y": 3301
+      },
+      "check": "y vs cm scale",
+      "pass": true,
+      "delta": {
+        "dx": -341,
+        "dy": 0
+      },
+      "note": "X not checked (cm landmark only defines y row; x varies where you clicked scale)"
+    },
+    {
+      "category": "weight-age",
+      "value": 2,
+      "expected": {
+        "x": 3012,
+        "y": 9191
+      },
+      "plotted": {
+        "x": 3012,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -8
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 4,
+      "expected": {
+        "x": 3472,
+        "y": 9188
+      },
+      "plotted": {
+        "x": 3472,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -5
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 6,
+      "expected": {
+        "x": 3939,
+        "y": 9188
+      },
+      "plotted": {
+        "x": 3939,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -5
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 8,
+      "expected": {
+        "x": 4390,
+        "y": 9188
+      },
+      "plotted": {
+        "x": 4390,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -5
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 10,
+      "expected": {
+        "x": 4866,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 4866,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 12,
+      "expected": {
+        "x": 5326,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 14,
+      "expected": {
+        "x": 5794,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 5794,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 16,
+      "expected": {
+        "x": 6244,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 6244,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 18,
+      "expected": {
+        "x": 6721,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 6721,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-age",
+      "value": 20,
+      "expected": {
+        "x": 7180,
+        "y": 9189
+      },
+      "plotted": {
+        "x": 7180,
+        "y": 9183
+      },
+      "check": "x vs weight age column",
+      "pass": true,
+      "delta": {
+        "dx": 0,
+        "dy": -6
+      },
+      "note": "Y not checked (age landmark only defines x column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 10,
+      "expected": {
+        "x": 3250,
+        "y": 9830
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 9830
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2076,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 15,
+      "expected": {
+        "x": 3242,
+        "y": 9620
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 9620
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2084,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 20,
+      "expected": {
+        "x": 3242,
+        "y": 9405
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 9405
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2084,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 25,
+      "expected": {
+        "x": 3259,
+        "y": 9183
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 9183
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2067,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 30,
+      "expected": {
+        "x": 3250,
+        "y": 8963
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8963
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2076,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-left-kg",
+      "value": 35,
+      "expected": {
+        "x": 3233,
+        "y": 8748
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8748
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": 2093,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 40,
+      "expected": {
+        "x": 6491,
+        "y": 8533
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8533
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -1165,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 45,
+      "expected": {
+        "x": 6491,
+        "y": 8321
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8321
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -1165,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 50,
+      "expected": {
+        "x": 6482,
+        "y": 8102
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8102
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -1156,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 60,
+      "expected": {
+        "x": 6482,
+        "y": 7655
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 7655
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -1156,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 75,
+      "expected": {
+        "x": 6015,
+        "y": 6992
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 6992
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -689,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 90,
+      "expected": {
+        "x": 6023,
+        "y": 6350
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 6350
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -697,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    },
+    {
+      "category": "weight-right-kg",
+      "value": 105,
+      "expected": {
+        "x": 6023,
+        "y": 5699
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 5699
+      },
+      "check": "y vs kg scale",
+      "pass": true,
+      "delta": {
+        "dx": -697,
+        "dy": 0
+      },
+      "note": "X not checked (kg landmark only defines y row; plot x comes from age column)"
+    }
+  ],
+  "clinicalResults": [
+    {
+      "label": "Height chron 12y 125cm",
+      "input": {
+        "ageYears": 12,
+        "heightCm": 125
+      },
+      "plotted": {
+        "x": 5334,
+        "y": 6366.5
+      },
+      "segment": {
+        "age": "right",
+        "cm": "left"
+      }
+    },
+    {
+      "label": "Height bone 10y 125cm",
+      "input": {
+        "ageYears": 10,
+        "heightCm": 125
+      },
+      "plotted": {
+        "x": 4858,
+        "y": 6366.5
+      },
+      "segment": {
+        "age": "left",
+        "cm": "left"
+      }
+    },
+    {
+      "label": "PAH 20y 161.4cm",
+      "input": {
+        "ageYears": 20,
+        "heightCm": 161.4
+      },
+      "plotted": {
+        "x": 7180,
+        "y": 4766.78
+      },
+      "segment": {
+        "age": "right",
+        "cm": "right"
+      }
+    },
+    {
+      "label": "MPS 20y 171cm",
+      "input": {
+        "ageYears": 20,
+        "heightCm": 171
+      },
+      "plotted": {
+        "x": 7180,
+        "y": 4357.9
+      },
+      "segment": {
+        "age": "right",
+        "cm": "right"
+      }
+    },
+    {
+      "label": "Weight chron 12y 35kg",
+      "input": {
+        "ageYears": 12,
+        "weightKg": 35
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8748
+      },
+      "segment": {
+        "kg": "left"
+      }
+    },
+    {
+      "label": "Weight chron 12y 30kg",
+      "input": {
+        "ageYears": 12,
+        "weightKg": 30
+      },
+      "plotted": {
+        "x": 5326,
+        "y": 8963
+      },
+      "segment": {
+        "kg": "left"
+      }
+    },
+    {
+      "label": "Weight chron 10y 32kg",
+      "input": {
+        "ageYears": 10,
+        "weightKg": 32
+      },
+      "plotted": {
+        "x": 4866,
+        "y": 8877
+      },
+      "segment": {
+        "kg": "left"
+      }
+    }
+  ]
+}

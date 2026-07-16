@@ -1,0 +1,167 @@
+CDC landmark plot verification (cal v5)
+Source: C:\Users\dfili\HUB-projects\peds-endo-calc\data\cdc\landmarks\cdc-landmarks-boys.json
+Marked: 2026-06-21T01:43:45.219Z
+Landmarks: 57
+
+=== Anchor round-trip (plotter vs logged landmarks) ===
+Age columns: verify plotted X. cm/kg scales: verify plotted Y only (X on scale line is not used for plotting).
+
+[PASS] stature-left-age value=2 | check x vs age column | expected (3021, 4813) → plotted (3021.0, 6575.0) | Δ (0.0, 1762.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=3 | check x vs age column | expected (3242, 4830) → plotted (3242.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=4 | check x vs age column | expected (3480, 4830) → plotted (3480.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=5 | check x vs age column | expected (3710, 4830) → plotted (3710.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=6 | check x vs age column | expected (3939, 4830) → plotted (3939.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=7 | check x vs age column | expected (4169, 4830) → plotted (4169.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=8 | check x vs age column | expected (4407, 4830) → plotted (4407.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=9 | check x vs age column | expected (4637, 4830) → plotted (4637.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=10 | check x vs age column | expected (4858, 4822) → plotted (4858.0, 6575.0) | Δ (0.0, 1753.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-age value=11 | check x vs age column | expected (5088, 4830) → plotted (5088.0, 6575.0) | Δ (0.0, 1745.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-left-cm value=80 | check y vs cm scale | expected (3242, 8314) → plotted (4407.0, 8314.0) | Δ (1165.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=90 | check y vs cm scale | expected (3242, 7874) → plotted (4407.0, 7874.0) | Δ (1165.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=100 | check y vs cm scale | expected (3259, 7440) → plotted (4407.0, 7440.0) | Δ (1148.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=110 | check y vs cm scale | expected (3242, 7010) → plotted (4407.0, 7010.0) | Δ (1165.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=120 | check y vs cm scale | expected (3250, 6575) → plotted (4407.0, 6575.0) | Δ (1157.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=130 | check y vs cm scale | expected (3250, 6158) → plotted (4407.0, 6158.0) | Δ (1157.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=140 | check y vs cm scale | expected (3242, 5691) → plotted (4407.0, 5691.0) | Δ (1165.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=150 | check y vs cm scale | expected (3242, 5257) → plotted (4407.0, 5257.0) | Δ (1165.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-left-cm value=160 | check y vs cm scale | expected (3599, 4825) → plotted (4407.0, 4825.0) | Δ (808.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-age value=12 | check x vs age column | expected (5334, 4827) → plotted (5334.0, 6575.0) | Δ (0.0, 1748.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=13 | check x vs age column | expected (5564, 4601) → plotted (5564.0, 6575.0) | Δ (0.0, 1974.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=14 | check x vs age column | expected (5794, 4831) → plotted (5794.0, 6575.0) | Δ (0.0, 1744.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=15 | check x vs age column | expected (6023, 4827) → plotted (6023.0, 6575.0) | Δ (0.0, 1748.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=16 | check x vs age column | expected (6261, 4827) → plotted (6261.0, 6575.0) | Δ (0.0, 1748.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=17 | check x vs age column | expected (6482, 4824) → plotted (6482.0, 6575.0) | Δ (0.0, 1751.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=18 | check x vs age column | expected (6721, 4833) → plotted (6721.0, 6575.0) | Δ (0.0, 1742.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=19 | check x vs age column | expected (6942, 4833) → plotted (6942.0, 6575.0) | Δ (0.0, 1742.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-age value=20 | check x vs age column | expected (7180, 4816) → plotted (7180.0, 6575.0) | Δ (0.0, 1759.0)
+         Y not checked (age landmark only defines x column)
+[PASS] stature-right-cm value=150 | check y vs cm scale | expected (6602, 5268) → plotted (6261.0, 5268.0) | Δ (-341.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-cm value=160 | check y vs cm scale | expected (6593, 4826) → plotted (6261.0, 4826.0) | Δ (-332.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-cm value=170 | check y vs cm scale | expected (6602, 4403) → plotted (6261.0, 4403.0) | Δ (-341.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-cm value=180 | check y vs cm scale | expected (6602, 3952) → plotted (6261.0, 3952.0) | Δ (-341.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-cm value=190 | check y vs cm scale | expected (6602, 3519) → plotted (6261.0, 3519.0) | Δ (-341.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] stature-right-cm value=195 | check y vs cm scale | expected (6602, 3301) → plotted (6261.0, 3301.0) | Δ (-341.0, 0.0)
+         X not checked (cm landmark only defines y row; x varies where you clicked scale)
+[PASS] weight-age value=2 | check x vs weight age column | expected (3012, 9191) → plotted (3012.0, 9183.0) | Δ (0.0, -8.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=4 | check x vs weight age column | expected (3472, 9188) → plotted (3472.0, 9183.0) | Δ (0.0, -5.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=6 | check x vs weight age column | expected (3939, 9188) → plotted (3939.0, 9183.0) | Δ (0.0, -5.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=8 | check x vs weight age column | expected (4390, 9188) → plotted (4390.0, 9183.0) | Δ (0.0, -5.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=10 | check x vs weight age column | expected (4866, 9189) → plotted (4866.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=12 | check x vs weight age column | expected (5326, 9189) → plotted (5326.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=14 | check x vs weight age column | expected (5794, 9189) → plotted (5794.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=16 | check x vs weight age column | expected (6244, 9189) → plotted (6244.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=18 | check x vs weight age column | expected (6721, 9189) → plotted (6721.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-age value=20 | check x vs weight age column | expected (7180, 9189) → plotted (7180.0, 9183.0) | Δ (0.0, -6.0)
+         Y not checked (age landmark only defines x column)
+[PASS] weight-left-kg value=10 | check y vs kg scale | expected (3250, 9830) → plotted (5326.0, 9830.0) | Δ (2076.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-left-kg value=15 | check y vs kg scale | expected (3242, 9620) → plotted (5326.0, 9620.0) | Δ (2084.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-left-kg value=20 | check y vs kg scale | expected (3242, 9405) → plotted (5326.0, 9405.0) | Δ (2084.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-left-kg value=25 | check y vs kg scale | expected (3259, 9183) → plotted (5326.0, 9183.0) | Δ (2067.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-left-kg value=30 | check y vs kg scale | expected (3250, 8963) → plotted (5326.0, 8963.0) | Δ (2076.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-left-kg value=35 | check y vs kg scale | expected (3233, 8748) → plotted (5326.0, 8748.0) | Δ (2093.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=40 | check y vs kg scale | expected (6491, 8533) → plotted (5326.0, 8533.0) | Δ (-1165.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=45 | check y vs kg scale | expected (6491, 8321) → plotted (5326.0, 8321.0) | Δ (-1165.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=50 | check y vs kg scale | expected (6482, 8102) → plotted (5326.0, 8102.0) | Δ (-1156.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=60 | check y vs kg scale | expected (6482, 7655) → plotted (5326.0, 7655.0) | Δ (-1156.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=75 | check y vs kg scale | expected (6015, 6992) → plotted (5326.0, 6992.0) | Δ (-689.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=90 | check y vs kg scale | expected (6023, 6350) → plotted (5326.0, 6350.0) | Δ (-697.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+[PASS] weight-right-kg value=105 | check y vs kg scale | expected (6023, 5699) → plotted (5326.0, 5699.0) | Δ (-697.0, 0.0)
+         X not checked (kg landmark only defines y row; plot x comes from age column)
+
+Anchor checks: 57 passed, 0 failed
+
+=== Clinical test points (verify on chart) ===
+Height chron 12y 125cm
+  input: {"ageYears":12,"heightCm":125}
+  segment: {"age":"right","cm":"left"}
+  plotted px: (5334, 6366.5)
+
+Height bone 10y 125cm
+  input: {"ageYears":10,"heightCm":125}
+  segment: {"age":"left","cm":"left"}
+  plotted px: (4858, 6366.5)
+
+PAH 20y 161.4cm
+  input: {"ageYears":20,"heightCm":161.4}
+  segment: {"age":"right","cm":"right"}
+  plotted px: (7180, 4766.78)
+
+MPS 20y 171cm
+  input: {"ageYears":20,"heightCm":171}
+  segment: {"age":"right","cm":"right"}
+  plotted px: (7180, 4357.9)
+
+Weight chron 12y 35kg
+  input: {"ageYears":12,"weightKg":35}
+  segment: {"kg":"left"}
+  plotted px: (5326, 8748)
+
+Weight chron 12y 30kg
+  input: {"ageYears":12,"weightKg":30}
+  segment: {"kg":"left"}
+  plotted px: (5326, 8963)
+
+Weight chron 10y 32kg
+  input: {"ageYears":10,"weightKg":32}
+  segment: {"kg":"left"}
+  plotted px: (4866, 8877)
+
+=== Height ordering (smaller y = higher on chart) ===
+  125cm @ 12y: y=6366.5
+  PAH 161.4 @ 20y: y=4766.78 (should be < 6366.5)
+  MPS 171 @ 20y: y=4357.9 (should be < 4766.78)
+  PAH above current: YES
+  MPS above PAH: YES

@@ -1,0 +1,25 @@
+# Olgemöller et al. 2003 — BW + age-at-sample multitier thresholds (nmol/L serum)
+# Source: J Clin Endocrinol Metab. 2003;88(12):5790-5794. doi:10.1210/jc.2002-021732
+# normal_max: at or below = normal; above normal_max up to elevated_max = elevated (CAH possible); above elevated_max = markedly elevated (CAH probable)
+bw_min_g,bw_max_g,age_min_days,age_max_days,normal_max_nmol,elevated_max_nmol
+0,999,0,19,200,300
+0,999,20,29,100,200
+0,999,30,59,60,150
+0,999,60,9999,30,90
+1000,1499,0,3,150,200
+1000,1499,4,13,120,200
+1000,1499,14,19,80,200
+1000,1499,20,29,60,200
+1000,1499,30,59,40,125
+1000,1499,60,9999,30,90
+1500,1999,0,3,80,150
+1500,1999,4,13,60,150
+1500,1999,14,29,40,150
+1500,1999,30,9999,30,90
+2000,2499,0,1,60,60
+2000,2499,2,3,50,125
+2000,2499,4,13,40,125
+2000,2499,14,9999,30,90
+2500,99999,0,1,60,60
+2500,99999,2,3,40,90
+2500,99999,4,9999,30,90

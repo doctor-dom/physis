@@ -1,0 +1,27 @@
+# Pode-Shakked et al. 2019 — Table 1 percentile values (nmol/L)
+# All reported percentiles per row are imported for percentile estimation and workup guidance.
+# Empty cells = percentile not reported for that row in Table 1.
+stratification,bw_min_g,bw_max_g,ga_min_weeks,ga_max_weeks,p99_00,p99_90,p99_95,p99_97,p99_99,row_label
+bw_only,0,1499,0,999,,288,320,357,,<1500 g
+bw_only,1500,1999,0,999,,126,151,178,,1500–1999 g
+bw_only,2000,2499,0,999,,85,104,123,,2000–2499 g
+bw_only,2500,2999,0,999,,51,60,69,,2500–2999 g
+bw_only,3000,3499,0,999,,32,39,45,,3000–3499 g
+bw_only,3500,3999,0,999,,26,33,41,,3500–3999 g
+bw_only,4000,99999,0,999,,25,30,36,,≥4000 g
+ga_only,0,99999,0,29,233,290,306,316,,≤29 wk
+ga_only,0,99999,29,32,106,180,189,195,,29–≤32 wk
+ga_only,0,99999,0,31,195,281,290,294,,<32 wk
+ga_only,0,99999,32,36,59,96,103,120,,32–≤36 wk
+ga_only,0,99999,36,36,40,72,96,108,125,36 wk
+ga_only,0,99999,37,999,19,36,46,52,63,>36 wk
+ga_only,0,99999,37,37,28,46,61,64,81,37 wk
+ga_only,0,99999,38,999,18,35,45,51,59,>37 wk
+bw_and_ga,0,2500,0,31,205,283,292,307,,≤2500 g and <32 wk
+bw_and_ga,0,2500,32,36,,105,123,147,,≤2500 g and 32–≤36 wk
+bw_and_ga,0,2500,37,999,,62,70,85,,≤2500 g and >36 wk
+bw_and_ga,0,2500,36,36,40,72,89,101,,≤2500 g and 36 wk
+bw_and_ga,2501,99999,36,36,38,70,90,109,,>2500 g and 36 wk
+bw_and_ga,2501,99999,37,37,,48,59,65,,>2500 g and 37 wk
+bw_and_ga,2501,99999,0,37,,47,62,63,71,>2500 g and ≤37 wk
+bw_and_ga,2501,99999,38,999,,25,29,34,43,>2500 g and >37 wk

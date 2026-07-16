@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10200 13200" width="10200" height="13200">
+  <image href="/cdc/stature-weight-2-20-girls.png" x="0" y="0" width="10200" height="13200"/>
+  <rect x="2464" y="3204" width="2419" height="1068" fill="rgba(14,165,233,0.08)" stroke="#0284c7" stroke-width="2" />
+  <rect x="5302" y="2914" width="1860" height="290" fill="rgba(3,105,161,0.08)" stroke="#0369a1" stroke-width="2" stroke-dasharray="8 6"/>
+  <rect x="2464" y="6618" width="5021" height="3399.000000000001" fill="rgba(34,197,94,0.08)" stroke="#16a34a" stroke-width="2" />
+  <line x1="2464.0" y1="6618" x2="2464.0" y2="10017.0" stroke="#22c55e" stroke-width="1" opacity="0.35"/>
+  <text x="2456.0" y="10035.0" font-size="12" fill="#22c55e">2y</text>
+  <text x="2428.0" y="10013.0" font-size="11" fill="#22c55e">10</text>
+  <text x="2428.0" y="6622.0" font-size="11" fill="#22c55e">105</text>
+  <line x1="4695.6" y1="6618" x2="4695.6" y2="10017.0" stroke="#22c55e" stroke-width="1" opacity="0.35"/>
+  <text x="4687.6" y="10035.0" font-size="12" fill="#22c55e">10y</text>
+  <text x="2428.0" y="10013.0" font-size="11" fill="#22c55e">10</text>
+  <text x="2428.0" y="6622.0" font-size="11" fill="#22c55e">105</text>
+  <line x1="7485.0" y1="6618" x2="7485.0" y2="10017.0" stroke="#22c55e" stroke-width="1" opacity="0.35"/>
+  <text x="7477.0" y="10035.0" font-size="12" fill="#22c55e">20y</text>
+  <text x="2428.0" y="10013.0" font-size="11" fill="#22c55e">10</text>
+  <text x="2428.0" y="6622.0" font-size="11" fill="#22c55e">105</text>
+  <line x1="5302.0" y1="3191.1" x2="4883.0" y2="3361.7" stroke="#c2410c" stroke-width="3" marker-end="url(#arrow)"/>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#c2410c"/></marker></defs>
+  <circle cx="5302.0" cy="3191.1" r="9" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+  <text x="5314.0" y="3195.1" font-size="14" fill="#111">H chron</text>
+  <circle cx="4883.0" cy="3361.7" r="9" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+  <text x="4895.0" y="3365.7" font-size="14" fill="#111">H bone</text>
+  <circle cx="5253.4" cy="8764.7" r="9" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+  <text x="5265.4" y="8768.7" font-size="14" fill="#111">Wt</text>
+  <circle cx="7162.0" cy="3120.1" r="10" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+  <text x="7174.0" y="3124.1" font-size="14" fill="#111">MPS</text>
+  <text x="400" y="13020" font-size="120" fill="#334155">Female — typical adolescent | PNG 10200×13200</text>
+</svg>
