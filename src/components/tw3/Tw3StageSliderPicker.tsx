@@ -87,6 +87,9 @@ export default function Tw3StageSliderPicker({
   }, [current, onSelectRating, sliderIndex, sliderMax, zoomOpen]);
 
   if (drawableStages.length === 0) {
+    if (availableRatings.length === 0) {
+      return null;
+    }
     return (
       <p className="text-sm text-teal-700">
         No stage images found for this landmark. Add PNGs under{" "}
@@ -97,6 +100,52 @@ export default function Tw3StageSliderPicker({
   }
 
   const isCurrentSelected = current && selectedRating === current.rating;
+
+  const stageSlider = (
+    <div className="px-0.5">
+      <div className="mb-1 flex items-center justify-between text-[10px] text-teal-600">
+        <span>Stage</span>
+        <span className="font-semibold tabular-nums text-teal-800">
+          {current?.rating ?? "—"}
+          {drawableStages.length > 1 && (
+            <span className="ml-1 font-normal text-teal-500">
+              ({sliderIndex + 1}/{drawableStages.length})
+            </span>
+          )}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={sliderMax}
+        step={1}
+        value={sliderIndex}
+        onChange={(e) => setSliderIndex(Number(e.target.value))}
+        className="w-full h-2 accent-teal-600 cursor-pointer"
+        aria-label={`Scan ${scoringTitle} maturity stages`}
+        aria-valuetext={current ? `Stage ${current.rating}` : undefined}
+      />
+      <div className="mt-1 flex justify-between text-[9px] text-teal-500 tabular-nums">
+        <span>{drawableStages[0]?.rating}</span>
+        <span>{drawableStages[drawableStages.length - 1]?.rating}</span>
+      </div>
+    </div>
+  );
+
+  const stageDescription = current && (
+    <div className="min-w-0 p-3 sm:p-4">
+      <p className="text-sm font-semibold text-teal-900">Stage {current.rating}</p>
+      {current.descriptionLines.length > 0 ? (
+        <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-teal-800">
+          {current.descriptionLines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs text-teal-600">No description available for this stage.</p>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-w-0 space-y-3">
@@ -128,7 +177,7 @@ export default function Tw3StageSliderPicker({
         }`}
       >
         {current && (
-          <div className="grid gap-0 sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-0 sm:grid sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
             <label
               className="group relative flex cursor-pointer items-center justify-center border-b border-teal-100 bg-white p-3 sm:border-b-0 sm:border-r"
               title={`Select stage ${current.rating}`}
@@ -151,18 +200,9 @@ export default function Tw3StageSliderPicker({
               <span className="pointer-events-none absolute inset-0 bg-teal-900/0 transition group-hover:bg-teal-900/[0.03]" />
             </label>
 
-            <div className="min-w-0 p-3 sm:p-4">
-              <p className="text-sm font-semibold text-teal-900">Stage {current.rating}</p>
-              {current.descriptionLines.length > 0 ? (
-                <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-teal-800">
-                  {current.descriptionLines.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-xs text-teal-600">No description available for this stage.</p>
-              )}
-            </div>
+            <div className="border-b border-teal-100 px-3 py-2 sm:hidden">{stageSlider}</div>
+
+            {stageDescription}
           </div>
         )}
       </div>
@@ -172,34 +212,7 @@ export default function Tw3StageSliderPicker({
         {current ? `stage ${current.rating}` : ""} and continue.
       </p>
 
-      <div className="px-0.5">
-        <div className="mb-1 flex items-center justify-between text-[10px] text-teal-600">
-          <span>Stage</span>
-          <span className="font-semibold tabular-nums text-teal-800">
-            {current?.rating ?? "—"}
-            {drawableStages.length > 1 && (
-              <span className="ml-1 font-normal text-teal-500">
-                ({sliderIndex + 1}/{drawableStages.length})
-              </span>
-            )}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={sliderMax}
-          step={1}
-          value={sliderIndex}
-          onChange={(e) => setSliderIndex(Number(e.target.value))}
-          className="w-full h-2 accent-teal-600 cursor-pointer"
-          aria-label={`Scan ${scoringTitle} maturity stages`}
-          aria-valuetext={current ? `Stage ${current.rating}` : undefined}
-        />
-        <div className="mt-1 flex justify-between text-[9px] text-teal-500 tabular-nums">
-          <span>{drawableStages[0]?.rating}</span>
-          <span>{drawableStages[drawableStages.length - 1]?.rating}</span>
-        </div>
-      </div>
+      <div className="hidden sm:block">{stageSlider}</div>
 
       {zoomOpen && current && (
         <div
