@@ -1,6 +1,6 @@
 # PHYSIS
 
-Pediatric bone age and height prediction (TW3 RUS → SMS → adjusted RWT). Additional endocrine calculators in **etc.** Forked and developed with substantial work from Dr. Simon Chapman's [eatyourpeas/endocrinologist](https://github.com/eatyourpeas/endocrinologist).
+Pediatric bone age and height prediction (TW3 RUS → SMS → adjusted RWT). Additional endocrine calculators in **etc.** 
 
 ## Calculators
 
