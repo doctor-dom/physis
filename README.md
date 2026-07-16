@@ -34,14 +34,18 @@ Production build output is the `dist/` folder. The app is deployed to **Cloudfla
    - In the Pages project → **Custom domains** → add `calc.dom.doctor`.
    - Cloudflare shows a CNAME target (e.g. `physis-calc.pages.dev`).
 
-3. **GoDaddy DNS** (`dom.doctor` uses GoDaddy nameservers)
-   - GoDaddy → **My Products** → `dom.doctor` → **DNS** → **Add record**
-   - Type: **CNAME**
-   - Name: `calc`
-   - Value: the `*.pages.dev` hostname Cloudflare gave you
-   - TTL: 600 seconds (or default)
+3. **Custom domain (Workers, not Pages)**
+   - This project deploys with `npx wrangler deploy` (a **Worker** named `physis`), not Cloudflare Pages.
+   - Workers **Custom Domains** do not show a `*.pages.dev` CNAME to copy. Cloudflare creates the DNS record for you **inside the `dom.doctor` zone**.
+   - `wrangler.jsonc` includes `calc.dom.doctor` as a custom domain route.
+   - **Important:** `dom.doctor` nameservers must point to Cloudflare (not GoDaddy) or `calc.dom.doctor` will never resolve publicly.
 
-4. Wait for DNS propagation (usually 5–30 minutes). Cloudflare will provision HTTPS automatically.
+4. **Move DNS to Cloudflare (required for calc.dom.doctor)**
+   - Cloudflare dashboard → **dom.doctor** → **Overview** → copy the 2 Cloudflare nameservers.
+   - GoDaddy → **dom.doctor** → **DNS** → **Change nameservers** → **Enter my own nameservers** → paste Cloudflare NS.
+   - Wait 15–60 minutes, then redeploy.
+
+5. **GoDaddy DNS** — only if you keep nameservers on GoDaddy and switch to **Pages** hosting instead of Workers. Otherwise skip this step.
 
 ### Deploy updates
 
