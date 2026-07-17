@@ -1,5 +1,7 @@
 # PHYSIS
 
+**Pediatric Height Yields: a Score-based Interpretation System**
+
 Pediatric endocrine clinical decision support — bone age scoring, adult height prediction, growth charting, and additional calculators for inpatient and outpatient practice. PHYSIS is a **standalone application built from scratch** for pediatric endocrinology workflows. It draws on published methods and clinical references; it is not a fork of [eatyourpeas/endocrinologist](https://github.com/eatyourpeas/endocrinologist).
 
 **Production:** [https://calc.dom.doctor](https://calc.dom.doctor)
@@ -129,15 +131,52 @@ Production build output is the `dist/` folder. The app is deployed to **Cloudfla
 
 4. **GoDaddy DNS** — only if you keep nameservers on GoDaddy and switch to **Pages** hosting instead of Workers. Otherwise skip this step.
 
+5. **KV namespace (scheduled deploy sync)**
+   - Create the namespace and paste its id into `wrangler.jsonc` (`DEPLOY_STATE`):
+
+   ```bash
+   npx wrangler kv namespace create DEPLOY_STATE
+   ```
+
+   Replace `REPLACE_WITH_KV_NAMESPACE_ID` in `wrangler.jsonc` with the returned id.
+
+6. **Worker secret: GitHub token**
+   - Create a GitHub fine-grained or classic PAT with permission to read the repo and dispatch Actions workflows.
+   - Set it on the Worker:
+
+   ```bash
+   npx wrangler secret put GITHUB_TOKEN
+   ```
+
+7. **GitHub Actions secrets** (repo → Settings → Secrets and variables → Actions)
+   - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Workers edit permission
+   - `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare account id
+
+### Scheduled GitHub sync (midnight UTC)
+
+The Worker entry point is `worker/index.ts`:
+
+- **`fetch`** — serves the built SPA from the `ASSETS` binding (unchanged user-facing behavior)
+- **`scheduled`** — runs daily at **00:00 UTC** (`triggers.crons` in `wrangler.jsonc`)
+
+Each cron run:
+
+1. Fetches the latest commit on `master` from `doctor-dom/physis`
+2. Compares the SHA to the value stored in KV (`DEPLOY_STATE`)
+3. On the **first run**, stores the SHA only (no deploy)
+4. On **later runs**, if the SHA changed, dispatches the [Deploy PHYSIS](.github/workflows/deploy.yml) GitHub Action, then updates KV
+
+Push-to-`master` still deploys immediately via GitHub Actions; the cron is a nightly check for missed updates.
+
 ### Deploy updates
 
-**Git (auto):** push to the connected branch — Cloudflare rebuilds on each push.
+**Git (auto):** push to `master` — GitHub Actions runs `.github/workflows/deploy.yml` (build + `wrangler deploy`).
 
 **CLI (manual):**
 
 ```bash
 npx wrangler login          # once
-npm run deploy:pages
+npm run deploy
 ```
 
 ### Verify

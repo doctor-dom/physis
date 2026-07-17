@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {isHome ? (
           <>
             <p className="mt-2 text-sm sm:text-base font-medium text-teal-800">
-              Pediatric Height Yielded through Skeletal Interpretation System
+              Pediatric Height Yields: a Score-based Interpretation System
             </p>
             <p className="mt-2 text-sm leading-relaxed text-teal-700/90 max-w-2xl">
               A TW3-based clinical tool to aid pediatric endocrinologists in the

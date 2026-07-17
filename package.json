@@ -36,6 +36,7 @@
     "pngjs": "^7.0.0",
     "pdf-parse": "^2.4.5",
     "vite": "^6.0.0",
-    "wrangler": "^4.111.0"
+    "wrangler": "^4.111.0",
+    "@cloudflare/workers-types": "^5.20260710.1"
   }
 }
