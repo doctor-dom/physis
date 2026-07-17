@@ -1,31 +1,34 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "physis",
-  "main": "worker/index.ts",
-  "compatibility_date": "2026-07-16",
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
-  },
-  "kv_namespaces": [
-    {
-      "binding": "DEPLOY_STATE",
-      // Create with: npx wrangler kv namespace create DEPLOY_STATE
-      // Then replace the id below with the returned namespace id.
-      "id": "4d11594-84e4-41aa-b438-e81b8fa78ee7"
-    }
-  ],
-  "triggers": {
-    "crons": ["0 0 * * *"]
-  },
-  "routes": [
-    {
-      "pattern": "calc.dom.doctor",
-      "custom_domain": true
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "physis",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-07-16",
+	"observability": {
+		"enabled": true
+	},
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS",
+		"not_found_handling": "single-page-application"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "DEPLOY_STATE",
+			// Create with: npx wrangler kv namespace create DEPLOY_STATE
+			// Then replace the id below with the returned namespace id.
+			"id": "41b050d6e9d44b0ab41d7286973369bd",
+			"remote": true
+		}
+	],
+	"triggers": {
+		"crons": [
+			"0 0 * * *"
+		]
+	},
+	"routes": [
+		{
+			"pattern": "calc.dom.doctor",
+			"custom_domain": true
+		}
+	]
 }
