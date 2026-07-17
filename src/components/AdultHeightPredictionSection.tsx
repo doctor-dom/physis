@@ -293,12 +293,14 @@ export default function AdultHeightPredictionSection({
               valueCm={fatherCm}
               onChangeCm={onFatherCmChange}
               placeholder="e.g. 178"
+              allowFeetInches
             />
             <UnitLengthInput
               label="Mother height"
               valueCm={motherCm}
               onChangeCm={onMotherCmChange}
               placeholder="e.g. 165"
+              allowFeetInches
             />
           </div>
         ) : (
