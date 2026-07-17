@@ -4,6 +4,8 @@ Larger Tasks for Final Push:
 [] Make PHYSIS logo
 
 Calculators to Add:
+[] Make sure every calculator includes references if indicated, and every copy-paste output, if necessary.
+[] update steroid wean calculator to match Christian's application: https://molonych-source.github.io/steroid-wean-calculator-/
 [] fix bone age calculator for improved speed for scoring
     [] manually crop and replace images and stage text (posting as text file) for this step
 [] SPL-premie, SPL-child, and clitoral-normogram -- papers are saved in /reference
@@ -15,6 +17,7 @@ Calculators to Add:
 
 
 CHANGELOG:
+[x] added auto-push update function every midnight.
 [x] MDI to ISS conversion
 [x] Avg glucose <> fructosamine <> A1c
 [x] mIVF calculations

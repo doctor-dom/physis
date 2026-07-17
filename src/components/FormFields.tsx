@@ -37,7 +37,9 @@ export function Field({
         {label}
         {labelTooltip ? <InfoTooltip text={labelTooltip} /> : null}
       </span>
-      {hint && <span className="block text-xs text-teal-700/70">{hint}</span>}
+      {hint && (
+        <span className="block whitespace-pre-line text-xs text-teal-700/70">{hint}</span>
+      )}
       {children}
     </label>
   );

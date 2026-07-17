@@ -167,7 +167,9 @@ export default function BsaSteroidWeanPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <UnitWeightInput
               label="Weight"
-              hint="Required when not entering BSA directly"
+              hint={
+                "If provided alone, BSA estimation via Costeff formula:\nBSA = [(4× weight (kg)) + 7] / [90 + weight (kg)]"
+              }
               valueKg={weightKg}
               onChangeKg={setWeightKg}
             />
