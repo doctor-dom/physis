@@ -1,6 +1,6 @@
 # PHYSIS
 
-**Pediatric Height Yields: a Score-based Interpretation System**
+**Pediatric Height Yielded through Skeletal Interpretation System**
 
 Pediatric endocrine clinical decision support — bone age scoring, adult height prediction, growth charting, and additional calculators for inpatient and outpatient practice. PHYSIS is a **standalone application built from scratch** for pediatric endocrinology workflows. It draws on published methods and clinical references; it takes inspiration from the Bone Age calculation tool developed by [eatyourpeas](https://github.com/eatyourpeas) and the ClinicalTool [endocrinologist](https://github.com/eatyourpeas/endocrinologist)
 
@@ -13,9 +13,9 @@ The main workflow (`/growth`) guides TW3-RUS bone age scoring through adult heig
 
 | Step                 | Feature                                                                                                                                                        |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **TW3 bone age**     | Hand-navigator scoring for all 13 RUS landmarks with stage drawings, descriptions, and SMS → bone age lookup (sex-specific Tables A1/A3, A5/A6)                |
+| **TW3 bone age**     | Hand-navigator scoring for all 13 RUS landmarks with per-stage drawings and criteria text (individual atlas PNGs + markdown descriptions), discrete stage slider, and SMS → bone age lookup (sex-specific Tables A1/A3, A5/A6) |
 | **Parental stature** | Father/mother heights (cm, in, or ft+in) or direct MPH entry; distinguishes **MPH** (Tanner, TW3) from **MPS** (parental average, adjusted RWT & Khamis-Roche) |
-| **APH methods**      | **TW3** (optional MPH adjustment, menarchal status for girls 11–14 y), **adjusted RWT** (supine length correction), **Khamis-Roche** (no bone age required)    |
+| **APH methods**      | **TW3** (optional MPH adjustment — off by default; menarchal status for girls 11–14 y), **adjusted RWT** (supine length correction), **Khamis-Roche** (no bone age required)    |
 | **CDC growth chart** | Plots stature and weight vs chronological age and bone-age–shifted age; overlays MPH/MPS and selected predicted adult height                                   |
 | **Show work / QC**   | Audit trail of inputs, coefficient lookup, landmark scoring, and discrepancy flags (`ShowWorkSection`)                                                         |
 | **Clinical copy**    | Configurable charting summary with method references and TW3 atlas citations                                                                                   |
@@ -45,7 +45,7 @@ The main workflow (`/growth`) guides TW3-RUS bone age scoring through adult heig
 
 | Tool                                       | Route                  |
 | ------------------------------------------ | ---------------------- |
-| A1c ↔ average glucose ↔ fructosamine ↔ GMI | `/a1c-converter`       |
+| A1c ↔ average glucose ↔ fructosamine ↔ GMI (Cohen et al. preferred; Young et al. alternate) | `/a1c-converter`       |
 | Insulin MDI → sliding scale (ISS)          | `/insulin-mdi-iss`     |
 | Diluted insulin sliding scale              | `/insulin-diluted-iss` |
 | Maintenance IVF (Holliday–Segar)           | `/maintenance-ivf`     |
@@ -59,10 +59,20 @@ The main workflow (`/growth`) guides TW3-RUS bone age scoring through adult heig
 
 | Tool                                                                  | Route            |
 | --------------------------------------------------------------------- | ---------------- |
-| BSA (Haycock pediatric, weight-only) & steroid potency wean/converter | `/bsa-steroid`   |
+| BSA (Haycock or Costeff weight-only) & steroid potency wean/converter | `/bsa-steroid`   |
 | Pediatric hypertensive BP percentiles (AAP 2017)                      | `/pediatric-bp`  |
 | CAH screening (17-OHP, prematurity algorithms)                        | `/cah-screening` |
 
+
+
+### Gonad auxology (`/calculators/gonad-auxology`)
+
+
+| Tool | Route |
+| --- | --- |
+| Stretched penile length (newborn) — Halil et al. nomogram | `/spl-newborn` |
+| Stretched penile length (child) — Bulgarian, Schonfeld, and Feldman references | `/spl-child` |
+| Clitoral length/width (neonate) — Alaei et al. nomogram | `/clitoral-dimension` |
 
 
 
@@ -72,7 +82,8 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 
 ### Growth, bone age & height prediction
 
-- [x] TW3 APH calculator from Tanner et al. (optional MPH adjustment; menarchal status for girls 11–14 y)
+- [x] TW3 atlas individual stage images with side-by-side markdown stage criteria (`data/atlas/individual-stages/`, `data/atlas/stage-descriptions/`)
+- [x] TW3 APH calculator from Tanner et al. (optional MPH adjustment — off by default; menarchal status for girls 11–14 y)
 - [x] MPH calculation within the app; clear separation of MPH vs true MPS (parental average)
 - [x] CDC growth charts plotting height/weight vs CA and BA-shifted age with predicted adult height trajectories
 - [x] Replaced standalone original RWT with **Khamis-Roche** as a third APH method (adjusted RWT retained)
@@ -95,7 +106,7 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 
 ### Diabetes & nutrition
 
-- [x] Average glucose ↔ fructosamine ↔ A1c (and GMI) converter
+- [x] Average glucose ↔ fructosamine ↔ A1c (and GMI) converter — Cohen et al. (ADA 2003) preferred; Young et al. (MilMed 2025) alternate
 - [x] MDI to ISS (insulin sliding scale) conversion
 - [x] Maintenance IVF (mIVF) — Holliday–Segar calculations
 - [x] GIR calculator — IV and enteral, with combined total
@@ -106,8 +117,9 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 
 - [x] Pediatric age-based hypertension guideline calculator (BP percentiles)
 - [x] CAH screening tool (17-OHP with prematurity algorithms)
-- [x] BSA calculator — Haycock pediatric and kg-only (JW) options
+- [x] BSA calculator — Haycock (weight + height) and Costeff weight-only estimate
 - [x] Steroid wean calculator / potency converter
+- [x] Gonad auxology — SPL (newborn and child) and clitoral dimension nomograms with reference charts
 
 
 
@@ -116,15 +128,30 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 - [x] CDC plotting logic fixes
 - [x] Top-banner attribution updated — PHYSIS is an independent app, not a fork of eatyourpeas/endocrinologist
 - [x] Deployed to `calc.dom.doctor` via Cloudflare Workers
+- [x] Scheduled midnight UTC GitHub sync — Worker compares `master` SHA and dispatches deploy when changed
+- [x] GitHub Actions deploy workflow (Node 22 build; checkout/setup-node v5)
 
 
 
 ### Planned (from `predeployPHYSIS.txt`)
 
+**Larger tasks**
+
 - [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
-- [ ] Workflow UI polish to match mock-ups; PHYSIS logo
-- [ ] TW3 scoring speed improvements (cropped stage images and text)
-- [ ] SPL newborn/child and clitoral nomogram calculators (references in `/reference`)
+- [ ] Workflow UI polish to match mock-ups
+- [ ] PHYSIS logo
+
+**Small tasks & polish**
+
+- [ ] Confirm gonad auxology charting logic for all three tools
+- [ ] Audit calculator references and copy-paste clinical outputs
+- [ ] Further TW3 scoring UX (slider, image preload, layout)
+
+**Calculators to add or consider**
+
+- [ ] Steroid wean enhancements inspired by [Christian's steroid wean calculator](https://molonych-source.github.io/steroid-wean-calculator-/)
+- [ ] Random spot urine Ca/Cr ratio with interpretation tooltip
+- [ ] Standalone SPL calculator (Halil et al. 2017) with OE reference
 - [ ] IGF-1 Z-score calculator (under consideration)
 
 
