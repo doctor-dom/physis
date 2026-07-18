@@ -3,20 +3,22 @@ Larger Tasks for Final Push:
 - [] make workflow pages more closely resemble mock-up images
 [] Make PHYSIS logo
 
-Calculators to Add:
+Small Tasks
+[] Confirm gonad auxology graphing logic works for all 3 tools
 [] Make sure every calculator includes references if indicated, and every copy-paste output, if necessary.
-[] update steroid wean calculator to match Christian's application: https://molonych-source.github.io/steroid-wean-calculator-/
-[] fix bone age calculator for improved speed for scoring
-    [] manually crop and replace images and stage text (posting as text file) for this step
-[] SPL-premie, SPL-child, and clitoral-normogram -- papers are saved in /reference
-    [] Confirm that graph logic works for all papers
+[] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
+[] manually improve cropped stage images
+
+Calculators to Add/ Consider:
+[] add features to steroid wean calculator using inspiration from Christian's application: https://molonych-source.github.io/steroid-wean-calculator-/    
+[] Add random spot UCa/Cr ratio calculator with interpretation tooltip
 [] Make SPL calculator (Halil et al. 2017;59(3)269-273) --> also add OE reference
 [] Make clitoral len/wid for neonates (Alaei, et al: 2020; 11:297)
 [] Consider IGF1 Zscore calculator
 
-
-
 CHANGELOG:
+[x] SPL-premie, SPL-child, and clitoral-normogram
+[x] convert TW3 stage description text to .md files
 [x] added auto-push update function every midnight.
 [x] MDI to ISS conversion
 [x] Avg glucose <> fructosamine <> A1c
