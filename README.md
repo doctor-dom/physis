@@ -86,7 +86,7 @@ Legacy routes `/trp` and `/ccr` redirect to `/renal-electrolytes`.
 
 ## Changelog
 
-Completed work tracked in `predeployPHYSIS.txt` ([x] items).
+Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items). That file replaced `predeployPHYSIS.txt` as the Markdown release-planning checklist.
 
 ### Growth, bone age & height prediction
 
@@ -140,11 +140,11 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 - [x] Deployed to `calc.dom.doctor` via Cloudflare Workers
 - [x] Scheduled midnight UTC GitHub sync — Worker compares `master` SHA and dispatches deploy when changed
 - [x] GitHub Actions deploy workflow (Node 22 build; checkout/setup-node v5)
-- [x] Google Analytics (gtag) on production site (`calc.dom.doctor`)
+- [x] Release planning checklist moved from `predeployPHYSIS.txt` to [`predeployPHYSIS.md`](predeployPHYSIS.md)
 
 
 
-### Planned (from `predeployPHYSIS.txt`)
+### Planned (from [`predeployPHYSIS.md`](predeployPHYSIS.md))
 
 **Larger tasks**
 

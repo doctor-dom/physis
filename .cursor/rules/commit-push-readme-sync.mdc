@@ -1,5 +1,5 @@
 ---
-description: On commit/push, review predeployPHYSIS.txt and sync README.md changelog and feature lists
+description: On commit/push, review predeployPHYSIS.md and sync README.md changelog and feature lists
 alwaysApply: true
 ---
 
@@ -7,7 +7,7 @@ alwaysApply: true
 
 When the user asks to **commit**, **push**, or both for this repo:
 
-1. **Read** `predeployPHYSIS.txt` before finalizing the commit message.
+1. **Read** `predeployPHYSIS.md` before finalizing the commit message. (Formerly `predeployPHYSIS.txt`; converted to Markdown for checkboxes and links.)
 2. **Compare** its task lists and `CHANGELOG:` section against `README.md`.
 3. **Update `README.md` in the same commit** when docs are stale:
    - Add newly completed `[x]` items to the matching **Changelog** subsection (Growth, Electrolytes, Diabetes, General pediatrics, Platform).
@@ -15,6 +15,6 @@ When the user asks to **commit**, **push**, or both for this repo:
    - Refresh **Planned** from unchecked `[ ]` items only — remove entries that are already shipped.
    - Keep the home tagline aligned with `src/components/Layout.tsx` if the PHYSIS acronym changed.
 4. **Do not** commit README-only whitespace/formatting churn unrelated to the release notes.
-5. **Source of truth** for done vs planned: `predeployPHYSIS.txt` (task lists + CHANGELOG), verified against the codebase when ambiguous.
+5. **Source of truth** for done vs planned: `predeployPHYSIS.md` (task lists + CHANGELOG), verified against the codebase when ambiguous.
 
 If the user only asked to commit code with no doc impact, skip README edits unless predeploy or README is already part of the diff.
