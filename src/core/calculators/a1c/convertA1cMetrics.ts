@@ -8,6 +8,18 @@ export const DEFAULT_FRUCTOSAMINE_A1C_METHOD: FructosamineA1cMethodId = "cohen";
 export const FRUCTOSAMINE_A1C_METHOD_TOOLTIP =
   "Cohen et al. (ADA 2003) is the preferred fructosamine ↔ A1c conversion method in this calculator.";
 
+export const A1C_REFERENCE_TOOLTIP =
+  "HbA1c (%). eAG (mg/dL) = 28.7 × A1c (%) − 46.7. Fructosamine is derived via the selected Cohen or Young equation.";
+
+export const GMI_REFERENCE_TOOLTIP =
+  "GMI (%) = 3.31 + 0.02392 × mean glucose (mg/dL). GMI uses the same mean glucose (mg/dL) as eAG in this calculator.";
+
+export const FRUCTOSAMINE_REFERENCE_TOOLTIP =
+  "Preferred: Cohen et al., ADA 2003 — A1c (%) = 0.017 × Fructosamine (µmol/L) + 1.61.\nAlternate: Young et al., MilMed 2025 — A1c (%) = 0.0154 × Fructosamine (µmol/L) + 3.121.";
+
+export const EAG_REFERENCE_TOOLTIP =
+  "Estimated average glucose: eAG (mg/dL) = 28.7 × A1c (%) − 46.7. The same mean glucose underlies GMI in this calculator.";
+
 export interface FructosamineA1cMethod {
   id: FructosamineA1cMethodId;
   label: string;

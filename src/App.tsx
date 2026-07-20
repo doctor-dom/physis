@@ -1,9 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
-import TubularResorptionPhosphatePage from "./pages/TubularResorptionPhosphatePage";
-import CalciumClearanceRatioPage from "./pages/CalciumClearanceRatioPage";
 import CalciumAlbuminCorrectionPage from "./pages/CalciumAlbuminCorrectionPage";
+import HyperglycemiaCorrectedSodiumPage from "./pages/HyperglycemiaCorrectedSodiumPage";
 import SodiumBalanceReplacementPage from "./pages/SodiumBalanceReplacementPage";
 import GirPage from "./pages/GirPage";
 import BsaSteroidWeanPage from "./pages/BsaSteroidWeanPage";
@@ -15,11 +14,13 @@ import InsulinDilutedSlidingScalePage from "./pages/InsulinDilutedSlidingScalePa
 import GrowthWorkflowPage from "./pages/GrowthWorkflowPage";
 import MaintenanceIvfPage from "./pages/MaintenanceIvfPage";
 import OtherCalculatorsPage from "./pages/OtherCalculatorsPage";
+import DiabetesCalculatorsPage from "./pages/DiabetesCalculatorsPage";
 import ElectrolytesCalculatorsPage from "./pages/ElectrolytesCalculatorsPage";
 import GonadAuxologyCalculatorsPage from "./pages/GonadAuxologyCalculatorsPage";
 import SplNewbornPage from "./pages/SplNewbornPage";
 import SplChildPage from "./pages/SplChildPage";
 import ClitoralDimensionPage from "./pages/ClitoralDimensionPage";
+import RenalElectrolytePanelPage from "./pages/RenalElectrolytePanelPage";
 import DisclaimerPage from "./pages/DisclaimerPage";
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/calculators" element={<OtherCalculatorsPage />} />
         <Route path="/calculators/electrolytes" element={<ElectrolytesCalculatorsPage />} />
+        <Route path="/calculators/diabetes" element={<DiabetesCalculatorsPage />} />
         <Route path="/calculators/gonad-auxology" element={<GonadAuxologyCalculatorsPage />} />
         <Route path="/spl-newborn" element={<SplNewbornPage />} />
         <Route path="/spl-child" element={<SplChildPage />} />
@@ -37,11 +39,16 @@ export default function App() {
         <Route path="/mph" element={<Navigate to="/growth" replace />} />
         <Route path="/tw3" element={<Navigate to="/growth" replace />} />
         <Route path="/rwt" element={<Navigate to="/growth" replace />} />
-        <Route path="/trp" element={<TubularResorptionPhosphatePage />} />
-        <Route path="/ccr" element={<CalciumClearanceRatioPage />} />
+        <Route path="/renal-electrolytes" element={<RenalElectrolytePanelPage />} />
+        <Route path="/trp" element={<Navigate to="/renal-electrolytes" replace />} />
+        <Route path="/ccr" element={<Navigate to="/renal-electrolytes" replace />} />
         <Route path="/calcium-albumin" element={<CalciumAlbuminCorrectionPage />} />
         <Route path="/fwd" element={<Navigate to="/sodium-balance" replace />} />
         <Route path="/sodium-balance" element={<SodiumBalanceReplacementPage />} />
+        <Route
+          path="/hyperglycemia-sodium-correction"
+          element={<HyperglycemiaCorrectedSodiumPage />}
+        />
         <Route path="/gir" element={<GirPage />} />
         <Route path="/bsa-steroid" element={<BsaSteroidWeanPage />} />
         <Route path="/cah-screening" element={<CahScreeningPage />} />
@@ -58,13 +65,14 @@ export default function App() {
 
 export const PRIMARY_WORKFLOW = {
   path: "/growth",
-  title: "TW3-RUS → SMS → APH / PAH",
+  title: "TW3-RUS ➡️ SMS ➡️ APH/PAH",
   description:
     "Utilize the Tanner-Whitehouse 3 Radius-Ulna-Short-bones (TW3-RUS) method to derive a skeletal maturity score (SMS). Then predict adult height with adjusted Roche-Wainer-Thissen (RWT), TW3-RUS, and Khamis-Roche methods.",
 } as const;
 
 export const OTHER_CLINICAL_CALCULATORS_PATH = "/calculators";
 export const ELECTROLYTES_CALCULATORS_PATH = "/calculators/electrolytes";
+export const DIABETES_CALCULATORS_PATH = "/calculators/diabetes";
 export const GONAD_AUXOLOGY_CALCULATORS_PATH = "/calculators/gonad-auxology";
 
 export const GONAD_AUXOLOGY_CALCULATORS = [
@@ -93,23 +101,46 @@ export const ELECTROLYTE_CALCULATORS = [
     path: "/sodium-balance",
     title: "Sodium balance and replacement",
     description:
-      "Free water deficit, hyperglycemia sodium correction, and hypo/hypernatremia infusion guidance.",
+      "Free water deficit and hypo/hypernatremia infusion guidance.",
   },
   {
-    path: "/trp",
-    title: "Tubular Resorption of Phosphate",
-    description: "TRP with interpretation for phosphorus wasting.",
+    path: "/hyperglycemia-sodium-correction",
+    title: "Hyperglycemia sodium correction",
+    description:
+      "Estimate corrected serum sodium during hyperglycemia to assess true sodium status.",
   },
   {
-    path: "/ccr",
-    title: "Calcium Clearance Ratio",
-    description: "CCR for evaluation of hypercalcemia / FHH.",
+    path: "/renal-electrolytes",
+    title: "Renal electrolyte indices",
+    description:
+      "Tubular Resorption of Phosphate (TRP), calcium clearance ratio (CCR), spot UCa/UCr, and transtubular potassium gradient (TTKG).",
   },
   {
     path: "/calcium-albumin",
     title: "Calcium correction for albumin",
     description:
       "Correct total serum calcium for hyper- or hypoalbuminemia.",
+  },
+] as const;
+
+export const DIABETES_CALCULATORS = [
+  {
+    path: "/insulin-diluted-iss",
+    title: "Diluted ISS generation",
+    description:
+      "Meal, snack, and correction sliding scales for diluted lispro with syringe draw-up guidance.",
+  },
+  {
+    path: "/insulin-mdi-iss",
+    title: "Insulin MDI → ISS",
+    description:
+      "Convert insulin ISF/ICR MDI regimen to sliding scales using fixed carbs.",
+  },
+  {
+    path: "/a1c-converter",
+    title: "A1c Converter",
+    description:
+      "Convert GMI, A1c, fructosamine, and estimated average glucose from one known value.",
   },
 ] as const;
 
@@ -136,6 +167,12 @@ export const OTHER_CLINICAL_CALCULATOR_GROUPS: ClinicalCalculatorGroup[] = [
   },
   {
     kind: "group",
+    path: DIABETES_CALCULATORS_PATH,
+    title: "Diabetes",
+    description: "Diabetes-related clinical tools and calculators.",
+  },
+  {
+    kind: "group",
     path: GONAD_AUXOLOGY_CALCULATORS_PATH,
     title: "Gonad Auxology",
     description: "External genitalia measurement nomograms and percentiles.",
@@ -143,20 +180,6 @@ export const OTHER_CLINICAL_CALCULATOR_GROUPS: ClinicalCalculatorGroup[] = [
 ];
 
 export const OTHER_CLINICAL_CALCULATORS: ClinicalCalculatorLink[] = [
-  {
-    kind: "calculator",
-    path: "/insulin-diluted-iss",
-    title: "Diluted insulin sliding scale",
-    description:
-      "Meal, snack, and correction sliding scales for diluted lispro with syringe draw-up guidance.",
-  },
-  {
-    kind: "calculator",
-    path: "/insulin-mdi-iss",
-    title: "Insulin MDI → ISS",
-    description:
-      "Convert insulin ISF/ICR MDI regimen to sliding scales using fixed carbs.",
-  },
   {
     kind: "calculator",
     path: "/maintenance-ivf",
@@ -176,7 +199,7 @@ export const OTHER_CLINICAL_CALCULATORS: ClinicalCalculatorLink[] = [
     path: "/bsa-steroid",
     title: "BSA & Steroid Wean",
     description:
-      "Body surface area (Haycock or weight-only) with steroid potency conversion.",
+      "Body Surface Area via Haycock, or Costeff if kg-only",
   },
   {
     kind: "calculator",
@@ -190,13 +213,6 @@ export const OTHER_CLINICAL_CALCULATORS: ClinicalCalculatorLink[] = [
     path: "/cah-screening",
     title: "CAH Screening",
     description:
-      "17-OHP screening via Olgemöller 2003 and Israeli NBS algorithm, with Table 1 percentile insight.",
-  },
-  {
-    kind: "calculator",
-    path: "/a1c-converter",
-    title: "A1c Converter",
-    description:
-      "Convert GMI, A1c, fructosamine, and estimated average glucose from one known value.",
+      "17-OHP unit conversion and interpretation based on GA+BW using Olgemöller 2003 and Pode-Shakked 2018 algorithms.",
   },
 ];

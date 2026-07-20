@@ -24,19 +24,21 @@ export default function OtherCalculatorsPage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-600">
             Calculator collections
           </p>
-          <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {OTHER_CLINICAL_CALCULATOR_GROUPS.map((group) => (
               <Link
                 key={group.path}
                 to={group.path}
-                className="block rounded-2xl border-2 border-teal-300 bg-gradient-to-br from-teal-50 to-white p-6 shadow-md transition hover:border-teal-400 hover:shadow-lg"
+                className="flex min-w-0 flex-col rounded-xl border-2 border-teal-300 bg-gradient-to-br from-teal-50 to-white p-3 shadow-md transition hover:border-teal-400 hover:shadow-lg sm:rounded-2xl sm:p-4"
               >
-                <h3 className="text-xl font-bold text-teal-900">{group.title}</h3>
-                <p className="mt-2 text-sm text-teal-800/90 leading-relaxed">
+                <h3 className="text-sm font-bold leading-snug text-teal-900 sm:text-base">
+                  {group.title}
+                </h3>
+                <p className="mt-1.5 flex-1 text-[11px] leading-snug text-teal-800/90 sm:mt-2 sm:text-xs">
                   {group.description}
                 </p>
-                <span className="mt-4 inline-flex items-center text-sm font-semibold text-teal-700">
-                  View calculator list →
+                <span className="mt-2 inline-flex items-center text-[11px] font-semibold text-teal-700 sm:mt-3 sm:text-xs">
+                  View list →
                 </span>
               </Link>
             ))}

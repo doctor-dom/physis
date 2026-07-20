@@ -157,8 +157,8 @@ export default function BsaSteroidWeanPage() {
             value={inputMode}
             onChange={(v) => setInputMode(v as InputMode)}
             options={[
-              { value: "weight", label: "Weight (optional height)" },
-              { value: "bsa", label: "BSA directly (m²)" },
+              { value: "weight", label: "Calculate BSA" },
+              { value: "bsa", label: "Provide BSA" },
             ]}
           />
         </Field>

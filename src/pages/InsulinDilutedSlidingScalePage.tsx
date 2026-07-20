@@ -123,7 +123,7 @@ export default function InsulinDilutedSlidingScalePage() {
 
   return (
     <CalculatorShell
-      title="Diluted insulin sliding scale"
+      title="Diluted ISS generation"
       description="Generate meal, snack, and correction sliding scales for diluted lispro with syringe draw-up guidance."
     >
       <SharedGuidanceBannerGroup

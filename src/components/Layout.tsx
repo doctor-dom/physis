@@ -31,7 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               isHome ? "text-4xl sm:text-5xl" : "text-xl sm:text-2xl"
             }`}
           >
-            P.H.Y.S.I.S.
+            P.H.Y.S.I.S. C.A.L.C.S.
           </h1>
         </Link>
         {isHome ? (
@@ -39,9 +39,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p className="mt-2 text-sm sm:text-base font-medium text-teal-800">
               Pediatric Height Yielded through Skeletal Interpretation System
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-teal-700/90 max-w-2xl">
-              A TW3-based clinical tool to aid pediatric endocrinologists in the
-              interpretation and scoring of pediatric bone age X-rays.
+            <p className="mt-1 text-sm sm:text-base font-medium text-teal-800">
+              Comprehensive Action-Leveraging Calculator Suite
             </p>
           </>
         ) : null}

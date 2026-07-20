@@ -1,15 +1,20 @@
 TRP = 1 - (uPhos * sSc/ sPhos * uCr)
+TRP<0.85 suggests excess phosphorus wasting/hyperparathyroidism
+
 Ca/Cr excretion ratio = [UCa × SCr] / [SCa × UCr]
-
 The Ca/Cr excretion ratio will be very low in familial hypocalciuric hypercalcemia. 
-Ca/Cr ratio is calculated as follows: [UCa × SCr] / [SCa × UCr], where UCa is the urinary calcium concentration, SCr is the serum creatinine, SCa is the serum calcium concentration, and UCr is the urinary creatinine concentration, all in mg/dl. 
-
-The Ca/Cr clearance ratio is less than 0.01 in 80% of cases. 
-
-All patients with calcium/creatinine clearance ratio of 0.020 or less should be tested for mutations in the CaSR gene. Serum
-
-The 95th percentiles for molar UCa/Cr for the different age groups were as follows: less than 7 months, 2.42 (0.86 mg/mg); 7 to 18 months, 1.69 (0.60 mg/mg); 19 months to 6 years, 1.18 (0.42 mg/mg); and adults, 0.61 (0.22 mg/mg).
-
+All patients with calcium/creatinine clearance ratio of 0.020 or less should be tested for mutations in the CaSR gene. 
 FHH Cutoffs
 > 0.01: Familial Hypocalciuric Hypercalcaemia (FHH) is unlikely. The patient most likely has primary hyperparathyroidism
 < 0.01: Familial Hypocalciuric Hypercalcaemia (FHH) is likely. It is however important to rule out other causes of low urine calcium excretion such as hypovitaminosis D, low salt intake, low calcium intake, significant renal disease, lithium or thiazide diuretic exposure
+
+The UCa/UCr clearance ratio is less than 0.01 in 80% of cases. When this value is > 0.2 there is a higher predisposition to nephrocalcinosis.
+The 95th percentiles for molar UCa/Cr for the different age groups were as follows: 
+less than 7 months 0.86 mg/mg; 
+7 to 18 months 0.60 mg/mg; 
+19 months to 6 years 0.42 mg/mg; 
+and adults 0.22 mg/mg. 
+
+Transtubular potassium gradient = uK/sK ÷ uOsm/sOsm
+Only valid if UOsm >300, and uK >25.
+In the setting of hyperkalemia, TPG <7 indicates mineralocorticoid deficiency

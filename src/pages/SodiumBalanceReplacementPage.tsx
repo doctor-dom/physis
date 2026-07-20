@@ -10,9 +10,6 @@ import {
 import { UnitWeightInput } from "../components/UnitInputs";
 import { calculateFreeWaterDeficit } from "@core/calculators/freeWaterDeficit";
 import {
-  calculateHyperglycemiaCorrectedSodium,
-} from "@core/calculators/sodium/calculateHyperglycemiaCorrectedSodium";
-import {
   calculateSodiumCorrectionGuidance,
   formatFluidRateMlPerHr,
   formatSodiumRate,
@@ -25,11 +22,10 @@ import {
   type SodiumFluidType,
 } from "@core/calculators/sodium/sodiumFluids";
 
-type SodiumCalculatorTab = "fwd" | "hyperglycemia" | "correction";
+type SodiumCalculatorTab = "fwd" | "correction";
 
 const TAB_LABELS: { id: SodiumCalculatorTab; label: string }[] = [
   { id: "fwd", label: "Free water deficit" },
-  { id: "hyperglycemia", label: "Hyperglycemia correction" },
   { id: "correction", label: "Na correction guidance" },
 ];
 
@@ -39,7 +35,7 @@ export default function SodiumBalanceReplacementPage() {
   return (
     <CalculatorShell
       title="Sodium balance and replacement"
-      description="Free water deficit, hyperglycemia sodium correction, and hypo/hypernatremia infusion guidance."
+      description="Free water deficit and hypo/hypernatremia infusion guidance."
     >
       <div className="flex flex-wrap gap-2">
         {TAB_LABELS.map((item) => (
@@ -60,8 +56,6 @@ export default function SodiumBalanceReplacementPage() {
 
       {tab === "fwd" ? (
         <FreeWaterDeficitSection />
-      ) : tab === "hyperglycemia" ? (
-        <HyperglycemiaCorrectedSodiumSection />
       ) : (
         <SodiumCorrectionGuidanceSection />
       )}
@@ -133,80 +127,6 @@ function FreeWaterDeficitSection() {
           />
           <CalculatorReferenceFooter>
             FWD (L) = (TBW × kg) × [(NaSerum / NaTarget) − 1]
-          </CalculatorReferenceFooter>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function HyperglycemiaCorrectedSodiumSection() {
-  const [serumSodium, setSerumSodium] = useState("");
-  const [serumGlucose, setSerumGlucose] = useState("");
-
-  const result = useMemo(() => {
-    const sodium = parseFloat(serumSodium);
-    const glucose = parseFloat(serumGlucose);
-    if ([sodium, glucose].some((v) => Number.isNaN(v))) return null;
-    try {
-      return calculateHyperglycemiaCorrectedSodium({
-        serumSodiumMmoll: sodium,
-        serumGlucoseMgDl: glucose,
-      });
-    } catch (e) {
-      return { error: (e as Error).message };
-    }
-  }, [serumSodium, serumGlucose]);
-
-  return (
-    <div className="space-y-6">
-      <p className="rounded-xl border border-teal-100 bg-teal-50/60 px-4 py-3 text-sm text-teal-800">
-        Estimate corrected serum sodium during hyperglycemia to assess true sodium
-        status independent of glucose effect.
-      </p>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Serum sodium (mmol/L)" hint="mEq/L equivalent">
-          <NumberInput
-            value={serumSodium}
-            onChange={setSerumSodium}
-            min={0}
-            placeholder="e.g. 132"
-          />
-        </Field>
-        <Field label="Serum glucose (mg/dL)">
-          <NumberInput
-            value={serumGlucose}
-            onChange={setSerumGlucose}
-            min={0}
-            placeholder="e.g. 450"
-          />
-        </Field>
-      </div>
-
-      {result && "error" in result ? (
-        <ResultCard title="Error" error={result.error} />
-      ) : result ? (
-        <div className="space-y-4">
-          <ResultCard
-            title="Corrected sodium"
-            value={`${result.value.correctedSodiumMmoll.toFixed(1)} mmol/L`}
-            interpretation={result.interpretation}
-            warning={result.warning}
-          />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <MetricCard
-              label="Measured sodium"
-              value={`${result.value.serumSodiumMmoll.toFixed(1)} mmol/L`}
-            />
-            <MetricCard
-              label="Glucose contribution"
-              value={`${result.value.glucoseContributionMmoll >= 0 ? "+" : ""}${result.value.glucoseContributionMmoll.toFixed(1)} mmol/L`}
-            />
-          </div>
-          <CalculatorReferenceFooter>
-            cNa = sNa + 0.024 × (sGlu − 100), where sNa is measured serum sodium
-            (mmol/L) and sGlu is serum glucose (mg/dL).
           </CalculatorReferenceFooter>
         </div>
       ) : null}

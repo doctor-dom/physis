@@ -180,7 +180,7 @@ export default function CahScreeningPage() {
         </Field>
         <label className="block space-y-1">
           <span className="text-sm font-medium text-teal-900">
-            Age at sample (days)
+            Patient age (in days) at sample collection
             <InfoTooltip text="The Olgemöller 2003 (CAH-2003) table requires birth weight and day of life when the sample was drawn. Enter both to see 2003 results." />
           </span>
           <span className="block text-xs text-teal-700/70">

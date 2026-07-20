@@ -17,6 +17,9 @@ export interface HyperglycemiaCorrectedSodiumResult {
 /**
  * Corrected sodium for hyperglycemia: cNa = sNa + 0.024 × (sGlu − 100).
  */
+export const HYPERGLYCEMIA_SODIUM_FORMULA_TOOLTIP =
+  "cNa = sNa + 0.024 × (sGlu − 100), where sNa is measured serum sodium (mmol/L) and sGlu is serum glucose (mg/dL).";
+
 export function calculateHyperglycemiaCorrectedSodium(
   input: HyperglycemiaCorrectedSodiumInput,
 ): CalculatorResult<HyperglycemiaCorrectedSodiumResult> {

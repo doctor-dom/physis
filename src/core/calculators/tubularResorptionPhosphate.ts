@@ -1,7 +1,5 @@
 import type { CalculatorResult } from "../types";
-import {
-  TRP_PHOSPHORUS_WASTING_THRESHOLD,
-} from "./electrolytes/trpCacrGuidance";
+import { interpretTrp } from "./electrolytes/trpCacrGuidance";
 
 export interface TubularResorptionPhosphateInput {
   phosUrine: number;
@@ -26,13 +24,5 @@ export function calculateTubularResorptionPhosphate(
   const fraction = (phosUrine * creatSerum) / (phosSerum * creatUrine);
   const trp = 1 - fraction;
 
-  let interpretation: string;
-  if (trp < TRP_PHOSPHORUS_WASTING_THRESHOLD) {
-    interpretation =
-      `TRP < ${TRP_PHOSPHORUS_WASTING_THRESHOLD} — suggests excess renal phosphate wasting. Correlate clinically.`;
-  } else {
-    interpretation = `TRP ≥ ${TRP_PHOSPHORUS_WASTING_THRESHOLD} — no suggestive renal phosphate wasting on this measure.`;
-  }
-
-  return { value: trp, interpretation };
+  return { value: trp, interpretation: interpretTrp(trp) };
 }

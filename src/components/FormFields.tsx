@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 
-export function InfoTooltip({ text }: { text: string }) {
+export function InfoTooltip({ text, wide = false }: { text: string; wide?: boolean }) {
   return (
     <span className="group/info relative ml-1.5 inline-flex align-middle">
       <span
@@ -12,7 +12,11 @@ export function InfoTooltip({ text }: { text: string }) {
       </span>
       <span
         role="tooltip"
-        className="pointer-events-none invisible absolute left-1/2 top-full z-20 mt-1.5 w-72 max-w-[min(18rem,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-teal-200 bg-white p-2.5 text-xs font-normal leading-relaxed text-teal-800 opacity-0 shadow-lg transition-opacity group-hover/info:visible group-hover/info:opacity-100 group-focus-within/info:visible group-focus-within/info:opacity-100"
+        className={`pointer-events-none invisible absolute left-1/2 top-full z-20 mt-1.5 -translate-x-1/2 rounded-lg border border-teal-200 bg-white p-2.5 text-xs font-normal leading-relaxed text-teal-800 opacity-0 shadow-lg transition-opacity group-hover/info:visible group-hover/info:opacity-100 group-focus-within/info:visible group-focus-within/info:opacity-100 ${
+          wide
+            ? "w-80 max-w-[min(20rem,calc(100vw-2rem))] whitespace-pre-line"
+            : "w-72 max-w-[min(18rem,calc(100vw-2rem))]"
+        }`}
       >
         {text}
       </span>
@@ -24,18 +28,22 @@ export function Field({
   label,
   hint,
   labelTooltip,
+  labelTooltipWide = false,
   children,
 }: {
   label: string;
   hint?: string;
   labelTooltip?: string;
+  labelTooltipWide?: boolean;
   children: ReactNode;
 }) {
   return (
     <label className="block space-y-1">
       <span className="text-sm font-medium text-teal-900">
         {label}
-        {labelTooltip ? <InfoTooltip text={labelTooltip} /> : null}
+        {labelTooltip ? (
+          <InfoTooltip text={labelTooltip} wide={labelTooltipWide} />
+        ) : null}
       </span>
       {hint && (
         <span className="block whitespace-pre-line text-xs text-teal-700/70">{hint}</span>
@@ -77,29 +85,42 @@ export function NumberInput({
   onChange,
   onFocus,
   onBlur,
+  onKeyDown,
   min,
   step = "any",
   placeholder,
+  disabled = false,
+  readOnly = false,
 }: {
   value: string;
   onChange: (v: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   min?: number;
   step?: string;
   placeholder?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <input
       type="number"
-      className="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 text-teal-900 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+      className={`w-full rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:border-teal-100 disabled:bg-teal-50/70 disabled:text-teal-700/80 ${
+        readOnly
+          ? "cursor-default border-teal-300 bg-teal-50/90 text-teal-950 focus:border-teal-300 focus:ring-teal-100"
+          : "border-teal-200 bg-white text-teal-900 focus:border-teal-500 focus:ring-teal-200"
+      }`}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       onFocus={onFocus}
       onBlur={onBlur}
+      onKeyDown={onKeyDown}
       min={min}
       step={step}
       placeholder={placeholder}
+      disabled={disabled}
+      readOnly={readOnly}
     />
   );
 }
@@ -130,12 +151,14 @@ export function SelectInput({
 
 export function ResultCard({
   title,
+  titleTooltip,
   value,
   interpretation,
   warning,
   error,
 }: {
   title: string;
+  titleTooltip?: string;
   value?: string;
   interpretation?: string;
   warning?: string;
@@ -152,7 +175,10 @@ export function ResultCard({
 
   return (
     <div className="rounded-xl border border-teal-200 bg-white p-4 shadow-sm">
-      <p className="text-sm font-medium text-teal-700">{title}</p>
+      <p className="text-sm font-medium text-teal-700">
+        {title}
+        {titleTooltip ? <InfoTooltip text={titleTooltip} /> : null}
+      </p>
       {value && <p className="mt-1 text-2xl font-bold text-teal-900">{value}</p>}
       {interpretation && (
         <p className="mt-2 text-sm text-teal-800">{interpretation}</p>

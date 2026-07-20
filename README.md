@@ -2,7 +2,15 @@
 
 **Pediatric Height Yielded through Skeletal Interpretation System**
 
-Pediatric endocrine clinical decision support — bone age scoring, adult height prediction, growth charting, and additional calculators for inpatient and outpatient practice. PHYSIS is a **standalone application built from scratch** for pediatric endocrinology workflows. It draws on published methods and clinical references; it takes inspiration from the Bone Age calculation tool developed by [eatyourpeas](https://github.com/eatyourpeas) and the ClinicalTool [endocrinologist](https://github.com/eatyourpeas/endocrinologist)
+Pediatric endocrine clinical decision support — bone age scoring, adult height prediction, growth charting, and additional calculators for inpatient and outpatient practice. PHYSIS is a **standalone application built from scratch** for pediatric endocrinology workflows. 
+
+**Inspiration**
+
+PHYSIS draws on published methods and clinical references with its main focus of making important clinical tools available and easily accessible. While entirely developed by myself, PHYSIS takes inspiration from [Bone Age](https://play.google.com/store/apps/details?id=uk.co.eatyourpeas.tannerwhitehouse) and [endocrinologist](https://github.com/eatyourpeas/endocrinologist), both developed by [eatyourpeas](https://github.com/eatyourpeas). Inspiration for additional clinical tools from [Child Metrics](https://www.ceddcozum.com/), developed and maintained by the Turkish Society for Pediatric Endocrinology and Diabetes (TSPED).
+
+**Disclaimer**
+
+Please be sure to read the [Disclaimer](Disclaimer) before using PHYSIS.
 
 **P.H.Y.S.I.S. Production:** [https://calc.dom.doctor](https://calc.dom.doctor)
 
@@ -11,68 +19,68 @@ Pediatric endocrine clinical decision support — bone age scoring, adult height
 The main workflow (`/growth`) guides TW3-RUS bone age scoring through adult height prediction and CDC growth chart visualization.
 
 
-| Step                 | Feature                                                                                                                                                        |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Step                 | Feature                                                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **TW3 bone age**     | Hand-navigator scoring for all 13 RUS landmarks with per-stage drawings and criteria text (individual atlas PNGs + markdown descriptions), discrete stage slider, and SMS → bone age lookup (sex-specific Tables A1/A3, A5/A6) |
-| **Parental stature** | Father/mother heights (cm, in, or ft+in) or direct MPH entry; distinguishes **MPH** (Tanner, TW3) from **MPS** (parental average, adjusted RWT & Khamis-Roche) |
-| **APH methods**      | **TW3** (optional MPH adjustment — off by default; menarchal status for girls 11–14 y), **adjusted RWT** (supine length correction), **Khamis-Roche** (no bone age required)    |
-| **CDC growth chart** | Plots stature and weight vs chronological age and bone-age–shifted age; overlays MPH/MPS and selected predicted adult height                                   |
-| **Show work / QC**   | Audit trail of inputs, coefficient lookup, landmark scoring, and discrepancy flags (`ShowWorkSection`)                                                         |
-| **Clinical copy**    | Configurable charting summary with method references and TW3 atlas citations                                                                                   |
+| **Parental stature** | Father/mother heights (cm, in, or ft+in) or direct MPH entry; distinguishes **MPH** (Tanner, TW3) from **MPS** (parental average, adjusted RWT & Khamis-Roche)                                                                 |
+| **APH methods**      | **TW3** (optional MPH adjustment — off by default; menarchal status for girls 11–14 y), **adjusted RWT** (supine length correction), **Khamis-Roche** (no bone age required)                                                   |
+| **CDC growth chart** | Plots stature and weight vs chronological age and bone-age–shifted age; overlays MPH/MPS and selected predicted adult height                                                                                                   |
+| **Show work / QC**   | Audit trail of inputs, coefficient lookup, landmark scoring, and discrepancy flags (`ShowWorkSection`)                                                                                                                         |
+| **Clinical copy**    | Configurable charting summary with method references and TW3 atlas citations                                                                                                                                                   |
 
 
 
 
-## Other calculators
+## Other calculators -- C.A.L.C.S.
 
-
+**C**omprehensive **A**ction-**L**everaging **C**alculator **S**uite
 
 ### Electrolytes (`/calculators/electrolytes`)
 
+| Tool | Route |
+| --- | --- |
+| Sodium balance & replacement (FWD, hypo/hypernatremia infusion guidance) | `/sodium-balance` |
+| Hyperglycemia sodium correction | `/hyperglycemia-sodium-correction` |
+| Renal electrolyte indices (TRP, CCR, spot UCa/UCr, TTKG) | `/renal-electrolytes` |
+| Calcium correction for albumin | `/calcium-albumin` |
 
-| Tool                                                                                      | Route              |
-| ----------------------------------------------------------------------------------------- | ------------------ |
-| Sodium balance & replacement (FWD, hyperglycemia correction, hypo/hypernatremia guidance) | `/sodium-balance`  |
-| Tubular resorption of phosphate (TRP)                                                     | `/trp`             |
-| Calcium clearance ratio (CCR)                                                             | `/ccr`             |
-| Calcium correction for albumin                                                            | `/calcium-albumin` |
+Legacy routes `/trp` and `/ccr` redirect to `/renal-electrolytes`.
 
+### Diabetes (`/calculators/diabetes`)
 
+| Tool | Route |
+| --- | --- |
+| A1c ↔ GMI ↔ fructosamine ↔ eAG (Cohen et al. preferred; Young et al. alternate) | `/a1c-converter` |
+| Insulin MDI → sliding scale (ISS) | `/insulin-mdi-iss` |
+| Diluted ISS generation | `/insulin-diluted-iss` |
 
+### Fluids & nutrition (`/calculators`)
 
-### Diabetes & fluids (`/calculators`)
-
-
-| Tool                                       | Route                  |
-| ------------------------------------------ | ---------------------- |
-| A1c ↔ average glucose ↔ fructosamine ↔ GMI (Cohen et al. preferred; Young et al. alternate) | `/a1c-converter`       |
-| Insulin MDI → sliding scale (ISS)          | `/insulin-mdi-iss`     |
-| Diluted insulin sliding scale              | `/insulin-diluted-iss` |
-| Maintenance IVF (Holliday–Segar)           | `/maintenance-ivf`     |
-| Glucose infusion rate — IV and enteral     | `/gir`                 |
-
-
-
+| Tool | Route |
+| --- | --- |
+| Maintenance IVF (Holliday–Segar) | `/maintenance-ivf` |
+| Glucose infusion rate — IV and enteral | `/gir` |
 
 ### General pediatrics (`/calculators`)
 
+| Tool | Route |
+| --- | --- |
+| BSA (Haycock or Costeff weight-only) & steroid potency wean/converter | `/bsa-steroid` |
+| Pediatric hypertensive BP percentiles (AAP 2017) | `/pediatric-bp` |
+| CAH screening (17-OHP; Olgemöller 2003 and Pode-Shakked 2018 algorithms) | `/cah-screening` |
 
-| Tool                                                                  | Route            |
-| --------------------------------------------------------------------- | ---------------- |
-| BSA (Haycock or Costeff weight-only) & steroid potency wean/converter | `/bsa-steroid`   |
-| Pediatric hypertensive BP percentiles (AAP 2017)                      | `/pediatric-bp`  |
-| CAH screening (17-OHP, prematurity algorithms)                        | `/cah-screening` |
 
 
 
 ### Gonad auxology (`/calculators/gonad-auxology`)
 
 
-| Tool | Route |
-| --- | --- |
-| Stretched penile length (newborn) — Halil et al. nomogram | `/spl-newborn` |
-| Stretched penile length (child) — Bulgarian, Schonfeld, and Feldman references | `/spl-child` |
-| Clitoral length/width (neonate) — Alaei et al. nomogram | `/clitoral-dimension` |
+| Tool                                                                           | Route                 |
+| ------------------------------------------------------------------------------ | --------------------- |
+| Stretched penile length (newborn) — Halil et al. nomogram                      | `/spl-newborn`        |
+| Stretched penile length (child) — Bulgarian, Schonfeld, and Feldman references | `/spl-child`          |
+| Clitoral length/width (neonate) — Alaei et al. nomogram                        | `/clitoral-dimension` |
+
 
 
 
@@ -98,16 +106,18 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 
 - [x] Free water deficit (hypernatremia)
 - [x] Sodium correction for hyponatremia
-- [x] Sodium correction with hyperglycemia
+- [x] Sodium correction with hyperglycemia (standalone calculator)
 - [x] Sodium replacement rate guidance (serum Na rise ≤ 0.5–1 mEq/L per hour; < 10–12 mEq/L in first 24 h)
 - [x] Calcium correction with albumin
-
-
+- [x] Renal electrolyte panel — TRP, CCR, spot UCa/UCr, and TTKG from paired serum/urine labs with result interpretation tooltips
+- [x] Spot UCa/UCr ratio with age-based 95th-percentile guidance and nephrocalcinosis flags
 
 ### Diabetes & nutrition
 
-- [x] Average glucose ↔ fructosamine ↔ A1c (and GMI) converter — Cohen et al. (ADA 2003) preferred; Young et al. (MilMed 2025) alternate
+- [x] A1c ↔ GMI ↔ fructosamine ↔ eAG converter — four-field input (enter any one value); Cohen et al. (ADA 2003) preferred; Young et al. (MilMed 2025) alternate
+- [x] Diabetes calculator collection (`/calculators/diabetes`)
 - [x] MDI to ISS (insulin sliding scale) conversion
+- [x] Diluted ISS generation
 - [x] Maintenance IVF (mIVF) — Holliday–Segar calculations
 - [x] GIR calculator — IV and enteral, with combined total
 
@@ -140,20 +150,26 @@ Completed work tracked in `predeployPHYSIS.txt` ([x] items).
 
 - [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
 - [ ] Workflow UI polish to match mock-ups
-- [ ] PHYSIS logo
+- [ ] PHYSIS / CALCS logo
 
 **Small tasks & polish**
 
+- [ ] TW3 clinical copy — include “via TW3” with BA score, raw SMS, citation on new line
+- [ ] GitHub link in PHYSIS for feature requests and bug reporting
+- [ ] BSA formula labels and equations (Costeff kg-only vs Haycock) more visible in UI
 - [ ] Confirm gonad auxology charting logic for all three tools
 - [ ] Audit calculator references and copy-paste clinical outputs
 - [ ] Further TW3 scoring UX (slider, image preload, layout)
+- [ ] Manually improve cropped TW3 stage images
+- [ ] Add original RWT alongside adjusted RWT for available APH estimation methods
+- [ ] TSPED PedsEndo website integration ([ceddcozum](https://www.ceddcozum.com/))
 
 **Calculators to add or consider**
 
 - [ ] Steroid wean enhancements inspired by [Christian's steroid wean calculator](https://molonych-source.github.io/steroid-wean-calculator-/)
-- [ ] Random spot urine Ca/Cr ratio with interpretation tooltip
-- [ ] Standalone SPL calculator (Halil et al. 2017) with OE reference
-- [ ] IGF-1 Z-score calculator (under consideration)
+- [ ] Elemental calcium calculator
+- [ ] ESOTERIX lab values manual (via `.md`) and unit converter tool
+- [ ] IGF-1 Z-score calculator (Roche Elecsys dataset)
 
 
 
@@ -165,8 +181,6 @@ npm run dev
 ```
 
 Hosting, DNS, Cloudflare Workers setup, and deploy steps: **[HOSTING.md](HOSTING.md)**.
-
-
 
 ## Android build
 
@@ -204,8 +218,11 @@ High-resolution XR per maturity rating will live in `data/atlas/xr/`. See **[dat
 ## Clinical notes
 
 - **TRP** < 0.85 → excess phosphorus wasting / hyperparathyroidism
-- **CCR** < 0.01 → familial hypocalciuric hypercalcemia (FHH)
+- **CCR** ≤ 0.02 → consider CaSR testing; < 0.01 → familial hypocalciuric hypercalcemia (FHH) likely
+- **Spot UCa/UCr** > 0.2 → higher predisposition to nephrocalcinosis; compare to age-specific 95th percentiles
+- **TTKG** < 7 (when valid) → mineralocorticoid deficiency suggested in hyperkalemia
 - **FWD** uses TBW fraction × weight × (NaSerum/NaTarget − 1)
+- **Hyperglycemia corrected sodium** — cNa = sNa + 0.024 × (sGlu − 100)
 - **Hyponatremia correction** — target serum sodium rise ≤ 0.5–1 mEq/L per hour and < 10–12 mEq/L over the first 24 hours
 
 For clinical decision support only — verify independently.
