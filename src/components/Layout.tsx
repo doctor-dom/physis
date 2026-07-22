@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { DISCLAIMER_SHORT } from "../content/disclaimer";
+import { useRouteFavicon } from "../hooks/useRouteFavicon";
 
 export function DisclaimerFooter() {
   return (
@@ -21,6 +22,8 @@ export function DisclaimerFooter() {
 export default function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+
+  useRouteFavicon();
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pt-6 pb-14">
