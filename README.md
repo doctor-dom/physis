@@ -128,6 +128,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Pediatric age-based hypertension guideline calculator (BP percentiles)
 - [x] CAH screening tool (17-OHP with prematurity algorithms)
 - [x] BSA calculator — Haycock (weight + height) and Costeff weight-only estimate
+- [x] BSA input method labels and Costeff/Haycock formula hints on `/bsa-steroid`
 - [x] Steroid wean calculator / potency converter
 - [x] Gonad auxology — SPL (newborn and child) and clitoral dimension nomograms with reference charts
 
@@ -151,25 +152,31 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
 - [ ] Workflow UI polish to match mock-ups
 - [ ] PHYSIS / CALCS logo
+- [ ] Google Analytics optimization for search and reach
+- [ ] RedCAP pre-test cohort data (PES survey dispersal)
 
 **Small tasks & polish**
 
 - [ ] TW3 clinical copy — include “via TW3” with BA score, raw SMS, citation on new line
+- [ ] RedCAP post-test QR code on APH/CDC page
+- [ ] Embed cm/in toggle into input rows where it is a separate row (e.g. AAP BP)
 - [ ] GitHub link in PHYSIS for feature requests and bug reporting
-- [ ] BSA formula labels and equations (Costeff kg-only vs Haycock) more visible in UI
 - [ ] Confirm gonad auxology charting logic for all three tools
 - [ ] Audit calculator references and copy-paste clinical outputs
 - [ ] Further TW3 scoring UX (slider, image preload, layout)
-- [ ] Manually improve cropped TW3 stage images
-- [ ] Add original RWT alongside adjusted RWT for available APH estimation methods
-- [ ] TSPED PedsEndo website integration ([ceddcozum](https://www.ceddcozum.com/))
+- [ ] Manually remake cropped TW3 stage images from original scans
+- [ ] Add original RWT alongside adjusted RWT; hide Khamis-Roche once bone age is entered
+- [ ] Move footer reference text into info tooltips or citations
+- [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
 
 **Calculators to add or consider**
 
 - [ ] Steroid wean enhancements inspired by [Christian's steroid wean calculator](https://molonych-source.github.io/steroid-wean-calculator-/)
-- [ ] Elemental calcium calculator
-- [ ] ESOTERIX lab values manual (via `.md`) and unit converter tool
-- [ ] IGF-1 Z-score calculator (Roche Elecsys dataset)
+- [ ] Elemental calcium calculator (salt ↔ elemental and dosage)
+- [ ] ESOTERIX lab values search tool (`.md`) and unit converter
+- [ ] IGF-1 LMS/SMS (Z-score) calculator — Roche, Esoterix, Severance references in `data/references/`
+- [ ] Esoterix/Labcorp IGF-1 SMS scraper for LMS quantiles
+- [ ] Time-based IGF-1 interpretation calculator for long-acting GH
 
 
 

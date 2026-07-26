@@ -5,25 +5,33 @@ Larger Tasks for Final Push:
 - [ ] add XR images from CHP database → see [README](data/atlas/xr/README.md)
 - [ ] make TW3 workflow pages more closely resemble mock-up images
 - [ ] Make, finalize and add PHYSIS CALC logo
+- [ ] Google analytics to optimize search functioning and reach
+- [ ] Get full cohort of pre-test data from RedCAP (PES survery dispersal)
 
 Small Tasks
 
 - [ ] Edit TW3 copy/paste outflow function to include "via TW3" with BA score, and to also provide raw SMS score, and to put citation on new line
-- [ ] Add link in PHYSIS to GitHub for feature requests/ bug reporting
-- [ ] Make names of BSA formulas chosen: Costeff (kg only) and Haycock (true BSA) more readily available, including equations for both
+- [ ] Add RedCAP (post-test) QR code at APH/CDC page for user input
+- [ ] imbed cm/in toggle into user input text box where it is a separate row (ie. AAP BP) 
+- [ ] Add link in PHYSIS to GitHub (github icon) for feature requests/ bug reporting (bug-icon)
+- [x] Make names of BSA formulas chosen: Costeff (kg only) and Haycock (true BSA) more readily available, including equations for both
 - [ ] Confirm gonad auxology graphing logic works for all 3 tools (SPL and clitoral dimensions)
 - [ ] Make sure every calculator includes references if indicated, and copy-paste functionality, if necessary.
 - [ ] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
-- [ ] manually improve cropped stage images (remake from scanned pages)
+- [ ] manually remake cropped stage images from original scans
 - [ ] Add original RWT to the adj RWT for available APH estimation methods
-- [ ] TSPED PedsEndo website [ceddcozum](https://www.ceddcozum.com/)
-- [ ] add features to steroid wean calculator using inspiration from Christian's application: [molony](https://molonych-source.github.io/steroid-wean-calculator-/)
+  - [ ] Make it so once bone age is input, Khamis-Roche is removed as an output method.
+- [ ] Go through at make sure footer text is embedded as i tooltips or citations
+- [ ] consider adding features/ references from TSPED's website: [ceddcozum](https://www.ceddcozum.com/)
+- [ ] consider adding features to steroid wean calculator using inspiration from: [molony](https://molonych-source.github.io/steroid-wean-calculator-/)
 
 Calculators and Tools to Add/ Consider:
 
-- [ ] Elemental Calcium Calculator
-- [ ] Add ESOTERIX lab values manual (via .MD file) as well as unit converter tool  
-- [ ] IGF1 Zscore calculator (Roche Elecsys Dataset)
+- [ ] Elemental Calcium Calculator (salt <> elemental based, and dosage calculator)
+- [ ] Add ESOTERIX lab values (create as .MD file) as a search tool, and include unit converter tool  
+- [ ] IGF1 LMS/SMS (Z-score) calculator (Heliyon, Roche, Esoterix:  in /references). 
+- [ ] Esoterix Labcorp IGF1 SMS scraper tool, obtain LMS data (2.5%, 97.5%, 50% quantiles required)
+- [ ] time-based IGF1 intrepretation calculator for long-acting GH
 
 CHANGELOG:
 
@@ -54,7 +62,7 @@ CHANGELOG:
 - [x] make ability for user to copy outputs for charting purposes and set parameters to of what is copied (include references to algorithms and TW3 atlas)
 - [x] Add TW3 APH calculator from paper (with optional MPH adjustment, and optional menarche slider)
 - [x] fix age input so it stops auto-adding decimal and zeros until user clicks away
-- [x] change top banner accrediation since application is not a fork from /eatyourpeas/endocrinologist but a separate app from scratch
+- [x] give inspiratoin accrediation to /eatyourpeas/endocrinologist but mention that PHYSIS CALC is a separate app built from scratch
 - [x] fix age inputs auto adding zeros for QOL
 - [x] fix CDC plotting logic
 - [x] add ability to calculate MPH within app (and differentiate between true MPS and parent average height)
