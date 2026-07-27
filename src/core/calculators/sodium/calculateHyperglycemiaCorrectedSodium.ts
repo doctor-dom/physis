@@ -20,6 +20,11 @@ export interface HyperglycemiaCorrectedSodiumResult {
 export const HYPERGLYCEMIA_SODIUM_FORMULA_TOOLTIP =
   "cNa = sNa + 0.024 × (sGlu − 100), where sNa is measured serum sodium (mmol/L) and sGlu is serum glucose (mg/dL).";
 
+export const HYPERGLYCEMIA_SODIUM_CITATION =
+  "Katz MA. Hyperglycemia-Induced Hyponatremia — Calculation of Expected Serum Sodium Depression. N Engl J Med. 1973;289(16):843-844.";
+
+export const HYPERGLYCEMIA_SODIUM_RESULT_TOOLTIP = `${HYPERGLYCEMIA_SODIUM_FORMULA_TOOLTIP}\n\n${HYPERGLYCEMIA_SODIUM_CITATION}`;
+
 export function calculateHyperglycemiaCorrectedSodium(
   input: HyperglycemiaCorrectedSodiumInput,
 ): CalculatorResult<HyperglycemiaCorrectedSodiumResult> {

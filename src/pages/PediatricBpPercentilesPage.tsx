@@ -7,12 +7,11 @@ import {
   ResultCard,
   SelectInput,
 } from "../components/FormFields";
+import { UnitLengthInput } from "../components/UnitInputs";
 import {
   BP_DATA_CITATION,
   calculatePediatricBpPercentiles,
-  convertHeightToCm,
   lookupHeightPercentile,
-  type BpHeightUnit,
   type BpClassification,
 } from "@core/calculators/bp/calculatePediatricBpPercentiles";
 import BpPercentileGradientChart, {
@@ -48,14 +47,13 @@ function classificationTitle(c: BpClassification): string {
 export default function PediatricBpPercentilesPage() {
   const [sex, setSex] = useState<"male" | "female">("male");
   const [ageYears, setAgeYears] = useState("");
-  const [height, setHeight] = useState("");
-  const [heightUnit, setHeightUnit] = useState<BpHeightUnit>("cm");
+  const [heightCm, setHeightCm] = useState("");
   const [sbp, setSbp] = useState("");
   const [dbp, setDbp] = useState("");
 
   const result = useMemo(() => {
     const age = parseFloat(ageYears);
-    const h = parseFloat(height);
+    const h = parseFloat(heightCm);
     const sbpVal = parseFloat(sbp);
     const dbpVal = parseFloat(dbp);
     if ([age, h, sbpVal, dbpVal].some((v) => Number.isNaN(v))) return null;
@@ -64,31 +62,30 @@ export default function PediatricBpPercentilesPage() {
         sex,
         ageYears: age,
         height: h,
-        heightUnit,
+        heightUnit: "cm",
         sbp: sbpVal,
         dbp: dbpVal,
       });
     } catch (e) {
       return { error: (e as Error).message };
     }
-  }, [sex, ageYears, height, heightUnit, sbp, dbp]);
+  }, [sex, ageYears, heightCm, sbp, dbp]);
 
   const heightPreview = useMemo(() => {
-    const h = parseFloat(height);
+    const cm = parseFloat(heightCm);
     const age = parseFloat(ageYears);
-    if (Number.isNaN(h) || h <= 0) return null;
+    if (Number.isNaN(cm) || cm <= 0) return null;
 
-    const cm = convertHeightToCm(h, heightUnit);
-    const inches = heightUnit === "in" ? h : h / 2.54;
+    const inches = cm / 2.54;
     const equivalent = `${cm.toFixed(1)} cm · ${inches.toFixed(1)} in`;
 
     const percentile =
       !Number.isNaN(age) && age > 0
-        ? lookupHeightPercentile(sex, age, h, heightUnit)
+        ? lookupHeightPercentile(sex, age, cm, "cm")
         : null;
 
     return { equivalent, percentile };
-  }, [sex, ageYears, height, heightUnit]);
+  }, [sex, ageYears, heightCm]);
 
   return (
     <CalculatorShell
@@ -115,25 +112,12 @@ export default function PediatricBpPercentilesPage() {
             placeholder="e.g. 10"
           />
         </Field>
-        <Field label="Height">
-          <NumberInput
-            value={height}
-            onChange={setHeight}
-            min={0}
-            step="0.1"
-            placeholder={heightUnit === "cm" ? "e.g. 140" : "e.g. 55"}
-          />
-        </Field>
-        <Field label="Height units">
-          <SelectInput
-            value={heightUnit}
-            onChange={(v) => setHeightUnit(v as BpHeightUnit)}
-            options={[
-              { value: "cm", label: "cm" },
-              { value: "in", label: "in" },
-            ]}
-          />
-        </Field>
+        <UnitLengthInput
+          label="Height"
+          valueCm={heightCm}
+          onChangeCm={setHeightCm}
+          placeholder="e.g. 140"
+        />
         <Field label="Systolic BP (mm Hg)">
           <NumberInput value={sbp} onChange={setSbp} min={0} step="1" placeholder="e.g. 112" />
         </Field>

@@ -152,6 +152,7 @@ export function SelectInput({
 export function ResultCard({
   title,
   titleTooltip,
+  titleTooltipWide = false,
   value,
   interpretation,
   warning,
@@ -159,6 +160,7 @@ export function ResultCard({
 }: {
   title: string;
   titleTooltip?: string;
+  titleTooltipWide?: boolean;
   value?: string;
   interpretation?: string;
   warning?: string;
@@ -177,7 +179,9 @@ export function ResultCard({
     <div className="rounded-xl border border-teal-200 bg-white p-4 shadow-sm">
       <p className="text-sm font-medium text-teal-700">
         {title}
-        {titleTooltip ? <InfoTooltip text={titleTooltip} /> : null}
+        {titleTooltip ? (
+          <InfoTooltip text={titleTooltip} wide={titleTooltipWide} />
+        ) : null}
       </p>
       {value && <p className="mt-1 text-2xl font-bold text-teal-900">{value}</p>}
       {interpretation && (

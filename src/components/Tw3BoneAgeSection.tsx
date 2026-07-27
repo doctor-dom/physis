@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import CopyClinicalSummaryButton from "./CopyClinicalSummaryButton";
 import { ResultCard } from "./FormFields";
+import AgeInput from "./AgeInput";
+import { buildTw3BoneAgeClinicalSummary } from "@core/formatTw3BoneAgeClinicalSummary";
 import ZoomableImage from "./ZoomableImage";
 import Tw3HandNavigator from "./tw3/Tw3HandNavigator";
 import Tw3ProgressBar from "./tw3/Tw3ProgressBar";
@@ -23,6 +26,8 @@ import type { Sex } from "@core/types";
 interface Tw3BoneAgeSectionProps {
   sex: Sex | null;
   onSexChange: (sex: Sex) => void;
+  chronAgeYears: string;
+  onChronAgeChange: (v: string) => void;
   ratings: Partial<Record<Tw3LandmarkId, Tw3MaturityRating>>;
   onRatingsChange: (
     ratings: Partial<Record<Tw3LandmarkId, Tw3MaturityRating>>,
@@ -37,6 +42,8 @@ function scoringTitleForLandmark(id: Tw3LandmarkId): string {
 export default function Tw3BoneAgeSection({
   sex,
   onSexChange,
+  chronAgeYears,
+  onChronAgeChange,
   ratings,
   onRatingsChange,
   onContinueToPrediction,
@@ -91,6 +98,17 @@ export default function Tw3BoneAgeSection({
       return { error: (e as Error).message };
     }
   }, [sex, ratings, smsScores, smsChart]);
+
+  const clinicalSummary = useMemo(() => {
+    if (!allScored || !result || "error" in result) return null;
+    const chronAge = parseFloat(chronAgeYears);
+    if (Number.isNaN(chronAge)) return null;
+    return buildTw3BoneAgeClinicalSummary({
+      chronAgeYears: chronAge,
+      boneAgeYears: result.value.boneAgeYears,
+      skeletalMaturityScore: result.value.skeletalMaturityScore,
+    });
+  }, [allScored, result, chronAgeYears]);
 
   const available =
     smsScores && sex
@@ -199,6 +217,17 @@ export default function Tw3BoneAgeSection({
         </label>
       </div>
 
+      {sex && (
+        <AgeInput
+          label="Chronological age"
+          hint="Required for clinical documentation copy. Carries forward to height prediction."
+          valueYears={chronAgeYears}
+          onChangeYears={onChronAgeChange}
+          modes={["decimal", "years-months", "months"]}
+          defaultMode="years-months"
+        />
+      )}
+
       <div className="-mx-2 grid grid-cols-[minmax(108px,22%)_minmax(0,1fr)] gap-2 sm:mx-0 sm:gap-3 lg:grid-cols-[minmax(132px,16%)_minmax(0,1fr)] lg:gap-4 lg:items-start">
         {handNavigatorPanel}
 
@@ -285,6 +314,12 @@ export default function Tw3BoneAgeSection({
               interpretation={`SMS: ${result.value.skeletalMaturityScore} (${result.value.completedLandmarks}/13 landmarks). ${result.interpretation ?? ""}`}
               warning={result.warning}
             />
+            <CopyClinicalSummaryButton summary={clinicalSummary} />
+            {!clinicalSummary && (
+              <p className="text-xs text-teal-700">
+                Enter chronological age above to enable copy for clinical documentation.
+              </p>
+            )}
             <button
               type="button"
               onClick={() => onContinueToPrediction(result.value.boneAgeYears)}

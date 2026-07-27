@@ -82,3 +82,9 @@ export function formatMaintenanceRateMlPerHr(value: number): string {
 export function formatMaintenanceVolumeMlPerDay(value: number): string {
   return `${Math.round(value)} mL/day`;
 }
+
+export const HOLLIDAY_SEGAR_MAINTENANCE_TOOLTIP =
+  "Holliday-Segar maintenance fluids: 100 mL/kg/day for the first 10 kg, 50 mL/kg/day for the next 10 kg (11–20 kg), and 20 mL/kg/day for each kg above 20 kg. Hourly rate = total mL/day ÷ 24 (equivalent to 4, 2, and 1 mL/kg/hr across the same weight tiers).";
+
+export const HOLLIDAY_SEGAR_CITATION =
+  "Holliday M, Segar W. The maintenance need for water in parenteral fluid therapy. Pediatrics. 1957 May;19(5):823-32. PMID: 13431307.";

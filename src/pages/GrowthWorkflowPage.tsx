@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { calculateTw3BoneAge } from "@core/calculators/tw3/calculateTw3BoneAge";
+import { getTw3SmsScores } from "../data/tw3/smsScores";
+import { getTw3SmsToBoneAgeChart } from "../data/tw3/smsToBoneAge";
 import { CalculatorShell } from "../components/FormFields";
 import Tw3BoneAgeSection from "../components/Tw3BoneAgeSection";
 import AdultHeightPredictionSection from "../components/AdultHeightPredictionSection";
@@ -43,6 +46,20 @@ export default function GrowthWorkflowPage() {
     useState<HeightPredictionMethod | null>(null);
   const [chartPredictions, setChartPredictions] =
     useState<AdultHeightPredictions | null>(null);
+
+  const tw3SmsScore = useMemo(() => {
+    if (!boneAgeFromTw3 || !sex) return null;
+    try {
+      return calculateTw3BoneAge({
+        sex,
+        landmarkRatings: ratings,
+        smsScores: getTw3SmsScores(sex),
+        smsToBoneAgeChart: getTw3SmsToBoneAgeChart(sex),
+      }).value.skeletalMaturityScore;
+    } catch {
+      return null;
+    }
+  }, [boneAgeFromTw3, sex, ratings]);
 
   function goToPrediction(boneAge?: number) {
     if (boneAge !== undefined) {
@@ -100,6 +117,8 @@ export default function GrowthWorkflowPage() {
         <Tw3BoneAgeSection
           sex={sex}
           onSexChange={setSex}
+          chronAgeYears={chronAge}
+          onChronAgeChange={setChronAge}
           ratings={ratings}
           onRatingsChange={setRatings}
           onContinueToPrediction={(ba) => goToPrediction(ba)}
@@ -132,6 +151,7 @@ export default function GrowthWorkflowPage() {
           onBackToTw3={() => setStep("tw3")}
           onContinueToChart={goToChart}
           boneAgeFromTw3={boneAgeFromTw3}
+          tw3SmsScore={tw3SmsScore}
           menarchalStatus={menarchalStatus}
           onMenarchalStatusChange={setMenarchalStatus}
           tw3ApplyMphAdjustment={tw3ApplyMphAdjustment}
@@ -169,6 +189,7 @@ export default function GrowthWorkflowPage() {
             sex={sex}
             chronAgeYears={chronAge}
             boneAgeYears={boneAgeYears}
+            tw3SmsScore={boneAgeFromTw3 ? tw3SmsScore : null}
             heightCm={heightCm}
             weightKg={weightKg}
             method={selectedMethod}

@@ -15,6 +15,7 @@ export interface GrowthChartSectionProps {
   sex: Sex;
   chronAgeYears: string;
   boneAgeYears: string;
+  tw3SmsScore?: number | null;
   heightCm: string;
   weightKg: string;
   method: HeightPredictionMethod;
@@ -27,6 +28,7 @@ export default function GrowthChartSection({
   sex,
   chronAgeYears,
   boneAgeYears,
+  tw3SmsScore,
   heightCm,
   weightKg,
   method,
@@ -66,6 +68,7 @@ export default function GrowthChartSection({
           mphCm: predictions.parental.mphCm,
           aphCm: prediction.value,
           method,
+          tw3SmsScore,
         })
       : null;
 

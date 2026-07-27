@@ -9,6 +9,8 @@ import {
   calculateHollidaySegarMaintenance,
   formatMaintenanceRateMlPerHr,
   formatMaintenanceVolumeMlPerDay,
+  HOLLIDAY_SEGAR_CITATION,
+  HOLLIDAY_SEGAR_MAINTENANCE_TOOLTIP,
 } from "@core/calculators/fluids/calculateHollidaySegarMaintenance";
 
 export default function MaintenanceIvfPage() {
@@ -37,6 +39,8 @@ export default function MaintenanceIvfPage() {
         <div className="space-y-4">
           <ResultCard
             title="Maintenance IV fluid rate"
+            titleTooltip={HOLLIDAY_SEGAR_MAINTENANCE_TOOLTIP}
+            titleTooltipWide
             value={formatMaintenanceRateMlPerHr(result.value.totalMlPerHr)}
             interpretation={result.interpretation}
           />
@@ -98,12 +102,7 @@ export default function MaintenanceIvfPage() {
             </div>
           </section>
 
-          <CalculatorReferenceFooter>
-            Holliday-Segar maintenance fluids: 100 mL/kg/day for the first 10 kg, 50
-            mL/kg/day for the next 10 kg (11–20 kg), and 20 mL/kg/day for each kg above
-            20 kg. Hourly rate = total mL/day ÷ 24 (equivalent to 4, 2, and 1 mL/kg/hr
-            across the same weight tiers).
-          </CalculatorReferenceFooter>
+          <CalculatorReferenceFooter>{HOLLIDAY_SEGAR_CITATION}</CalculatorReferenceFooter>
         </div>
       ) : null}
     </CalculatorShell>

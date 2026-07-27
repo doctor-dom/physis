@@ -7,23 +7,31 @@ Larger Tasks for Final Push:
 - [ ] Make, finalize and add PHYSIS CALC logo
 - [ ] Google analytics to optimize search functioning and reach
 - [ ] Get full cohort of pre-test data from RedCAP (PES survery dispersal)
+- [ ] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
 
 Small Tasks
 
-- [ ] Edit TW3 copy/paste outflow function to include "via TW3" with BA score, and to also provide raw SMS score, and to put citation on new line
+- [x] Edit TW3 copy/paste outflow function to include "via TW3" with BA score, and to also provide raw SMS score, and to put citation on new line
 - [ ] Add RedCAP (post-test) QR code at APH/CDC page for user input
-- [ ] imbed cm/in toggle into user input text box where it is a separate row (ie. AAP BP) 
-- [ ] Add link in PHYSIS to GitHub (github icon) for feature requests/ bug reporting (bug-icon)
+- [x] imbed cm/in toggle into user input text box where it is a separate row (ie. AAP BP) 
+- [x] Add link in PHYSIS to GitHub (github icon) for feature requests/ bug reporting (bug-icon)
 - [x] Make names of BSA formulas chosen: Costeff (kg only) and Haycock (true BSA) more readily available, including equations for both
 - [ ] Confirm gonad auxology graphing logic works for all 3 tools (SPL and clitoral dimensions)
-- [ ] Make sure every calculator includes references if indicated, and copy-paste functionality, if necessary.
-- [ ] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
+- [ ] Confirm copy-paste functionality for each calculator, with inclusion of references if necessary.
 - [ ] manually remake cropped stage images from original scans
 - [ ] Add original RWT to the adj RWT for available APH estimation methods
   - [ ] Make it so once bone age is input, Khamis-Roche is removed as an output method.
-- [ ] Go through at make sure footer text is embedded as i tooltips or citations
-- [ ] consider adding features/ references from TSPED's website: [ceddcozum](https://www.ceddcozum.com/)
-- [ ] consider adding features to steroid wean calculator using inspiration from: [molony](https://molonych-source.github.io/steroid-wean-calculator-/)
+- [x] Go through at make sure footer text is embedded as i tooltips or citations
+- [ ] consider adding features/ references from TSPED's website [ceddcozum](https://www.ceddcozum.com/):  
+  - [ ] GH dosing calculator tool
+  - [ ] IGF1/BP3 SDS tables
+  - [ ] long-acting GH IGF1 intrepretation tool, 
+  - [ ] anthropometric measurements (X0, achrondroplasia, etc)
+  - [ ] Calcium salt <> elemental Ca conversion/ dosing tool
+  - [ ] insulin resistance tools (HOMA-IR, QUICKI, and Glucose/Insulin)
+  - [ ] T/DHT ratio and intrep, T/Δ4A ratio and intrep
+  - [ ] Uterine/ov normative values [10.1007/s00247-019-04419-z](https://doi.org/10.1007/s00247-019-04419-z) 
+- [ ] steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
 
 Calculators and Tools to Add/ Consider:
 

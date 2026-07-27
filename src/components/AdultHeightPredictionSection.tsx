@@ -56,6 +56,7 @@ interface AdultHeightPredictionSectionProps {
     predictions: AdultHeightPredictions,
   ) => void;
   boneAgeFromTw3?: boolean;
+  tw3SmsScore?: number | null;
   menarchalStatus: Tw3MenarchalStatus | null;
   onMenarchalStatusChange: (status: Tw3MenarchalStatus | null) => void;
   tw3ApplyMphAdjustment: boolean;
@@ -159,6 +160,7 @@ export default function AdultHeightPredictionSection({
   onBackToTw3,
   onContinueToChart,
   boneAgeFromTw3,
+  tw3SmsScore,
   menarchalStatus,
   onMenarchalStatusChange,
   tw3ApplyMphAdjustment,
@@ -229,6 +231,7 @@ export default function AdultHeightPredictionSection({
             mphCm: parental.mphCm,
             aphCm: selectedResult.value,
             method: selectedMethod,
+            tw3SmsScore: boneAgeFromTw3 ? tw3SmsScore : null,
           });
         })()
       : null;

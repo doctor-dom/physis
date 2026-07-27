@@ -33,24 +33,36 @@ export function formatBoneAgeLabel(decimalYears: number): string {
   return `${formatDecimalYears(decimalYears, 2)} years (${formatYearsMonthsLabel(decimalYears)})`;
 }
 
+export function formatBoneAgeWithTw3Sms(
+  boneAgeYears: number,
+  tw3SmsScore?: number | null,
+): string {
+  const base = formatBoneAgeLabel(boneAgeYears);
+  if (tw3SmsScore != null) {
+    return `${base} (via TW3, SMS: ${tw3SmsScore})`;
+  }
+  return base;
+}
+
 export interface AphClinicalSummaryInput {
   chronAgeYears: number;
   boneAgeYears: number | null;
   mphCm: number;
   aphCm: number;
   method: HeightPredictionMethod;
+  tw3SmsScore?: number | null;
 }
 
 export function buildAphClinicalSummary(input: AphClinicalSummaryInput): string {
   const ca = formatYearsMonthsLabel(input.chronAgeYears);
   const ba =
     input.boneAgeYears !== null && !Number.isNaN(input.boneAgeYears)
-      ? formatBoneAgeLabel(input.boneAgeYears)
+      ? formatBoneAgeWithTw3Sms(input.boneAgeYears, input.tw3SmsScore)
       : "N/A";
   const mph = `${input.mphCm.toFixed(1)} cm`;
   const aph = `${input.aphCm.toFixed(1)} cm`;
   const methodLabel = HEIGHT_PREDICTION_METHOD_LABELS[input.method];
   const citation = APH_METHOD_CITATIONS[input.method];
 
-  return `CA: ${ca} BA: ${ba} MPH: ${mph} APH: ${aph} (${methodLabel}) Citation: ${citation}`;
+  return `CA: ${ca} BA: ${ba} MPH: ${mph} APH: ${aph} (${methodLabel})\nCitation: ${citation}`;
 }

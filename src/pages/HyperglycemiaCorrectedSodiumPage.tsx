@@ -7,7 +7,7 @@ import {
 } from "../components/FormFields";
 import {
   calculateHyperglycemiaCorrectedSodium,
-  HYPERGLYCEMIA_SODIUM_FORMULA_TOOLTIP,
+  HYPERGLYCEMIA_SODIUM_RESULT_TOOLTIP,
 } from "@core/calculators/sodium/calculateHyperglycemiaCorrectedSodium";
 
 export default function HyperglycemiaCorrectedSodiumPage() {
@@ -58,7 +58,8 @@ export default function HyperglycemiaCorrectedSodiumPage() {
         <div className="space-y-4">
           <ResultCard
             title="Corrected sodium"
-            titleTooltip={HYPERGLYCEMIA_SODIUM_FORMULA_TOOLTIP}
+            titleTooltip={HYPERGLYCEMIA_SODIUM_RESULT_TOOLTIP}
+            titleTooltipWide
             value={`${result.value.correctedSodiumMmoll.toFixed(1)} mmol/L`}
             interpretation={result.interpretation}
             warning={result.warning}
