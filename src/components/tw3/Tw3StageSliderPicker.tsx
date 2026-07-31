@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import type { Tw3LandmarkId, Tw3MaturityRating } from "@core/calculators/tw3/types";
 import { getStageImagesForLandmark } from "../../data/tw3/atlasStageManifest";
 import { Tw3AtlasRatingAChip } from "./Tw3AtlasStageRadioOverlay";
@@ -9,6 +9,232 @@ function ratingIndex(ratings: Tw3MaturityRating[], rating?: Tw3MaturityRating): 
   if (!rating) return 0;
   const idx = ratings.indexOf(rating);
   return idx >= 0 ? idx : 0;
+}
+
+function clampIndex(index: number, max: number): number {
+  if (max <= 0) return 0;
+  return Math.min(Math.max(0, index), max);
+}
+
+interface Tw3DiscreteStageSliderProps {
+  stages: { rating: Tw3MaturityRating }[];
+  index: number;
+  onIndexChange: (index: number) => void;
+  scoringTitle: string;
+}
+
+function Tw3DiscreteStageSlider({
+  stages,
+  index,
+  onIndexChange,
+  scoringTitle,
+}: Tw3DiscreteStageSliderProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+  const [dragging, setDragging] = useState(false);
+  const sliderMax = Math.max(0, stages.length - 1);
+  const safeIndex = clampIndex(index, sliderMax);
+  const current = stages[safeIndex];
+  const snapPercent = sliderMax === 0 ? 0 : (safeIndex / sliderMax) * 100;
+  const [visualPercent, setVisualPercent] = useState(snapPercent);
+
+  useEffect(() => {
+    if (!draggingRef.current) {
+      setVisualPercent(snapPercent);
+    }
+  }, [snapPercent]);
+
+  const indexFromClientX = useCallback(
+    (clientX: number) => {
+      const track = containerRef.current;
+      if (!track || stages.length <= 1) return 0;
+      const rect = track.getBoundingClientRect();
+      if (rect.width <= 0) return 0;
+      const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      const ratio = x / rect.width;
+      return clampIndex(Math.round(ratio * sliderMax), sliderMax);
+    },
+    [sliderMax, stages.length],
+  );
+
+  const percentFromClientX = useCallback(
+    (clientX: number) => {
+      const track = containerRef.current;
+      if (!track || stages.length <= 1) return 0;
+      const rect = track.getBoundingClientRect();
+      if (rect.width <= 0) return snapPercent;
+      const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      return (x / rect.width) * 100;
+    },
+    [snapPercent, stages.length],
+  );
+
+  const commitIndex = useCallback(
+    (next: number) => {
+      onIndexChange(clampIndex(next, sliderMax));
+    },
+    [onIndexChange, sliderMax],
+  );
+
+  const updateFromPointer = useCallback(
+    (clientX: number, snapIndex?: number) => {
+      setVisualPercent(percentFromClientX(clientX));
+      commitIndex(snapIndex ?? indexFromClientX(clientX));
+    },
+    [commitIndex, indexFromClientX, percentFromClientX],
+  );
+
+  const beginDrag = useCallback(
+    (event: PointerEvent<HTMLElement>, nextIndex?: number) => {
+      event.preventDefault();
+      if (nextIndex !== undefined) {
+        const markPercent = sliderMax === 0 ? 0 : (nextIndex / sliderMax) * 100;
+        setVisualPercent(markPercent);
+        commitIndex(nextIndex);
+      } else {
+        updateFromPointer(event.clientX);
+      }
+      draggingRef.current = true;
+      setDragging(true);
+      containerRef.current?.setPointerCapture(event.pointerId);
+    },
+    [commitIndex, sliderMax, updateFromPointer],
+  );
+
+  const handlePointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current) return;
+      updateFromPointer(event.clientX);
+    },
+    [updateFromPointer],
+  );
+
+  const snapVisualPercent = sliderMax === 0 ? 0 : (safeIndex / sliderMax) * 100;
+
+  const endDrag = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      draggingRef.current = false;
+      setDragging(false);
+      setVisualPercent(snapVisualPercent);
+      if (containerRef.current?.hasPointerCapture(event.pointerId)) {
+        containerRef.current.releasePointerCapture(event.pointerId);
+      }
+    },
+    [snapVisualPercent],
+  );
+
+  const handleTrackPointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (target.closest("[data-stage-mark]") || target.closest("[data-slider-thumb]")) {
+        return;
+      }
+      beginDrag(event);
+    },
+    [beginDrag],
+  );
+
+  return (
+    <div className="px-0.5 select-none">
+      <div className="mb-2 flex items-center justify-between text-[10px] text-teal-600">
+        <span>Stage</span>
+        <span className="font-semibold tabular-nums text-teal-800">
+          {current?.rating ?? "—"}
+          {stages.length > 1 && (
+            <span className="ml-1 font-normal text-teal-500">
+              ({safeIndex + 1}/{stages.length})
+            </span>
+          )}
+        </span>
+      </div>
+
+      <div
+        ref={containerRef}
+        role="slider"
+        aria-label={`Scan ${scoringTitle} maturity stages`}
+        aria-valuemin={0}
+        aria-valuemax={sliderMax}
+        aria-valuenow={safeIndex}
+        aria-valuetext={current ? `Stage ${current.rating}` : undefined}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          event.stopPropagation();
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            commitIndex(safeIndex - 1);
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            commitIndex(safeIndex + 1);
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            commitIndex(0);
+          } else if (event.key === "End") {
+            event.preventDefault();
+            commitIndex(sliderMax);
+          }
+        }}
+        onPointerDown={handleTrackPointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={() => {
+          draggingRef.current = false;
+          setDragging(false);
+          setVisualPercent(snapVisualPercent);
+        }}
+        className={`relative h-10 touch-none outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 rounded-full ${
+          dragging ? "cursor-grabbing" : "cursor-pointer"
+        }`}
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-4 -translate-y-1/2 rounded-full bg-teal-100">
+          <div
+            className={`absolute inset-y-0 left-0 rounded-full bg-teal-300/40 ${
+              dragging ? "" : "transition-[width] duration-200 ease-out"
+            }`}
+            style={{ width: `${visualPercent}%` }}
+          />
+        </div>
+
+        {stages.map((stage, stageIndex) => {
+          const markPercent = sliderMax === 0 ? 0 : (stageIndex / sliderMax) * 100;
+          return (
+            <button
+              key={stage.rating}
+              type="button"
+              data-stage-mark
+              onPointerDown={(event) => {
+                event.stopPropagation();
+                beginDrag(event, stageIndex);
+              }}
+              className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 p-0"
+              style={{ left: `${markPercent}%` }}
+              aria-label={`Jump to stage ${stage.rating}`}
+              aria-current={stageIndex === safeIndex ? "true" : undefined}
+            >
+              <span className="flex h-7 w-10 items-center justify-center rounded-full bg-teal-100 text-[11px] font-bold leading-none text-black">
+                {stage.rating}
+              </span>
+            </button>
+          );
+        })}
+
+        <div
+          data-slider-thumb
+          onPointerDown={(event) => {
+            event.stopPropagation();
+            beginDrag(event);
+          }}
+          className={`absolute top-1/2 z-30 flex h-7 w-10 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full bg-white text-[11px] font-bold leading-none text-black shadow-[0_1px_5px_rgba(15,118,110,0.3)] touch-none ${
+            dragging ? "cursor-grabbing scale-[1.04]" : ""
+          } ${dragging ? "" : "transition-[left,transform] duration-200 ease-out"}`}
+          style={{ left: `${visualPercent}%` }}
+          aria-hidden
+        >
+          {current?.rating}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface Tw3StageSliderPickerProps {
@@ -45,15 +271,23 @@ export default function Tw3StageSliderPicker({
     );
   }, [drawableStages, initialRating, selectedRating]);
 
-  const [sliderIndex, setSliderIndex] = useState(startIndex);
+  const sliderMax = Math.max(0, drawableStages.length - 1);
+  const [sliderIndex, setSliderIndex] = useState(() => clampIndex(startIndex, sliderMax));
   const [zoomOpen, setZoomOpen] = useState(false);
 
-  useEffect(() => {
-    setSliderIndex(startIndex);
-  }, [landmarkId, startIndex]);
+  const setStageIndex = useCallback(
+    (next: number) => {
+      setSliderIndex(clampIndex(next, sliderMax));
+    },
+    [sliderMax],
+  );
 
-  const current = drawableStages[sliderIndex];
-  const sliderMax = Math.max(0, drawableStages.length - 1);
+  useEffect(() => {
+    setSliderIndex(clampIndex(startIndex, sliderMax));
+  }, [landmarkId, startIndex, sliderMax]);
+
+  const safeSliderIndex = clampIndex(sliderIndex, sliderMax);
+  const current = drawableStages[safeSliderIndex];
 
   const handleSelectCurrent = useCallback(() => {
     if (current) onSelectRating(current.rating);
@@ -71,12 +305,12 @@ export default function Tw3StageSliderPicker({
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (zoomOpen) return;
-      if (e.key === "ArrowLeft" && sliderIndex > 0) {
+      if (e.key === "ArrowLeft" && safeSliderIndex > 0) {
         e.preventDefault();
-        setSliderIndex((i) => i - 1);
-      } else if (e.key === "ArrowRight" && sliderIndex < sliderMax) {
+        setStageIndex(safeSliderIndex - 1);
+      } else if (e.key === "ArrowRight" && safeSliderIndex < sliderMax) {
         e.preventDefault();
-        setSliderIndex((i) => i + 1);
+        setStageIndex(safeSliderIndex + 1);
       } else if (e.key === "Enter" && current) {
         e.preventDefault();
         onSelectRating(current.rating);
@@ -84,7 +318,7 @@ export default function Tw3StageSliderPicker({
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [current, onSelectRating, sliderIndex, sliderMax, zoomOpen]);
+  }, [current, onSelectRating, safeSliderIndex, setStageIndex, sliderMax, zoomOpen]);
 
   if (drawableStages.length === 0) {
     if (availableRatings.length === 0) {
@@ -93,7 +327,7 @@ export default function Tw3StageSliderPicker({
     return (
       <p className="text-sm text-teal-700">
         No stage images found for this landmark. Add PNGs under{" "}
-        <code className="text-xs">data/atlas/individual-stages/</code> and run{" "}
+        <code className="text-xs">data/atlas/stages-v2/</code> and run{" "}
         <code className="text-xs">npm run import:data</code>.
       </p>
     );
@@ -102,34 +336,12 @@ export default function Tw3StageSliderPicker({
   const isCurrentSelected = current && selectedRating === current.rating;
 
   const stageSlider = (
-    <div className="px-0.5">
-      <div className="mb-1 flex items-center justify-between text-[10px] text-teal-600">
-        <span>Stage</span>
-        <span className="font-semibold tabular-nums text-teal-800">
-          {current?.rating ?? "—"}
-          {drawableStages.length > 1 && (
-            <span className="ml-1 font-normal text-teal-500">
-              ({sliderIndex + 1}/{drawableStages.length})
-            </span>
-          )}
-        </span>
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={sliderMax}
-        step={1}
-        value={sliderIndex}
-        onChange={(e) => setSliderIndex(Number(e.target.value))}
-        className="w-full h-2 accent-teal-600 cursor-pointer"
-        aria-label={`Scan ${scoringTitle} maturity stages`}
-        aria-valuetext={current ? `Stage ${current.rating}` : undefined}
-      />
-      <div className="mt-1 flex justify-between text-[9px] text-teal-500 tabular-nums">
-        <span>{drawableStages[0]?.rating}</span>
-        <span>{drawableStages[drawableStages.length - 1]?.rating}</span>
-      </div>
-    </div>
+    <Tw3DiscreteStageSlider
+      stages={drawableStages}
+      index={safeSliderIndex}
+      onIndexChange={setStageIndex}
+      scoringTitle={scoringTitle}
+    />
   );
 
   const stageDescription = current && (
@@ -177,32 +389,35 @@ export default function Tw3StageSliderPicker({
         }`}
       >
         {current && (
-          <div className="flex flex-col gap-0 sm:grid sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
-            <label
-              className="group relative flex cursor-pointer items-center justify-center border-b border-teal-100 bg-white p-3 sm:border-b-0 sm:border-r"
-              title={`Select stage ${current.rating}`}
-            >
-              <input
-                type="radio"
-                name={`rating-${landmarkId}`}
-                value={current.rating}
-                checked={!!isCurrentSelected}
-                onChange={handleSelectCurrent}
-                className="absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [clip:rect(0,0,0,0)]"
-                aria-label={`Select stage ${current.rating}`}
-              />
-              <img
-                src={current.referenceSrc}
-                alt={`${scoringTitle} — stage ${current.rating}`}
-                className="max-h-48 w-full object-contain sm:max-h-64"
-                draggable={false}
-              />
-              <span className="pointer-events-none absolute inset-0 bg-teal-900/0 transition group-hover:bg-teal-900/[0.03]" />
-            </label>
+          <div className="flex flex-col">
+            <div className="grid gap-0 sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
+              <label
+                className="group relative flex h-44 shrink-0 cursor-pointer items-center justify-center border-b border-teal-100 bg-white p-3 sm:h-56 sm:border-b-0 sm:border-r"
+                title={`Select stage ${current.rating}`}
+              >
+                <input
+                  type="radio"
+                  name={`rating-${landmarkId}`}
+                  value={current.rating}
+                  checked={!!isCurrentSelected}
+                  onChange={handleSelectCurrent}
+                  className="absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [clip:rect(0,0,0,0)]"
+                  aria-label={`Select stage ${current.rating}`}
+                />
+                <img
+                  key={`${landmarkId}-${current.rating}`}
+                  src={current.referenceSrc}
+                  alt={`${scoringTitle} — stage ${current.rating}`}
+                  className="max-h-full max-w-full object-contain"
+                  draggable={false}
+                />
+                <span className="pointer-events-none absolute inset-0 bg-teal-900/0 transition group-hover:bg-teal-900/[0.03]" />
+              </label>
 
-            <div className="border-b border-teal-100 px-3 py-2 sm:hidden">{stageSlider}</div>
+              {stageDescription}
+            </div>
 
-            {stageDescription}
+            <div className="shrink-0 border-t border-teal-100 px-3 py-2.5">{stageSlider}</div>
           </div>
         )}
       </div>
@@ -211,8 +426,6 @@ export default function Tw3StageSliderPicker({
         Slide to scan stages, then tap the drawing to select{" "}
         {current ? `stage ${current.rating}` : ""} and continue.
       </p>
-
-      <div className="hidden sm:block">{stageSlider}</div>
 
       {zoomOpen && current && (
         <div

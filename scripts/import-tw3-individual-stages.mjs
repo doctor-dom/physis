@@ -1,6 +1,6 @@
 /**
  * Imports TW3 individual stage PNGs and markdown descriptions into typed manifests.
- * Source: data/atlas/individual-stages/*.png, data/atlas/stage-descriptions/*.md
+ * Source: data/atlas/stages-v2/*.png, data/atlas/stage-descriptions/*.md
  * Run: node scripts/import-tw3-individual-stages.mjs
  */
 import fs from "fs";
@@ -9,11 +9,27 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const stagesSrc = path.join(root, "data", "atlas", "individual-stages");
+const stagesV2Src = path.join(root, "data", "atlas", "stages-v2");
+const stagesDeploySrc = path.join(root, "data", "atlas", "individual-stages");
 const descSrc = path.join(root, "data", "atlas", "stage-descriptions");
 const outDir = path.join(root, "src", "data", "tw3");
 
 const RATINGS = ["B", "C", "D", "E", "F", "G", "H", "I"];
+
+/** v2 folder name or canonical prefix → deploy prefix (rad_img_B.png). */
+const LOCATION_TO_PREFIX = {
+  radius: "rad",
+  rad: "rad",
+  ulna: "uln",
+  uln: "uln",
+  "1MC": "1MC",
+  "1PP": "1PP",
+  "1DP": "1DP",
+  "35MC": "35MC",
+  "35PP": "35PP",
+  "35MP": "35MP",
+  "35DP": "35DP",
+};
 
 /** Landmark id → image prefix (e.g. rad_img_B.png). */
 const LANDMARK_IMAGE_PREFIX = {
@@ -49,6 +65,86 @@ const LANDMARK_DESC_FILE = {
   distal_phalanx_5: "35DP_desc.md",
 };
 
+function resolvePrefix(locationToken) {
+  return (
+    LOCATION_TO_PREFIX[locationToken] ??
+    LOCATION_TO_PREFIX[locationToken.toLowerCase()] ??
+    locationToken
+  );
+}
+
+function parseStageFileName(name) {
+  const canonicalMatch = name.match(/^(.+)_img_([A-I])\.png$/i);
+  if (canonicalMatch) {
+    const prefix = resolvePrefix(canonicalMatch[1]);
+    const rating = canonicalMatch[2].toUpperCase();
+    return { prefix, rating, canonical: `${prefix}_img_${rating}.png` };
+  }
+
+  const v2Match = name.match(/^(.+)-([a-iA-I])\.png$/);
+  if (v2Match) {
+    const prefix = resolvePrefix(v2Match[1]);
+    const rating = v2Match[2].toUpperCase();
+    return { prefix, rating, canonical: `${prefix}_img_${rating}.png` };
+  }
+
+  return null;
+}
+
+function stageImageFile(prefix, rating) {
+  return `${prefix}_img_${rating}.png`;
+}
+
+function normalizeStagesV2Filenames() {
+  if (!fs.existsSync(stagesV2Src)) {
+    throw new Error(`Missing ${stagesV2Src}`);
+  }
+
+  let renamed = 0;
+  for (const name of fs.readdirSync(stagesV2Src)) {
+    if (!/\.png$/i.test(name)) continue;
+
+    const parsed = parseStageFileName(name);
+    if (!parsed) {
+      console.warn(`Skipping unrecognized stage file: ${name}`);
+      continue;
+    }
+
+    const srcPath = path.join(stagesV2Src, name);
+    const destPath = path.join(stagesV2Src, parsed.canonical);
+    if (name === parsed.canonical) continue;
+
+    if (fs.existsSync(destPath) && srcPath !== destPath) {
+      fs.unlinkSync(destPath);
+    }
+    fs.renameSync(srcPath, destPath);
+    console.log(`Renamed ${name} → ${parsed.canonical}`);
+    renamed += 1;
+  }
+
+  return renamed;
+}
+
+function syncStagesToDeployFolder() {
+  fs.mkdirSync(stagesDeploySrc, { recursive: true });
+
+  const canonicalFiles = fs
+    .readdirSync(stagesV2Src)
+    .filter((name) => /^.+_img_[A-I]\.png$/.test(name));
+
+  for (const name of fs.readdirSync(stagesDeploySrc)) {
+    if (/^.+_img_[A-I]\.png$/.test(name) && !canonicalFiles.includes(name)) {
+      fs.unlinkSync(path.join(stagesDeploySrc, name));
+    }
+  }
+
+  for (const name of canonicalFiles) {
+    fs.copyFileSync(path.join(stagesV2Src, name), path.join(stagesDeploySrc, name));
+  }
+
+  return canonicalFiles.length;
+}
+
 function parseStageDescriptions(markdown) {
   const byRating = {};
   const pattern = /\*\*Stage ([A-I])\*\*\s*([\s\S]*?)(?=\*\*Stage [A-I]\*\*|$)/g;
@@ -64,15 +160,7 @@ function parseStageDescriptions(markdown) {
   return byRating;
 }
 
-function stageImageFile(prefix, rating) {
-  return `${prefix}_img_${rating}.png`;
-}
-
 function buildManifest() {
-  if (!fs.existsSync(stagesSrc)) {
-    throw new Error(`Missing ${stagesSrc}`);
-  }
-
   const manifest = {};
 
   for (const [landmarkId, prefix] of Object.entries(LANDMARK_IMAGE_PREFIX)) {
@@ -84,7 +172,7 @@ function buildManifest() {
     const entries = [];
     for (const rating of RATINGS) {
       const fileName = stageImageFile(prefix, rating);
-      const filePath = path.join(stagesSrc, fileName);
+      const filePath = path.join(stagesDeploySrc, fileName);
       if (!fs.existsSync(filePath)) continue;
       entries.push({
         rating,
@@ -102,6 +190,8 @@ function buildManifest() {
   return manifest;
 }
 
+const renamedCount = normalizeStagesV2Filenames();
+const syncedCount = syncStagesToDeployFolder();
 const manifest = buildManifest();
 const totalImages = Object.values(manifest).reduce((n, rows) => n + rows.length, 0);
 
@@ -153,4 +243,6 @@ export function getAllStageImageUrlsForLandmark(landmarkId: Tw3LandmarkId): stri
 `,
 );
 
-console.log(`Wrote ${outPath} (${totalImages} stage images across ${Object.keys(manifest).length} landmarks).`);
+console.log(
+  `Wrote ${outPath} (${totalImages} stage images; renamed ${renamedCount} in stages-v2; synced ${syncedCount} to individual-stages).`,
+);
