@@ -77,7 +77,7 @@ Legacy routes `/trp` and `/ccr` redirect to `/renal-electrolytes`.
 
 | Tool                                                                           | Route                 |
 | ------------------------------------------------------------------------------ | --------------------- |
-| Stretched penile length (newborn) — Halil et al. nomogram                      | `/spl-newborn`        |
+| Stretched penile length (newborn) — Halil et al. and Feldman/Aaronson nomograms | `/spl-newborn`        |
 | Stretched penile length (child) — Bulgarian, Schonfeld, and Feldman references | `/spl-child`          |
 | Clitoral length/width (neonate) — Alaei et al. nomogram                        | `/clitoral-dimension` |
 
@@ -99,6 +99,9 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Copy-to-chart clinical summaries with configurable content and algorithm/atlas references
 - [x] Standing vs supine height and other clinical notes moved to hover **info tooltips** for a cleaner UI
 - [x] Age input fixes — no auto-padding of decimals/zeros until blur; improved years+months entry
+- [x] TW3 stage slider stability, discrete stage picker, and refreshed stage-v2 atlas images
+- [x] Bone age calculator UX — stage slider, image preloading, and layout improvements
+- [x] CDC growth chart viewer — click chart to open zoom/pan/print window with margin legend
 
 
 
@@ -131,6 +134,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] BSA input method labels and Costeff/Haycock formula hints on `/bsa-steroid`
 - [x] Steroid wean calculator / potency converter
 - [x] Gonad auxology — SPL (newborn and child) and clitoral dimension nomograms with reference charts
+- [x] Gonad auxology — click-to-enlarge zoomable nomograms; Feldman newborn GA reference; Feldman child −2.5 SD threshold; corrected Feldman percentile derivation from mean ± SD
 
 
 
@@ -142,6 +146,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Scheduled midnight UTC GitHub sync — Worker compares `master` SHA and dispatches deploy when changed
 - [x] GitHub Actions deploy workflow (Node 22 build; checkout/setup-node v5)
 - [x] Release planning checklist moved from `predeployPHYSIS.txt` to [`predeployPHYSIS.md`](predeployPHYSIS.md)
+- [x] Sequential release tagging script (`npm run release:tag`)
 
 
 
@@ -154,19 +159,13 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [ ] PHYSIS / CALCS logo
 - [ ] Google Analytics optimization for search and reach
 - [ ] RedCAP pre-test cohort data (PES survey dispersal)
+- [ ] RedCAP post-test QR code on APH/CDC page
 
 **Small tasks & polish**
 
-- [ ] TW3 clinical copy — include “via TW3” with BA score, raw SMS, citation on new line
-- [ ] RedCAP post-test QR code on APH/CDC page
-- [ ] Embed cm/in toggle into input rows where it is a separate row (e.g. AAP BP)
-- [ ] GitHub link in PHYSIS for feature requests and bug reporting
-- [ ] Confirm gonad auxology charting logic for all three tools
 - [ ] Audit calculator references and copy-paste clinical outputs
-- [ ] Further TW3 scoring UX (slider, image preload, layout)
 - [ ] Manually remake cropped TW3 stage images from original scans
 - [ ] Add original RWT alongside adjusted RWT; hide Khamis-Roche once bone age is entered
-- [ ] Move footer reference text into info tooltips or citations
 - [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
 
 **Calculators to add or consider**

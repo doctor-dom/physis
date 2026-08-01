@@ -13,6 +13,7 @@ import {
   percentileFromDeciles,
   percentileFromP5P50P95,
   type NormogramCurve,
+  type NormogramExtraCurve,
   type NormogramResult,
 } from "./normogramUtils";
 
@@ -32,6 +33,7 @@ export interface SplChildReferenceResult extends NormogramResult {
   referenceId: "bulgaria" | "usa-schonfeld" | "usa-feldman";
   referenceLabel: string;
   citation: string;
+  extraCurves?: NormogramExtraCurve[];
 }
 
 export interface SplChildCombinedResult {
@@ -152,6 +154,15 @@ function buildSchonfeldResult(ageYears: number, splCm: number): SplChildReferenc
   };
 }
 
+function feldmanM2_5SdCurve(): NormogramExtraCurve {
+  return {
+    label: "−2.5 SD",
+    points: splChildUsaFeldman.map((row) => ({ x: row.ageYears, y: row.m2_5SdCm })),
+    stroke: "#dc2626",
+    dash: "4 4",
+  };
+}
+
 function buildFeldmanResult(ageYears: number, splCm: number): SplChildReferenceResult {
   const curves = buildPercentileCurves(feldmanRowsByAge(), { low: 5, high: 95 });
   const centiles = interpolateFeldmanCentiles(ageYears);
@@ -164,6 +175,7 @@ function buildFeldmanResult(ageYears: number, splCm: number): SplChildReferenceR
     curves,
     lowCurve: curves.find((c) => c.percentile === 5)!,
     highCurve: curves.find((c) => c.percentile === 95)!,
+    extraCurves: [feldmanM2_5SdCurve()],
     patient: { x: ageYears, y: splCm, ...stats },
     xLabel: "Age",
     yLabel: "Stretched penile length",
@@ -195,9 +207,15 @@ export function calculateSplChild(input: SplChildInput): CalculatorResult<SplChi
   };
 }
 
-export function splChildChartDomain(result: NormogramResult) {
+export function splChildChartDomain(
+  result: NormogramResult,
+  extraCurves: NormogramExtraCurve[] = [],
+) {
   const values = result.curves.flatMap((c) => c.points.map((p) => p.y));
   values.push(result.patient.y);
+  for (const curve of extraCurves) {
+    values.push(...curve.points.map((p) => p.y));
+  }
   const xValues = result.curves[0]?.points.map((p) => p.x) ?? [result.patient.x];
   return {
     x: clampChartDomain(xValues, 0.02),

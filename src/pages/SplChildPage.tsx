@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import CopyClinicalSummaryButton from "../components/CopyClinicalSummaryButton";
-import NormogramChart from "../components/gonad-auxology/NormogramChart";
+import ZoomableNormogramChart from "../components/gonad-auxology/ZoomableNormogramChart";
 import SplChildReferenceCharts from "../components/gonad-auxology/SplChildReferenceCharts";
 import {
   CalculatorReferenceFooter,
@@ -58,15 +58,16 @@ export default function SplChildPage() {
 
           <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
             {result.value.references.map((ref) => {
-              const domain = splChildChartDomain(ref);
+              const domain = splChildChartDomain(ref, ref.extraCurves);
               return (
-                <NormogramChart
+                <ZoomableNormogramChart
                   key={ref.referenceId}
                   result={ref}
                   title={ref.referenceLabel}
                   xDomain={domain.x}
                   yDomain={domain.y}
                   citation={ref.citation}
+                  extraCurves={ref.extraCurves}
                 />
               );
             })}
@@ -93,7 +94,8 @@ export default function SplChildPage() {
             US Schonfeld reference (Fig. 5, digitized from SPL-USA-SCHONFELD.png) uses 10th/median/90th
             decile curves with asymmetric SD above vs below the median. US Feldman reference (Aaronson age
             bands, digitized from SPL-child-USA-feldman.jpg) uses mean ± SD with 5th/50th/95th percentile
-            curves through ~11 years. Micropenis is commonly defined as SPL below −2.5 SD for age.
+            curves through ~11 years; the dashed red −2.5 SD line marks the micropenis threshold per Aaronson.
+            Click any nomogram to enlarge axis labels.
           </CalculatorReferenceFooter>
         </div>
       ) : null}

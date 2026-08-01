@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import CopyClinicalSummaryButton from "../components/CopyClinicalSummaryButton";
-import NormogramChart from "../components/gonad-auxology/NormogramChart";
+import ZoomableNormogramChart from "../components/gonad-auxology/ZoomableNormogramChart";
 import {
   CalculatorReferenceFooter,
   CalculatorShell,
@@ -85,7 +85,7 @@ export default function ClitoralDimensionPage() {
             {result.value.measurements.map((measurement) => {
               const domain = clitoralChartDomain(measurement);
               return (
-                <NormogramChart
+                <ZoomableNormogramChart
                   key={measurement.kind}
                   result={measurement}
                   title={`Clitoral ${measurement.kind} vs gestational age`}
@@ -99,7 +99,8 @@ export default function ClitoralDimensionPage() {
 
           <CalculatorReferenceFooter>
             Reference values are reported as mean and +1/+2/+3 SD by gestational age week. Percentile
-            estimated by interpolation on the SD scale at the nearest gestational age stratum.
+            estimated by interpolation on the SD scale at the nearest gestational age stratum. Click any
+            nomogram to enlarge axis labels.
           </CalculatorReferenceFooter>
         </div>
       ) : null}

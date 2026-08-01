@@ -1,11 +1,13 @@
 ---
-description: On commit/push, review predeployPHYSIS.md and sync README.md changelog and feature lists
+description: On commit/push, sync README with predeployPHYSIS.md and create sequential version tags
 alwaysApply: true
 ---
 
-# Commit/push — README & predeploy sync
+# Commit/push — README sync, version tags & predeploy
 
 When the user asks to **commit**, **push**, or both for this repo:
+
+## 1. Pre-commit docs
 
 1. **Read** `predeployPHYSIS.md` before finalizing the commit message. (Formerly `predeployPHYSIS.txt`; converted to Markdown for checkboxes and links.)
 2. **Compare** its task lists and `CHANGELOG:` section against `README.md`.
@@ -18,3 +20,52 @@ When the user asks to **commit**, **push**, or both for this repo:
 5. **Source of truth** for done vs planned: `predeployPHYSIS.md` (task lists + CHANGELOG), verified against the codebase when ambiguous.
 
 If the user only asked to commit code with no doc impact, skip README edits unless predeploy or README is already part of the diff.
+
+## 2. Version tag (default on commit/push)
+
+**Unless the user explicitly names a tag/version** in the commit-and-push request (e.g. “tag as v0.25”, “do not tag”, “skip tagging”):
+
+1. After a **successful commit**, create the next sequential annotated tag on that commit:
+   ```bash
+   node scripts/create-release-tag.mjs --commit HEAD
+   ```
+2. **Do not guess the next number manually** — the script reads existing `v0.*` tags and increments (currently `v0.22` → next is `v0.23`).
+3. **Custom version** only when the user specifies it:
+   ```bash
+   node scripts/create-release-tag.mjs --commit HEAD --version v0.25
+   ```
+4. **Skip tagging** only when the user explicitly says not to tag.
+
+### Tag message format
+
+The script builds an annotated `-m` message as:
+
+```
+Version 0.N: <commit subject>
+
+Predeploy completed since previous tag:
+- [x] <newly checked item from predeployPHYSIS.md>
+- [x] ...
+```
+
+- First line: version label + git commit subject (short description).
+- Bullets: `[x]` items in `predeployPHYSIS.md` (or legacy `.txt`) that were **not** already checked at the **previous `v0.*` tag**.
+- If none newly completed, omit the bullet section (subject line only).
+
+Preview without writing:
+```bash
+node scripts/create-release-tag.mjs --commit HEAD --dry-run
+```
+
+## 3. Push
+
+After commit (and tag, unless skipped):
+
+1. Push the branch: `git push -u origin HEAD` (or `git push origin master` as appropriate).
+2. **Also push tags** when a tag was created: `git push origin --tags` (or `git push origin v0.N` for a single tag).
+
+## 4. Git safety (unchanged)
+
+- Never update git config, force-push, or skip hooks unless the user explicitly requests it.
+- Do not commit secrets (`.env`, credentials).
+- Only commit when the user asks.

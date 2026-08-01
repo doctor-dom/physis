@@ -1,11 +1,10 @@
-import type { NormogramResult } from "./normogramUtils";
 import {
   formatPercentile,
   formatPercentileAndSds,
   formatSds,
 } from "./normogramUtils";
 import {
-  SPL_NEWBORN_CITATION,
+  type SplNewbornCombinedResult,
 } from "./calculateSplNewborn";
 import {
   type SplChildCombinedResult,
@@ -15,16 +14,23 @@ import {
   type ClitoralDimensionResult,
 } from "./calculateClitoralDimension";
 
-export function formatSplNewbornForCopy(result: NormogramResult): string {
-  return [
+export function formatSplNewbornForCopy(result: SplNewbornCombinedResult): string {
+  const lines = [
     "STRETCHED PENILE LENGTH — NEWBORN",
-    `Gestational age: ${result.patient.x} weeks`,
-    `SPL: ${result.patient.y.toFixed(2)} cm`,
-    `Percentile: ${formatPercentile(result.patient.percentile)}`,
-    `SDS (Z-score): ${formatSds(result.patient.sds)}`,
+    `Gestational age: ${result.gestationalAgeWeeks} weeks`,
+    `SPL: ${result.splCm.toFixed(2)} cm`,
     "",
-    SPL_NEWBORN_CITATION,
-  ].join("\n");
+  ];
+
+  for (const ref of result.references) {
+    lines.push(ref.referenceLabel);
+    lines.push(`  Percentile: ${formatPercentile(ref.patient.percentile)}`);
+    lines.push(`  SDS (Z-score): ${formatSds(ref.patient.sds)}`);
+    lines.push(`  ${ref.citation}`);
+    lines.push("");
+  }
+
+  return lines.join("\n").trim();
 }
 
 export function formatSplChildForCopy(result: SplChildCombinedResult): string {

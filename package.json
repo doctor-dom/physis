@@ -16,7 +16,8 @@
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android",
     "deploy": "npm run build && wrangler deploy",
-    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name=physis-calc"
+    "deploy:pages": "npm run build && wrangler pages deploy dist --project-name=physis-calc",
+    "release:tag": "node scripts/create-release-tag.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",

@@ -14,6 +14,22 @@ export interface NormogramCurve {
   points: NormogramPoint[];
 }
 
+export interface NormogramExtraCurve {
+  label: string;
+  points: NormogramPoint[];
+  stroke?: string;
+  dash?: string;
+}
+
+export interface NormogramChartScale {
+  width?: number;
+  height?: number;
+  tickFontSize?: number;
+  axisFontSize?: number;
+  curveLabelFontSize?: number;
+  margin?: { top: number; right: number; bottom: number; left: number };
+}
+
 export interface NormogramPatientPoint {
   x: number;
   y: number;

@@ -246,11 +246,29 @@ writeModule(
   ageLabel: string;
   meanCm: number;
   sdCm: number;
+  m2_5SdCm: number;
   p3Cm: number;
   p5Cm: number;
   p50Cm: number;
   p95Cm: number;
   p97Cm: number;
+}
+
+`,
+);
+
+const feldmanNewbornPath = path.join(excelDir, "SPL-USA-newborn-FELDMAN.csv");
+const splUsaNewbornFeldman = readCsvRows(feldmanNewbornPath);
+writeModule(
+  "splNewbornUsaFeldman",
+  "SplNewbornUsaFeldmanRow",
+  splUsaNewbornFeldman,
+  `export interface SplNewbornUsaFeldmanRow {
+  gaWeeks: number;
+  gaLabel: string;
+  meanCm: number;
+  sdCm: number;
+  m2_5SdCm: number;
 }
 
 `,

@@ -1,22 +1,22 @@
 > **Note:** This file was converted from `predeployPHYSIS.txt` to Markdown (`predeployPHYSIS.md`) for richer task formatting (checkboxes, links). It remains the source of truth for release planning and README changelog sync.
 
-Larger Tasks for Final Push:
+++**Larger Tasks for prior to v1.0 Push:**++
 
 - [ ] add XR images from CHP database → see [README](data/atlas/xr/README.md)
 - [ ] make TW3 workflow pages more closely resemble mock-up images
 - [ ] Make, finalize and add PHYSIS CALC logo
 - [ ] Google analytics to optimize search functioning and reach
 - [ ] Get full cohort of pre-test data from RedCAP (PES survery dispersal)
-- [ ] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
+- [x] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
+- [ ] Add RedCAP (post-test) QR code at APH/CDC page for user input
 
-Small Tasks
+++**Smaller v0.x Tasks during BETA phasing**++
 
 - [x] Edit TW3 copy/paste outflow function to include "via TW3" with BA score, and to also provide raw SMS score, and to put citation on new line
-- [ ] Add RedCAP (post-test) QR code at APH/CDC page for user input
 - [x] imbed cm/in toggle into user input text box where it is a separate row (ie. AAP BP) 
 - [x] Add link in PHYSIS to GitHub (github icon) for feature requests/ bug reporting (bug-icon)
 - [x] Make names of BSA formulas chosen: Costeff (kg only) and Haycock (true BSA) more readily available, including equations for both
-- [ ] Confirm gonad auxology graphing logic works for all 3 tools (SPL and clitoral dimensions)
+- [x] Confirm gonad auxology graphing logic works for all 3 tools (SPL and clitoral dimensions)
 - [ ] Confirm copy-paste functionality for each calculator, with inclusion of references if necessary.
 - [ ] manually remake cropped stage images from original scans
 - [ ] Add original RWT to the adj RWT for available APH estimation methods
@@ -33,7 +33,7 @@ Small Tasks
   - [ ] Uterine/ov normative values [10.1007/s00247-019-04419-z](https://doi.org/10.1007/s00247-019-04419-z) 
 - [ ] steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
 
-Calculators and Tools to Add/ Consider:
+++**Calculators and Tools to Add/ Consider during BETA phasing as a v0.xx update**++
 
 - [ ] Elemental Calcium Calculator (salt <> elemental based, and dosage calculator)
 - [ ] Add ESOTERIX lab values (create as .MD file) as a search tool, and include unit converter tool  
@@ -41,7 +41,7 @@ Calculators and Tools to Add/ Consider:
 - [ ] Esoterix Labcorp IGF1 SMS scraper tool, obtain LMS data (2.5%, 97.5%, 50% quantiles required)
 - [ ] time-based IGF1 intrepretation calculator for long-acting GH
 
-CHANGELOG:
+++**Historic CHANGELOG (tasks no longer moved to this section upon completion since v0.16**++
 
 - [x] Re-hash TRP calculator to be interchangeable with Ca-Clearance Ratio and UCa/Cr ratio (by requesting all data points then giving all results)
 - [x] Add interpretation tooltips based on results for TRP, spot UCa/UCr, and CCR
