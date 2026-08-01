@@ -12,6 +12,7 @@ import A1cConverterPage from "./pages/A1cConverterPage";
 import InsulinMdiToIssPage from "./pages/InsulinMdiToIssPage";
 import InsulinDilutedSlidingScalePage from "./pages/InsulinDilutedSlidingScalePage";
 import GrowthWorkflowPage from "./pages/GrowthWorkflowPage";
+import GrowthChartViewPage from "./pages/GrowthChartViewPage";
 import MaintenanceIvfPage from "./pages/MaintenanceIvfPage";
 import OtherCalculatorsPage from "./pages/OtherCalculatorsPage";
 import DiabetesCalculatorsPage from "./pages/DiabetesCalculatorsPage";
@@ -25,8 +26,13 @@ import DisclaimerPage from "./pages/DisclaimerPage";
 
 export default function App() {
   return (
-    <Layout>
-      <Routes>
+    <Routes>
+      <Route path="/growth/chart-view" element={<GrowthChartViewPage />} />
+      <Route
+        path="/*"
+        element={
+          <Layout>
+            <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/calculators" element={<OtherCalculatorsPage />} />
         <Route path="/calculators/electrolytes" element={<ElectrolytesCalculatorsPage />} />
@@ -58,8 +64,11 @@ export default function App() {
         <Route path="/insulin-mdi-iss" element={<InsulinMdiToIssPage />} />
         <Route path="/insulin-diluted-iss" element={<InsulinDilutedSlidingScalePage />} />
         <Route path="/disclaimer" element={<DisclaimerPage />} />
-      </Routes>
-    </Layout>
+            </Routes>
+          </Layout>
+        }
+      />
+    </Routes>
   );
 }
 

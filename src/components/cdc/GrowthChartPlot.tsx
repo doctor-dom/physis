@@ -1,196 +1,19 @@
-import { useEffect, useState, type ReactNode } from "react";
-import {
-  dataToStaturePoint,
-  dataToWeightPoint,
-} from "@core/cdc/chartCoordinates";
-import {
-  getCdcGrowthChart,
-  CDC_CHART_IMAGE,
-  type CdcGrowthChartDefinition,
-} from "../../data/cdc/chartManifest";
+import { useEffect, useState } from "react";
+import { openGrowthChartViewer } from "@core/cdc/growthChartViewStorage";
+import type { GrowthChartPlotData } from "@core/cdc/growthChartTypes";
+import { getCdcGrowthChart } from "../../data/cdc/chartManifest";
+import GrowthChartSvg, {
+  CHART_IMAGE_HEIGHT,
+  CHART_IMAGE_WIDTH,
+  type ChartTooltipState,
+} from "./GrowthChartSvg";
 
-const CHART_IMAGE_WIDTH = CDC_CHART_IMAGE.width;
-const CHART_IMAGE_HEIGHT = CDC_CHART_IMAGE.height;
-
-/** SVG units — semi-transparent so grid lines show through. */
-const MARKER_RADIUS = 50;
-const MARKER_STROKE = 10;
-const MARKER_OPACITY = 0.65;
-const STAR_SIZE = 58;
-const ARROW_STROKE = 5;
-const ARROW_HEAD = 14;
-
-export interface GrowthChartPlotData {
-  chronAgeYears: number;
-  boneAgeYears: number;
-  heightCm: number;
-  weightKg: number;
-  mphCm: number;
-  mpsCm: number;
-  /** Parental stature term used in the PAH equation (MPH or MPS). */
-  parentalStatureUsedInCalculation: "MPH" | "MPS";
-  predictedAdultHeightCm: number;
-  methodLabel: string;
-}
+export type { GrowthChartPlotData } from "@core/cdc/growthChartTypes";
 
 interface GrowthChartPlotProps {
   sex: "male" | "female";
   data: GrowthChartPlotData;
   onShowWork?: () => void;
-}
-
-interface ChartTooltipState {
-  xPct: number;
-  yPct: number;
-  title: string;
-  lines: string[];
-}
-
-interface PlotMarkerProps {
-  cx: number;
-  cy: number;
-  ariaLabel: string;
-  tooltip: { title: string; lines: string[] };
-  onHover: (tooltip: ChartTooltipState | null) => void;
-  children: ReactNode;
-}
-
-function lineBetweenCircles(
-  a: { x: number; y: number },
-  b: { x: number; y: number },
-  radius: number,
-) {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const len = Math.hypot(dx, dy);
-  if (len <= radius * 2) {
-    return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-  }
-  const ux = dx / len;
-  const uy = dy / len;
-  return {
-    x1: a.x + ux * radius,
-    y1: a.y + uy * radius,
-    x2: b.x - ux * radius,
-    y2: b.y - uy * radius,
-  };
-}
-
-function PlotMarker({
-  cx,
-  cy,
-  ariaLabel,
-  tooltip,
-  onHover,
-  children,
-}: PlotMarkerProps) {
-  return (
-    <g
-      aria-label={ariaLabel}
-      className="cursor-pointer"
-      onMouseEnter={() =>
-        onHover({
-          xPct: (cx / CHART_IMAGE_WIDTH) * 100,
-          yPct: (cy / CHART_IMAGE_HEIGHT) * 100,
-          title: tooltip.title,
-          lines: tooltip.lines,
-        })
-      }
-      onMouseLeave={() => onHover(null)}
-      onFocus={() =>
-        onHover({
-          xPct: (cx / CHART_IMAGE_WIDTH) * 100,
-          yPct: (cy / CHART_IMAGE_HEIGHT) * 100,
-          title: tooltip.title,
-          lines: tooltip.lines,
-        })
-      }
-      onBlur={() => onHover(null)}
-      tabIndex={0}
-      role="button"
-    >
-      <title>{[tooltip.title, ...tooltip.lines].join(" — ")}</title>
-      <circle
-        cx={cx}
-        cy={cy}
-        r={MARKER_RADIUS * 1.15}
-        fill="transparent"
-        stroke="none"
-      />
-      {children}
-    </g>
-  );
-}
-
-function StarShape({ cx, cy }: { cx: number; cy: number }) {
-  const points = Array.from({ length: 10 }, (_, i) => {
-    const angle = (Math.PI / 2) * -1 + (i * Math.PI) / 5;
-    const radius = i % 2 === 0 ? STAR_SIZE : STAR_SIZE * 0.45;
-    return `${cx + Math.cos(angle) * radius},${cy + Math.sin(angle) * radius}`;
-  }).join(" ");
-
-  return (
-    <polygon
-      points={points}
-      fill="#f59e0b"
-      fillOpacity={MARKER_OPACITY}
-      stroke="#92400e"
-      strokeWidth={MARKER_STROKE}
-    />
-  );
-}
-
-function DiamondShape({ cx, cy }: { cx: number; cy: number }) {
-  const size = STAR_SIZE;
-  const points = [
-    `${cx},${cy - size}`,
-    `${cx + size},${cy}`,
-    `${cx},${cy + size}`,
-    `${cx - size},${cy}`,
-  ].join(" ");
-
-  return (
-    <polygon
-      points={points}
-      fill="#7c3aed"
-      fillOpacity={MARKER_OPACITY}
-      stroke="#4c1d95"
-      strokeWidth={MARKER_STROKE}
-    />
-  );
-}
-
-function plotPoints(
-  chart: CdcGrowthChartDefinition,
-  data: GrowthChartPlotData,
-) {
-  const heightChron = dataToStaturePoint(
-    chart.stature,
-    data.chronAgeYears,
-    data.heightCm,
-  );
-  const heightBone = dataToStaturePoint(
-    chart.stature,
-    data.boneAgeYears,
-    data.heightCm,
-  );
-  const weightChron = dataToWeightPoint(
-    chart.weight,
-    data.chronAgeYears,
-    data.weightKg,
-  );
-  const parentalStar = dataToStaturePoint(
-    chart.stature,
-    chart.endOfGrowthAgeYears,
-    data.mphCm,
-  );
-  const predictedAdult = dataToStaturePoint(
-    chart.stature,
-    chart.endOfGrowthAgeYears,
-    data.predictedAdultHeightCm,
-  );
-
-  return { heightChron, heightBone, weightChron, parentalStar, predictedAdult };
 }
 
 export default function GrowthChartPlot({ sex, data, onShowWork }: GrowthChartPlotProps) {
@@ -208,38 +31,19 @@ export default function GrowthChartPlot({ sex, data, onShowWork }: GrowthChartPl
     img.src = chart.src;
   }, [chart.src]);
 
-  const points = plotPoints(chart, data);
-  const boneAgeShiftYears = data.boneAgeYears - data.chronAgeYears;
-  const boneAgeShiftLabel =
-    boneAgeShiftYears === 0
-      ? "0 y (aligned)"
-      : `${boneAgeShiftYears > 0 ? "+" : ""}${boneAgeShiftYears.toFixed(1)} y`;
-  const arrowLine = lineBetweenCircles(
-    points.heightChron,
-    points.heightBone,
-    MARKER_RADIUS,
-  );
-
   const mpsUsedInCalculation =
     data.parentalStatureUsedInCalculation === "MPS";
 
-  const mphTooltipLines = [
-    `Age: ${chart.endOfGrowthAgeYears} y`,
-    `MPH: ${data.mphCm.toFixed(1)} cm`,
-    "Panel: stature-for-age (upper chart)",
-  ];
-  if (mpsUsedInCalculation) {
-    mphTooltipLines.splice(
-      2,
-      0,
-      `MPS ${data.mpsCm.toFixed(1)} cm used in PAH calculation (${data.methodLabel})`,
-    );
-  } else {
-    mphTooltipLines.splice(
-      2,
-      0,
-      `MPH used in PAH calculation (${data.methodLabel})`,
-    );
+  function openViewer() {
+    if (!imageLoaded || imageError) return;
+    openGrowthChartViewer({ sex, data });
+  }
+
+  function onChartKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openViewer();
+    }
   }
 
   return (
@@ -284,164 +88,36 @@ export default function GrowthChartPlot({ sex, data, onShowWork }: GrowthChartPl
           </div>
         )}
 
-        <svg
-          viewBox={`0 0 ${CHART_IMAGE_WIDTH} ${CHART_IMAGE_HEIGHT}`}
-          className={`w-full h-auto block ${imageLoaded ? "" : "hidden"}`}
-          role="img"
-          aria-label={chart.label}
-          preserveAspectRatio="xMidYMid meet"
+        <div
+          role="button"
+          tabIndex={imageLoaded && !imageError ? 0 : -1}
+          aria-label="Open growth chart in a new window for zoom, pan, and print"
+          onClick={openViewer}
+          onKeyDown={onChartKeyDown}
+          className={`group relative block w-full ${
+            imageLoaded && !imageError
+              ? "cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+              : ""
+          } ${imageLoaded ? "" : "hidden"}`}
         >
-          <image
-            href={chart.src}
-            x={0}
-            y={0}
-            width={CHART_IMAGE_WIDTH}
-            height={CHART_IMAGE_HEIGHT}
+          <GrowthChartSvg
+            chart={chart}
+            data={data}
+            interactive
+            onMarkerHover={setTooltip}
+            className="w-full h-auto block"
           />
-
-          <defs>
-            <marker
-              id="bone-age-arrowhead"
-              markerWidth={ARROW_HEAD}
-              markerHeight={ARROW_HEAD}
-              refX={ARROW_HEAD - 2}
-              refY={ARROW_HEAD / 2}
-              orient="auto"
-            >
-              <polygon
-                points={`0 0, ${ARROW_HEAD} ${ARROW_HEAD / 2}, 0 ${ARROW_HEAD}`}
-                fill="#c2410c"
-              />
-            </marker>
-          </defs>
-
-          {/* Arrow behind markers — edge to edge so it does not cover dots */}
-          <line
-            x1={arrowLine.x1}
-            y1={arrowLine.y1}
-            x2={arrowLine.x2}
-            y2={arrowLine.y2}
-            stroke="#c2410c"
-            strokeWidth={ARROW_STROKE}
-            markerEnd="url(#bone-age-arrowhead)"
-            opacity={0.85}
-          />
-
-          <PlotMarker
-            cx={points.weightChron.x}
-            cy={points.weightChron.y}
-            ariaLabel="Weight at chronological age"
-            onHover={setTooltip}
-            tooltip={{
-              title: "Weight at chronological age",
-              lines: [
-                `Age: ${data.chronAgeYears.toFixed(1)} y`,
-                `Weight: ${data.weightKg.toFixed(1)} kg`,
-                "Panel: weight-for-age (lower chart)",
-              ],
-            }}
-          >
-            <circle
-              cx={points.weightChron.x}
-              cy={points.weightChron.y}
-              r={MARKER_RADIUS}
-              fill="#2563eb"
-              fillOpacity={MARKER_OPACITY}
-              stroke="#fff"
-              strokeWidth={MARKER_STROKE}
-            />
-          </PlotMarker>
-
-          <PlotMarker
-            cx={points.heightChron.x}
-            cy={points.heightChron.y}
-            ariaLabel="Height at chronological age"
-            onHover={setTooltip}
-            tooltip={{
-              title: "Height at chronological age",
-              lines: [
-                `Age: ${data.chronAgeYears.toFixed(1)} y`,
-                `Height: ${data.heightCm.toFixed(1)} cm`,
-                "Panel: stature-for-age (upper chart)",
-              ],
-            }}
-          >
-            <circle
-              cx={points.heightChron.x}
-              cy={points.heightChron.y}
-              r={MARKER_RADIUS}
-              fill="#2563eb"
-              fillOpacity={MARKER_OPACITY}
-              stroke="#fff"
-              strokeWidth={MARKER_STROKE}
-            />
-          </PlotMarker>
-
-          <PlotMarker
-            cx={points.heightBone.x}
-            cy={points.heightBone.y}
-            ariaLabel="Height at bone age"
-            onHover={setTooltip}
-            tooltip={{
-              title: "Height at bone age",
-              lines: [
-                `Bone age: ${data.boneAgeYears.toFixed(1)} y`,
-                `Height: ${data.heightCm.toFixed(1)} cm (measured)`,
-                `Chronologic age: ${data.chronAgeYears.toFixed(1)} y`,
-                `Bone age shift: ${boneAgeShiftLabel}`,
-              ],
-            }}
-          >
-            <circle
-              cx={points.heightBone.x}
-              cy={points.heightBone.y}
-              r={MARKER_RADIUS}
-              fill="#ea580c"
-              fillOpacity={MARKER_OPACITY}
-              stroke="#fff"
-              strokeWidth={MARKER_STROKE}
-            />
-          </PlotMarker>
-
-          <PlotMarker
-            cx={points.parentalStar.x}
-            cy={points.parentalStar.y}
-            ariaLabel="MPH at end of growth"
-            onHover={setTooltip}
-            tooltip={{
-              title: "MPH (mid-parental height)",
-              lines: mphTooltipLines,
-            }}
-          >
-            <StarShape cx={points.parentalStar.x} cy={points.parentalStar.y} />
-          </PlotMarker>
-
-          <PlotMarker
-            cx={points.predictedAdult.x}
-            cy={points.predictedAdult.y}
-            ariaLabel="Predicted adult height at end of growth"
-            onHover={setTooltip}
-            tooltip={{
-              title: "Predicted adult height",
-              lines: [
-                `Method: ${data.methodLabel}`,
-                `Age: ${chart.endOfGrowthAgeYears} y`,
-                `Height: ${data.predictedAdultHeightCm.toFixed(1)} cm`,
-                "Panel: stature-for-age (upper chart)",
-              ],
-            }}
-          >
-            <DiamondShape
-              cx={points.predictedAdult.x}
-              cy={points.predictedAdult.y}
-            />
-          </PlotMarker>
-        </svg>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-teal-950/50 to-transparent px-3 py-2 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+            <p className="text-center text-xs font-medium text-white">
+              Click to open full chart · zoom, pan, print
+            </p>
+          </div>
+        </div>
 
         <figcaption className="border-t border-teal-100 px-4 py-3 text-sm text-teal-800">
           {chart.label}
           <span className="mt-1 block text-xs text-teal-600">
-            Hover a marker to see the values used to plot it.
+            Hover a marker for values, or click the chart to open a zoomable view.
           </span>
         </figcaption>
       </figure>
