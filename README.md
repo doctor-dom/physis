@@ -23,7 +23,7 @@ The main workflow (`/growth`) guides TW3-RUS bone age scoring through adult heig
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **TW3 bone age**     | Hand-navigator scoring for all 13 RUS landmarks with per-stage drawings and criteria text (individual atlas PNGs + markdown descriptions), discrete stage slider, and SMS → bone age lookup (sex-specific Tables A1/A3, A5/A6) |
 | **Parental stature** | Father/mother heights (cm, in, or ft+in) or direct MPH entry; distinguishes **MPH** (Tanner, TW3) from **MPS** (parental average, adjusted RWT & Khamis-Roche)                                                                 |
-| **APH methods**      | **TW3** (optional MPH adjustment — off by default; menarchal status for girls 11–14 y), **adjusted RWT** (supine length correction), **Khamis-Roche** (no bone age required)                                                   |
+| **APH methods**      | Bone-age mode: **TW3**, **adjusted RWT**, **original RWT**. No-bone-age mode: **Khamis-Roche** only. Missing-input checklists on result cards before calculation.                                                              |
 | **CDC growth chart** | Plots stature and weight vs chronological age and bone-age–shifted age; overlays MPH/MPS and selected predicted adult height                                                                                                   |
 | **Show work / QC**   | Audit trail of inputs, coefficient lookup, landmark scoring, and discrepancy flags (`ShowWorkSection`)                                                                                                                         |
 | **Clinical copy**    | Configurable charting summary with method references and TW3 atlas citations                                                                                                                                                   |
@@ -94,7 +94,8 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] TW3 APH calculator from Tanner et al. (optional MPH adjustment — off by default; menarchal status for girls 11–14 y)
 - [x] MPH calculation within the app; clear separation of MPH vs true MPS (parental average)
 - [x] CDC growth charts plotting height/weight vs CA and BA-shifted age with predicted adult height trajectories
-- [x] Replaced standalone original RWT with **Khamis-Roche** as a third APH method (adjusted RWT retained)
+- [x] Adjusted RWT retained; original RWT restored alongside it; Khamis-Roche gated behind “APH without bone age”
+- [x] APH result cards list missing inputs before a prediction populates
 - [x] Show-work / QC audit step (`src/core/showWork/buildShowWorkReport.ts`, `src/components/ShowWorkSection.tsx`)
 - [x] Copy-to-chart clinical summaries with configurable content and algorithm/atlas references
 - [x] Standing vs supine height and other clinical notes moved to hover **info tooltips** for a cleaner UI
@@ -146,7 +147,8 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Scheduled midnight UTC GitHub sync — Worker compares `master` SHA and dispatches deploy when changed
 - [x] GitHub Actions deploy workflow (Node 22 build; checkout/setup-node v5)
 - [x] Release planning checklist moved from `predeployPHYSIS.txt` to [`predeployPHYSIS.md`](predeployPHYSIS.md)
-- [x] Sequential release tagging script (`npm run release:tag`)
+- [x] Sequential release tagging script (`npm run release:tag`) using `vMAJOR.MINOR.PATCH` (`0.y.x` during beta)
+- [x] Header version + last-updated date above feedback icons (`src/data/appVersion.ts`)
 
 
 
@@ -155,7 +157,6 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 **Larger tasks**
 
 - [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
-- [ ] Workflow UI polish to match mock-ups
 - [ ] PHYSIS / CALCS logo
 - [ ] Google Analytics optimization for search and reach
 - [ ] RedCAP pre-test cohort data (PES survey dispersal)
@@ -165,7 +166,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 
 - [ ] Audit calculator references and copy-paste clinical outputs
 - [ ] Manually remake cropped TW3 stage images from original scans
-- [ ] Add original RWT alongside adjusted RWT; hide Khamis-Roche once bone age is entered
+- [ ] UD radius / DXA BMD scoring tools
 - [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
 
 **Calculators to add or consider**

@@ -10,6 +10,8 @@ import {
 export const APH_METHOD_CITATIONS: Record<HeightPredictionMethod, string> = {
   "adjusted-rwt":
     "Khamis HJ, Guo S. Improvement in the Roche-Wainer-Thissen stature prediction model: A comparative study. Am J Hum Biol. 1993;5(6):669-679. doi: 10.1002/ajhb.1310050609. PMID: 28548358.",
+  "original-rwt":
+    "Roche AF, Wainer H, Thissen D. The RWT method for the prediction of adult stature. Pediatrics. 1975;56(6):1027-1033.",
   tw3:
     "Tanner JM, Whitehouse RH, Marshall WA, Carter BS. Prediction of adult height from height, bone age, and occurrence of menarche, at ages 4 to 16 with allowance for midparent height. Arch Dis Child. 1975 Jan;50(1):14-26. doi: 10.1136/adc.50.1.14. PMID: 164838; PMCID: PMC1544488.",
   "khamis-roche":

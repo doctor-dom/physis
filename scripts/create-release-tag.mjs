@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Create the next sequential v0.N annotated tag on a commit.
+ * Create the next annotated release tag using vMAJOR.MINOR.PATCH (e.g. v0.7.1).
  * Tag message: commit subject + newly completed predeployPHYSIS checkboxes since prior tag.
  *
  * Usage:
- *   node scripts/create-release-tag.mjs [--commit HEAD] [--version v0.23] [--dry-run]
+ *   node scripts/create-release-tag.mjs [--commit HEAD] [--bump patch|minor|major] [--version v0.8.0] [--dry-run]
  */
 
 import { execFileSync } from "node:child_process";
@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const PREDEPLOY_PATHS = ["predeployPHYSIS.md", "predeployPHYSIS.txt"];
+const TAG_PATTERN = /^v(\d+)\.(\d+)\.(\d+)$/;
 
 function runGit(args) {
   return execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -22,6 +23,7 @@ function parseArgs(argv) {
   const options = {
     commit: "HEAD",
     version: null,
+    bump: "patch",
     dryRun: false,
   };
 
@@ -31,10 +33,14 @@ function parseArgs(argv) {
       options.commit = argv[++i] ?? "HEAD";
     } else if (arg === "--version") {
       options.version = argv[++i] ?? null;
+    } else if (arg === "--bump") {
+      options.bump = argv[++i] ?? "patch";
     } else if (arg === "--dry-run") {
       options.dryRun = true;
     } else if (arg === "--help" || arg === "-h") {
-      console.log(`Usage: node scripts/create-release-tag.mjs [--commit REF] [--version v0.N] [--dry-run]`);
+      console.log(
+        `Usage: node scripts/create-release-tag.mjs [--commit REF] [--bump patch|minor|major] [--version vMAJOR.MINOR.PATCH] [--dry-run]`,
+      );
       process.exit(0);
     }
   }
@@ -42,29 +48,62 @@ function parseArgs(argv) {
   return options;
 }
 
-function parseTagNumber(tag) {
-  const match = /^v0\.(\d+)$/.exec(tag);
-  return match ? Number.parseInt(match[1], 10) : 0;
+function parseSemverTag(tag) {
+  const match = TAG_PATTERN.exec(tag);
+  if (!match) return null;
+  return {
+    tag,
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
+  };
+}
+
+function compareSemver(a, b) {
+  if (a.major !== b.major) return a.major - b.major;
+  if (a.minor !== b.minor) return a.minor - b.minor;
+  return a.patch - b.patch;
+}
+
+function formatSemverTag(major, minor, patch) {
+  return `v${major}.${minor}.${patch}`;
 }
 
 function listVersionTags() {
-  const output = runGit(["tag", "-l", "v0.*"]);
+  const output = runGit(["tag", "-l", "v*.*.*"]);
   if (!output) return [];
-  return output.split("\n").filter(Boolean);
+  return output
+    .split("\n")
+    .filter(Boolean)
+    .map(parseSemverTag)
+    .filter(Boolean)
+    .sort(compareSemver);
 }
 
 function getLatestVersionTag() {
   const tags = listVersionTags();
   if (tags.length === 0) return null;
-  return tags.reduce((latest, tag) =>
-    parseTagNumber(tag) > parseTagNumber(latest) ? tag : latest,
-  );
+  return tags[tags.length - 1];
 }
 
-function getNextVersionTag() {
+function getNextVersionTag(bump) {
   const latest = getLatestVersionTag();
-  const nextNumber = latest ? parseTagNumber(latest) + 1 : 1;
-  return `v0.${nextNumber}`;
+  if (!latest) {
+    return formatSemverTag(0, 1, 0);
+  }
+
+  if (bump === "major") {
+    return formatSemverTag(latest.major + 1, 0, 0);
+  }
+  if (bump === "minor") {
+    return formatSemverTag(latest.major, latest.minor + 1, 0);
+  }
+  if (bump === "patch") {
+    return formatSemverTag(latest.major, latest.minor, latest.patch + 1);
+  }
+
+  console.error(`Invalid --bump "${bump}". Expected patch, minor, or major.`);
+  process.exit(1);
 }
 
 function readPredeployAtRef(ref) {
@@ -148,9 +187,9 @@ function main() {
   const commitShort = commit.slice(0, 7);
   const subject = getCommitSubject(commit);
 
-  const tag = options.version ?? getNextVersionTag();
-  if (!/^v0\.\d+$/.test(tag)) {
-    console.error(`Invalid version tag "${tag}". Expected format v0.N`);
+  const tag = options.version ?? getNextVersionTag(options.bump);
+  if (!TAG_PATTERN.test(tag)) {
+    console.error(`Invalid version tag "${tag}". Expected format vMAJOR.MINOR.PATCH (e.g. v0.7.1)`);
     process.exit(1);
   }
 
@@ -159,8 +198,8 @@ function main() {
     process.exit(1);
   }
 
-  const previousTag = getLatestVersionTag();
-  const baselineRef = previousTag ?? `${commit}^`;
+  const previous = getLatestVersionTag();
+  const baselineRef = previous?.tag ?? `${commit}^`;
   let completedItems = [];
 
   try {
@@ -169,7 +208,7 @@ function main() {
     console.warn(`Warning: could not diff predeploy checkboxes from ${baselineRef}: ${error.message}`);
   }
 
-  const versionLabel = `Version ${tag.replace(/^v0\./, "0.")}`;
+  const versionLabel = `Version ${tag.replace(/^v/, "")}`;
   const message = buildTagMessage(versionLabel, subject, completedItems);
 
   createAnnotatedTag(tag, commit, message, options.dryRun);

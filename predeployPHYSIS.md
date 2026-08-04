@@ -1,17 +1,22 @@
 > **Note:** This file was converted from `predeployPHYSIS.txt` to Markdown (`predeployPHYSIS.md`) for richer task formatting (checkboxes, links). It remains the source of truth for release planning and README changelog sync.
 
-++**Larger Tasks for prior to v1.0 Push:**++
+++**Larger Tasks for prior to v1.0 Push/ full version updates**++
 
 - [ ] add XR images from CHP database → see [README](data/atlas/xr/README.md)
-- [ ] make TW3 workflow pages more closely resemble mock-up images
+- [x] make TW3 workflow pages more closely resemble mock-up images
 - [ ] Make, finalize and add PHYSIS CALC logo
 - [ ] Google analytics to optimize search functioning and reach
 - [ ] Get full cohort of pre-test data from RedCAP (PES survery dispersal)
 - [x] fix bone age calculator for improved speed for scoring (slide bar, image loading, layout, etc)
 - [ ] Add RedCAP (post-test) QR code at APH/CDC page for user input
 
-++**Smaller v0.x Tasks during BETA phasing**++
+++**Smaller sub-version updates ("x" of v0.y.x), complete during BETA phasing**++
 
+- [x] Add back original RWT and send to LG to review
+- [x] Add version number and update date to physis below GitHub icons
+- [ ] Add UD_radius BMD scoring tool for DXA as well as BMD DXA z-score tool
+- [x] Add checklist of missing items for TW3 result cards when on APH page
+- [x] Use 0.y.x version nomenclature. Y are medium updates/ new calculators, and X are small updates/ refinements/ fixes
 - [x] Edit TW3 copy/paste outflow function to include "via TW3" with BA score, and to also provide raw SMS score, and to put citation on new line
 - [x] imbed cm/in toggle into user input text box where it is a separate row (ie. AAP BP) 
 - [x] Add link in PHYSIS to GitHub (github icon) for feature requests/ bug reporting (bug-icon)
@@ -19,9 +24,13 @@
 - [x] Confirm gonad auxology graphing logic works for all 3 tools (SPL and clitoral dimensions)
 - [ ] Confirm copy-paste functionality for each calculator, with inclusion of references if necessary.
 - [ ] manually remake cropped stage images from original scans
-- [ ] Add original RWT to the adj RWT for available APH estimation methods
-  - [ ] Make it so once bone age is input, Khamis-Roche is removed as an output method.
+- [x] Add original RWT to the adj RWT for available APH estimation methods
+  - [x] Make it so once bone age is input, Khamis-Roche is removed as an output method.
 - [x] Go through at make sure footer text is embedded as i tooltips or citations
+- [ ] steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
+
+++**Calculators and Tools to Add/ Consider during BETA phasing as a "y" update (v0.y.x)**++
+
 - [ ] consider adding features/ references from TSPED's website [ceddcozum](https://www.ceddcozum.com/):  
   - [ ] GH dosing calculator tool
   - [ ] IGF1/BP3 SDS tables
@@ -31,9 +40,6 @@
   - [ ] insulin resistance tools (HOMA-IR, QUICKI, and Glucose/Insulin)
   - [ ] T/DHT ratio and intrep, T/Δ4A ratio and intrep
   - [ ] Uterine/ov normative values [10.1007/s00247-019-04419-z](https://doi.org/10.1007/s00247-019-04419-z) 
-- [ ] steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
-
-++**Calculators and Tools to Add/ Consider during BETA phasing as a v0.xx update**++
 
 - [ ] Elemental Calcium Calculator (salt <> elemental based, and dosage calculator)
 - [ ] Add ESOTERIX lab values (create as .MD file) as a search tool, and include unit converter tool  

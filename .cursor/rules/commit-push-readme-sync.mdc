@@ -23,25 +23,38 @@ If the user only asked to commit code with no doc impact, skip README edits unle
 
 ## 2. Version tag (default on commit/push)
 
-**Unless the user explicitly names a tag/version** in the commit-and-push request (e.g. “tag as v0.25”, “do not tag”, “skip tagging”):
+Tags use **`vMAJOR.MINOR.PATCH`** (e.g. `v0.7.1`):
 
-1. After a **successful commit**, create the next sequential annotated tag on that commit:
+- **PATCH (x):** bug fixes, deploy/config, docs, copy, small UX refinements
+- **MINOR (y):** new calculators, new reference datasets with UI, robust functionality
+- **MAJOR:** large product-level releases (rare; resets y and x)
+
+**Unless the user explicitly names a tag/version** in the commit-and-push request (e.g. “tag as v0.8.0”, “do not tag”, “skip tagging”):
+
+1. After a **successful commit**, create the next annotated tag on that commit:
    ```bash
    node scripts/create-release-tag.mjs --commit HEAD
    ```
-2. **Do not guess the next number manually** — the script reads existing `v0.*` tags and increments (currently `v0.22` → next is `v0.23`).
-3. **Custom version** only when the user specifies it:
+   Default bump is **`patch`** (`v0.7.0` → `v0.7.1`).
+2. If the user asks for a **minor** or **major** release, pass the bump:
    ```bash
-   node scripts/create-release-tag.mjs --commit HEAD --version v0.25
+   node scripts/create-release-tag.mjs --commit HEAD --bump minor
+   node scripts/create-release-tag.mjs --commit HEAD --bump major
    ```
-4. **Skip tagging** only when the user explicitly says not to tag.
+3. **Do not guess the next number manually** — the script reads existing `v*.*.*` tags and increments.
+4. **Custom version** only when the user specifies it:
+   ```bash
+   node scripts/create-release-tag.mjs --commit HEAD --version v0.8.0
+   ```
+5. **Skip tagging** only when the user explicitly says not to tag.
+6. After tagging, sync header display version in `src/data/appVersion.ts` (`APP_VERSION` / `APP_LAST_UPDATED`) in the same commit when practical, or in an immediate follow-up if the tag is created after the commit.
 
 ### Tag message format
 
 The script builds an annotated `-m` message as:
 
 ```
-Version 0.N: <commit subject>
+Version 0.y.x: <commit subject>
 
 Predeploy completed since previous tag:
 - [x] <newly checked item from predeployPHYSIS.md>
@@ -49,7 +62,7 @@ Predeploy completed since previous tag:
 ```
 
 - First line: version label + git commit subject (short description).
-- Bullets: `[x]` items in `predeployPHYSIS.md` (or legacy `.txt`) that were **not** already checked at the **previous `v0.*` tag**.
+- Bullets: `[x]` items in `predeployPHYSIS.md` (or legacy `.txt`) that were **not** already checked at the **previous `v*.*.*` tag**.
 - If none newly completed, omit the bullet section (subject line only).
 
 Preview without writing:
@@ -62,7 +75,7 @@ node scripts/create-release-tag.mjs --commit HEAD --dry-run
 After commit (and tag, unless skipped):
 
 1. Push the branch: `git push -u origin HEAD` (or `git push origin master` as appropriate).
-2. **Also push tags** when a tag was created: `git push origin --tags` (or `git push origin v0.N` for a single tag).
+2. **Also push tags** when a tag was created: `git push origin --tags` (or `git push origin v0.y.x` for a single tag).
 
 ## 4. Git safety (unchanged)
 

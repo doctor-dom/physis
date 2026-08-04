@@ -3,7 +3,11 @@ import type { Tw3MenarchalStatus } from "../calculators/tw3/calculateTw3Predicte
 import type { Tw3LandmarkId, Tw3MaturityRating } from "../calculators/tw3/types";
 import type { Sex } from "../types";
 
-export type ShowWorkMethod = "tw3" | "adjusted-rwt" | "khamis-roche";
+export type ShowWorkMethod =
+  | "tw3"
+  | "adjusted-rwt"
+  | "original-rwt"
+  | "khamis-roche";
 
 export type QcSeverity = "error" | "warning";
 

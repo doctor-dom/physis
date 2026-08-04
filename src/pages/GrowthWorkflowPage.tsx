@@ -12,6 +12,7 @@ import type { Sex } from "@core/types";
 import {
   getPredictionForMethod,
   type AdultHeightPredictions,
+  type AphMode,
   type HeightPredictionMethod,
   type ParentalInputMode,
   type Tw3MenarchalStatus,
@@ -28,6 +29,7 @@ export default function GrowthWorkflowPage() {
   >({});
   const [boneAgeYears, setBoneAgeYears] = useState("");
   const [boneAgeFromTw3, setBoneAgeFromTw3] = useState(false);
+  const [aphMode, setAphMode] = useState<AphMode>("bone-age");
 
   const [fatherCm, setFatherCm] = useState("");
   const [motherCm, setMotherCm] = useState("");
@@ -61,13 +63,17 @@ export default function GrowthWorkflowPage() {
     }
   }, [boneAgeFromTw3, sex, ratings]);
 
-  function goToPrediction(boneAge?: number) {
-    if (boneAge !== undefined) {
-      setBoneAgeYears(boneAge.toFixed(2));
+  function goToPrediction(opts: { boneAge?: number; mode: AphMode }) {
+    setAphMode(opts.mode);
+    if (opts.mode === "no-bone-age") {
+      setBoneAgeFromTw3(false);
+    } else if (opts.boneAge !== undefined) {
+      setBoneAgeYears(opts.boneAge.toFixed(2));
       setBoneAgeFromTw3(true);
     } else {
       setBoneAgeFromTw3(false);
     }
+    setSelectedMethod(null);
     setStep("prediction");
   }
 
@@ -91,7 +97,9 @@ export default function GrowthWorkflowPage() {
     step === "tw3"
       ? "TW3 RUS -> SMS -> Bone Age -> Adult Height Prediction"
       : step === "prediction"
-        ? "TW3: height + CA + RUS bone age (menarche for girls 11–14 y)  |  Adjusted RWT: MPS + supine length (+1.25 cm if standing)"
+        ? aphMode === "no-bone-age"
+          ? "Khamis-Roche: standing height + weight + MPS (no bone age)"
+          : "TW3: height + CA + RUS bone age (menarche for girls 11–14 y)  |  RWT: MPS + supine length (+1.25 cm if standing)"
         : step === "show-work"
           ? "Calculation audit trail, coefficient lookup, and QC for TW3 SMS and PAH"
           : "CDC stature & weight chart with chronologic age, bone age shift, and MPH/MPS at end of growth";
@@ -102,14 +110,24 @@ export default function GrowthWorkflowPage() {
       formula={shellFormula}
       formulaAction={
         step === "tw3" ? (
-          <button
-            type="button"
-            onClick={() => goToPrediction()}
-            disabled={!sex}
-            className="rounded-lg border border-teal-200 bg-white px-3 py-1.5 text-xs font-medium text-teal-800 hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm whitespace-nowrap"
-          >
-            Skip to adult height prediction →
-          </button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => goToPrediction({ mode: "bone-age" })}
+              disabled={!sex}
+              className="rounded-lg border border-teal-200 bg-white px-3 py-1.5 text-xs font-medium text-teal-800 hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm whitespace-nowrap"
+            >
+              Input bone age directly
+            </button>
+            <button
+              type="button"
+              onClick={() => goToPrediction({ mode: "no-bone-age" })}
+              disabled={!sex}
+              className="rounded-lg border border-teal-200 bg-white px-3 py-1.5 text-xs font-medium text-teal-800 hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm whitespace-nowrap"
+            >
+              APH without bone age
+            </button>
+          </div>
         ) : undefined
       }
     >
@@ -121,12 +139,15 @@ export default function GrowthWorkflowPage() {
           onChronAgeChange={setChronAge}
           ratings={ratings}
           onRatingsChange={setRatings}
-          onContinueToPrediction={(ba) => goToPrediction(ba)}
+          onContinueToPrediction={(ba) =>
+            goToPrediction({ boneAge: ba, mode: "bone-age" })
+          }
         />
       ) : step === "prediction" && sex ? (
         <AdultHeightPredictionSection
           sex={sex}
           onSexChange={setSex}
+          aphMode={aphMode}
           chronAgeYears={chronAge}
           onChronAgeChange={setChronAge}
           boneAgeYears={boneAgeYears}

@@ -41,7 +41,6 @@ import type {
   PredictionWorkSection,
   QcIssue,
   ShowWorkInput,
-  ShowWorkMethod,
   ShowWorkReport,
   Tw3WorkSection,
 } from "./types";
@@ -327,7 +326,7 @@ function buildTw3PredictionSection(
 
 function buildRwtPredictionSection(
   input: ShowWorkInput,
-  method: ShowWorkMethod,
+  method: "adjusted-rwt" | "original-rwt",
   parentalMphOrMps: number,
   parentalLabel: "MPH" | "MPS",
   heightCm: number,
@@ -336,10 +335,11 @@ function buildRwtPredictionSection(
   const chronAge = parseFloat(input.chronAgeYears);
   const weight = parseFloat(input.weightKg);
   const boneAge = parseFloat(input.boneAgeYears);
+  const variant = method === "original-rwt" ? "original" : "adjusted";
   const charts =
     input.sex === "male"
-      ? rwtCoefficients.male.adjusted
-      : rwtCoefficients.female.adjusted;
+      ? rwtCoefficients.male[variant]
+      : rwtCoefficients.female[variant];
 
   const coeffs = interpolateRwtCoefficients(charts, chronAge);
   const coefficientInterpolation = (
@@ -551,14 +551,16 @@ export function buildShowWorkReport(input: ShowWorkInput): ShowWorkReport {
       troubleshooting: "All prediction inputs must be numeric.",
     });
   } else if (
-    (input.method === "tw3" || input.method === "adjusted-rwt") &&
+    (input.method === "tw3" ||
+      input.method === "adjusted-rwt" ||
+      input.method === "original-rwt") &&
     Number.isNaN(boneAge)
   ) {
     issues.push({
       id: "bone-age-missing",
       severity: "error",
-      message: "Bone age is required for RWT-based methods.",
-      troubleshooting: "TW3 and adjusted RWT equations include a bone age term.",
+      message: "Bone age is required for TW3 and RWT-based methods.",
+      troubleshooting: "TW3 and RWT equations include a bone age term.",
       suggestedFix: "Enter bone age manually or complete TW3 scoring.",
     });
   } else if (parentalSection) {
@@ -585,14 +587,17 @@ export function buildShowWorkReport(input: ShowWorkInput): ShowWorkReport {
             height,
           );
         }
-      } else if (input.method === "adjusted-rwt") {
+      } else if (
+        input.method === "adjusted-rwt" ||
+        input.method === "original-rwt"
+      ) {
         const { adjustedHeightCm, adjustmentAppliedCm } = heightForAdjustedRwt(
           height,
           input.heightIsStandingVertical,
         );
         predictionSection = buildRwtPredictionSection(
           input,
-          "adjusted-rwt",
+          input.method,
           parentalSection.mpsCm,
           "MPS",
           adjustedHeightCm,

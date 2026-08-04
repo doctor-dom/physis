@@ -47,11 +47,12 @@ export default function GrowthChartSection({
   const predictedAdultHeightCm =
     prediction && !("error" in prediction) ? prediction.value : null;
 
+  const boneAgeRequired = method !== "khamis-roche";
   const inputsValid =
     parentalTarget &&
     predictedAdultHeightCm !== null &&
     !Number.isNaN(chronAge) &&
-    !Number.isNaN(boneAge) &&
+    (!boneAgeRequired || !Number.isNaN(boneAge)) &&
     !Number.isNaN(height) &&
     !Number.isNaN(weight) &&
     chronAge >= 2 &&
@@ -104,7 +105,11 @@ export default function GrowthChartSection({
       {!inputsValid ? (
         <ResultCard
           title="Cannot plot growth chart"
-          error="Chronological age must be 2–20 years with valid height, weight, bone age, and parental heights."
+          error={
+            boneAgeRequired
+              ? "Chronological age must be 2–20 years with valid height, weight, bone age, and parental heights."
+              : "Chronological age must be 2–20 years with valid height, weight, and parental heights."
+          }
         />
       ) : (
         <GrowthChartPlot
@@ -112,7 +117,7 @@ export default function GrowthChartSection({
           onShowWork={onShowWork}
           data={{
             chronAgeYears: chronAge,
-            boneAgeYears: boneAge,
+            boneAgeYears: Number.isNaN(boneAge) ? chronAge : boneAge,
             heightCm: height,
             weightKg: weight,
             mphCm: predictions.parental!.mphCm,

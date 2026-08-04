@@ -85,15 +85,29 @@ export function calculateRwtPredictedHeight(
     coeffs.betaMph * input.midParentalHeightCm +
     coeffs.betaBoneAge * input.boneAgeYears;
 
-  const methodLabel = input.methodLabel ?? (input.variant === "adjusted" ? "Adjusted RWT" : "Original RWT");
+  const methodLabel =
+    input.methodLabel ?? (input.variant === "adjusted" ? "Adjusted RWT" : "Original RWT");
   const parentalLabel = input.parentalStatureLabel ?? "MPH";
+
+  const warnings: string[] = [];
+  if (charts.length === 0) {
+    warnings.push("Coefficient chart is empty — run npm run import:data.");
+  } else {
+    const minAge = charts[0].ageYears;
+    const maxAge = charts[charts.length - 1].ageYears;
+    if (
+      input.chronologicalAgeYears < minAge ||
+      input.chronologicalAgeYears > maxAge
+    ) {
+      warnings.push(
+        `${methodLabel} coefficient tables cover ${minAge.toFixed(1)}–${maxAge.toFixed(1)} y; chronological age ${input.chronologicalAgeYears.toFixed(2)} y is outside that range — endpoint coefficients were used.`,
+      );
+    }
+  }
 
   return {
     value: predicted,
     interpretation: `${methodLabel} predicted adult height: ${predicted.toFixed(1)} cm (${parentalLabel} ${input.midParentalHeightCm.toFixed(1)} cm; coefficients at chronological age ${input.chronologicalAgeYears.toFixed(2)} y).`,
-    warning:
-      charts.length === 0
-        ? "Coefficient chart is empty — run npm run import:data."
-        : undefined,
+    warning: warnings.length > 0 ? warnings.join(" ") : undefined,
   };
 }

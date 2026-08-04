@@ -23,7 +23,13 @@ import {
 } from "../data/khamisRoche/coefficients";
 import type { Sex } from "@core/types";
 
-export type HeightPredictionMethod = "tw3" | "adjusted-rwt" | "khamis-roche";
+export type HeightPredictionMethod =
+  | "tw3"
+  | "adjusted-rwt"
+  | "original-rwt"
+  | "khamis-roche";
+
+export type AphMode = "bone-age" | "no-bone-age";
 
 export interface HeightPredictionInputs {
   sex: Sex;
@@ -56,7 +62,67 @@ export interface AdultHeightPredictions {
   parental: ResolvedParentalStature | null;
   tw3Result: PredictionResult;
   rwtResult: PredictionResult;
+  originalRwtResult: PredictionResult;
   krResult: PredictionResult;
+  missingInputs: Record<HeightPredictionMethod, string[]>;
+}
+
+function parentalStatureLabel(mode: ParentalInputMode): string {
+  return mode === "mph" ? "Mid-parental height" : "Father and mother heights";
+}
+
+function buildMissingInputs(
+  inputs: HeightPredictionInputs,
+  parental: ResolvedParentalStature | null,
+): Record<HeightPredictionMethod, string[]> {
+  const height = parseFloat(inputs.heightCm);
+  const weight = parseFloat(inputs.weightKg);
+  const chronAge = parseFloat(inputs.chronAgeYears);
+  const boneAge = parseFloat(inputs.boneAgeYears);
+  const parentalLabel = parentalStatureLabel(inputs.parentalInputMode);
+
+  const heightMissing = Number.isNaN(height) ? ["Height"] : [];
+  const weightMissing = Number.isNaN(weight) ? ["Weight"] : [];
+  const chronMissing = Number.isNaN(chronAge) ? ["Chronological age"] : [];
+  const boneMissing = Number.isNaN(boneAge) ? ["Bone age"] : [];
+  const parentalMissing = parental ? [] : [parentalLabel];
+
+  const tw3Missing = [
+    ...heightMissing,
+    ...chronMissing,
+    ...boneMissing,
+    ...parentalMissing,
+  ];
+  if (
+    !Number.isNaN(chronAge) &&
+    tw3MenarchalStatusRequired(inputs.sex, chronAge) &&
+    inputs.menarchalStatus !== "pre" &&
+    inputs.menarchalStatus !== "post"
+  ) {
+    tw3Missing.push("Menarchal status");
+  }
+
+  const rwtMissing = [
+    ...heightMissing,
+    ...weightMissing,
+    ...chronMissing,
+    ...boneMissing,
+    ...parentalMissing,
+  ];
+
+  const krMissing = [
+    ...heightMissing,
+    ...weightMissing,
+    ...chronMissing,
+    ...parentalMissing,
+  ];
+
+  return {
+    tw3: tw3Missing,
+    "adjusted-rwt": rwtMissing,
+    "original-rwt": [...rwtMissing],
+    "khamis-roche": krMissing,
+  };
 }
 
 export function useAdultHeightPredictions(
@@ -87,6 +153,42 @@ export function useAdultHeightPredictions(
     });
   }, [parentalInputMode, fatherCm, motherCm, mphDirectCm, sex]);
 
+  const missingInputs = useMemo(
+    () =>
+      buildMissingInputs(
+        {
+          sex,
+          parentalInputMode,
+          fatherCm,
+          motherCm,
+          mphDirectCm,
+          heightCm,
+          weightKg,
+          chronAgeYears,
+          boneAgeYears,
+          heightIsStandingVertical,
+          menarchalStatus,
+          tw3ApplyMphAdjustment,
+        },
+        parental,
+      ),
+    [
+      sex,
+      parentalInputMode,
+      fatherCm,
+      motherCm,
+      mphDirectCm,
+      heightCm,
+      weightKg,
+      chronAgeYears,
+      boneAgeYears,
+      heightIsStandingVertical,
+      menarchalStatus,
+      tw3ApplyMphAdjustment,
+      parental,
+    ],
+  );
+
   const tw3Result = useMemo(() => {
     const height = parseFloat(heightCm);
     const boneAge = parseFloat(boneAgeYears);
@@ -99,10 +201,8 @@ export function useAdultHeightPredictions(
       menarchalStatus !== "pre" &&
       menarchalStatus !== "post"
     ) {
-      return {
-        error:
-          "Select pre-menarche or post-menarche for TW3 adult height prediction (girls aged 11–14 y).",
-      };
+      // Incomplete form — listed under missingInputs instead of an error card.
+      return null;
     }
     try {
       return calculateTw3PredictedHeight({
@@ -173,6 +273,50 @@ export function useAdultHeightPredictions(
     heightIsStandingVertical,
   ]);
 
+  const originalRwtResult = useMemo(() => {
+    const height = parseFloat(heightCm);
+    const weight = parseFloat(weightKg);
+    const boneAge = parseFloat(boneAgeYears);
+    const chronAge = parseFloat(chronAgeYears);
+    if (!parental || [height, weight, boneAge, chronAge].some((v) => Number.isNaN(v))) {
+      return null;
+    }
+    const { adjustedHeightCm, adjustmentAppliedCm } = heightForAdjustedRwt(
+      height,
+      heightIsStandingVertical,
+    );
+    try {
+      const result = calculateRwtPredictedHeight({
+        variant: "original",
+        sex,
+        heightCm: adjustedHeightCm,
+        weightKg: weight,
+        midParentalHeightCm: parental.mpsCm,
+        boneAgeYears: boneAge,
+        chronologicalAgeYears: chronAge,
+        maleCharts: rwtCoefficients.male.original,
+        femaleCharts: rwtCoefficients.female.original,
+        methodLabel: "Original RWT",
+        parentalStatureLabel: "MPS",
+      });
+      return {
+        ...result,
+        adjustmentAppliedCm,
+        adjustedHeightCm,
+      };
+    } catch (e) {
+      return { error: (e as Error).message };
+    }
+  }, [
+    parental,
+    heightCm,
+    weightKg,
+    boneAgeYears,
+    chronAgeYears,
+    sex,
+    heightIsStandingVertical,
+  ]);
+
   const krResult = useMemo(() => {
     const height = parseFloat(heightCm);
     const weight = parseFloat(weightKg);
@@ -197,7 +341,14 @@ export function useAdultHeightPredictions(
     }
   }, [parental, heightCm, weightKg, chronAgeYears, sex]);
 
-  return { parental, tw3Result, rwtResult, krResult };
+  return {
+    parental,
+    tw3Result,
+    rwtResult,
+    originalRwtResult,
+    krResult,
+    missingInputs,
+  };
 }
 
 export function getPredictionForMethod(
@@ -209,6 +360,8 @@ export function getPredictionForMethod(
       return predictions.tw3Result;
     case "adjusted-rwt":
       return predictions.rwtResult;
+    case "original-rwt":
+      return predictions.originalRwtResult;
     case "khamis-roche":
       return predictions.krResult;
   }
@@ -231,6 +384,7 @@ export const HEIGHT_PREDICTION_METHOD_LABELS: Record<
 > = {
   tw3: "TW3 method",
   "adjusted-rwt": "Adjusted RWT",
+  "original-rwt": "Original RWT",
   "khamis-roche": "Khamis-Roche",
 };
 

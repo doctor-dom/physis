@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Field,
   InfoTooltip,
@@ -13,10 +13,12 @@ import {
 } from "@core/calculators/rwt/supineHeight";
 import {
   useAdultHeightPredictions,
+  getPredictionForMethod,
   HEIGHT_PREDICTION_METHOD_LABELS,
   KHAMIS_ROCHE_AGE_MIN,
   KHAMIS_ROCHE_AGE_MAX,
   tw3MenarchalStatusRequired,
+  type AphMode,
   type HeightPredictionMethod,
   type AdultHeightPredictions,
   type ParentalInputMode,
@@ -32,6 +34,7 @@ import type { Sex } from "@core/types";
 interface AdultHeightPredictionSectionProps {
   sex: Sex;
   onSexChange: (sex: Sex) => void;
+  aphMode: AphMode;
   chronAgeYears: string;
   onChronAgeChange: (v: string) => void;
   boneAgeYears: string;
@@ -69,20 +72,24 @@ function isValidPrediction(
   return result !== null && !("error" in result);
 }
 
+function isRwtMethod(method: HeightPredictionMethod): boolean {
+  return method === "adjusted-rwt" || method === "original-rwt";
+}
+
 function SelectableResultCard({
   method,
   title,
   selected,
   onSelect,
   result,
-  placeholder,
+  missingInputs,
 }: {
   method: HeightPredictionMethod;
   title: string;
   selected: boolean;
   onSelect: () => void;
   result: AdultHeightPredictions["tw3Result"];
-  placeholder: string;
+  missingInputs: string[];
 }) {
   if (result && "error" in result) {
     return <ResultCard title={title} error={result.error} />;
@@ -91,17 +98,29 @@ function SelectableResultCard({
   if (!result) {
     return (
       <div className="rounded-xl border border-dashed border-teal-200 bg-teal-50/30 p-4 text-sm text-teal-700">
-        {placeholder}
+        <p className="font-medium text-teal-800">{title}</p>
+        <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-teal-600">
+          Enter to calculate
+        </p>
+        {missingInputs.length > 0 ? (
+          <ul className="mt-1 list-disc space-y-0.5 pl-5">
+            {missingInputs.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-1">Complete the required fields above.</p>
+        )}
       </div>
     );
   }
 
   const warning =
-    method === "adjusted-rwt" &&
+    isRwtMethod(method) &&
     "adjustmentAppliedCm" in result &&
     result.adjustmentAppliedCm &&
     result.adjustmentAppliedCm > 0
-      ? `Standing height correction: +${result.adjustmentAppliedCm.toFixed(2)} cm applied (${result.adjustedHeightCm?.toFixed(1)} cm used in equation). ${result.warning ?? ""}`
+      ? `Standing height correction: +${result.adjustmentAppliedCm.toFixed(2)} cm applied (${result.adjustedHeightCm?.toFixed(1)} cm used in equation). ${result.warning ?? ""}`.trim()
       : method === "khamis-roche"
         ? "No bone age required. Uses standing height, weight, and MPS."
         : result.warning;
@@ -139,6 +158,7 @@ function SelectableResultCard({
 export default function AdultHeightPredictionSection({
   sex,
   onSexChange,
+  aphMode,
   chronAgeYears,
   onChronAgeChange,
   boneAgeYears,
@@ -167,10 +187,23 @@ export default function AdultHeightPredictionSection({
   onTw3ApplyMphAdjustmentChange,
 }: AdultHeightPredictionSectionProps) {
   const [selectedMethod, setSelectedMethod] =
-    useState<HeightPredictionMethod | null>(null);
+    useState<HeightPredictionMethod | null>(
+      aphMode === "no-bone-age" ? "khamis-roche" : null,
+    );
+
+  useEffect(() => {
+    if (aphMode === "no-bone-age") {
+      setSelectedMethod("khamis-roche");
+    } else if (selectedMethod === "khamis-roche") {
+      setSelectedMethod(null);
+    }
+    // Only re-sync when mode changes; ignore selectedMethod to avoid loops.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mode-driven selection
+  }, [aphMode]);
 
   const chronAgeParsed = parseFloat(chronAgeYears);
   const showMenarchePrompt =
+    aphMode === "bone-age" &&
     sex === "female" &&
     !Number.isNaN(chronAgeParsed) &&
     tw3MenarchalStatusRequired(sex, chronAgeParsed);
@@ -190,7 +223,7 @@ export default function AdultHeightPredictionSection({
     tw3ApplyMphAdjustment,
   });
 
-  const { parental, tw3Result, rwtResult, krResult } = predictions;
+  const { parental, missingInputs } = predictions;
 
   function handleParentalInputModeChange(next: ParentalInputMode) {
     if (next === parentalInputMode) return;
@@ -207,14 +240,9 @@ export default function AdultHeightPredictionSection({
     onParentalInputModeChange(next);
   }
 
-  const selectedResult =
-    selectedMethod === "tw3"
-      ? tw3Result
-      : selectedMethod === "adjusted-rwt"
-        ? rwtResult
-        : selectedMethod === "khamis-roche"
-          ? krResult
-          : null;
+  const selectedResult = selectedMethod
+    ? getPredictionForMethod(predictions, selectedMethod)
+    : null;
 
   const canContinue =
     selectedMethod !== null && isValidPrediction(selectedResult);
@@ -235,6 +263,8 @@ export default function AdultHeightPredictionSection({
           });
         })()
       : null;
+
+  const boneAgeMode = aphMode === "bone-age";
 
   return (
     <div className="space-y-6">
@@ -324,39 +354,43 @@ export default function AdultHeightPredictionSection({
       </fieldset>
 
       {parental && (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-teal-200 bg-teal-50/40 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
-              MPH — TW3 method
-            </p>
-            <p className="mt-1 text-2xl font-bold text-teal-900">
-              {parental.mphCm.toFixed(1)} cm
-            </p>
-            <p className="mt-1 text-xs text-teal-700">
-              Target range ±{MPH_RANGE_CM} cm:{" "}
-              {parental.mphRangeLowCm.toFixed(1)}–{parental.mphRangeHighCm.toFixed(1)} cm
-            </p>
-            <p className="mt-2 text-xs text-teal-600 font-mono">{parental.mphFormula}</p>
-            {parental.derivedFromMph ? (
-              <p className="mt-1 text-xs text-teal-700/80">
-                Entered directly. Optional MPH adjustment for TW3 PAH uses this value.
+        <div className={`grid gap-3 ${boneAgeMode ? "sm:grid-cols-2" : ""}`}>
+          {boneAgeMode ? (
+            <div className="rounded-xl border border-teal-200 bg-teal-50/40 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+                MPH — TW3 method
               </p>
-            ) : (
-              <p className="mt-1 text-xs text-teal-700/80">
-                Used for optional TW3 MPH adjustment (standing vertical height in equation).
+              <p className="mt-1 text-2xl font-bold text-teal-900">
+                {parental.mphCm.toFixed(1)} cm
               </p>
-            )}
-          </div>
+              <p className="mt-1 text-xs text-teal-700">
+                Target range ±{MPH_RANGE_CM} cm:{" "}
+                {parental.mphRangeLowCm.toFixed(1)}–{parental.mphRangeHighCm.toFixed(1)} cm
+              </p>
+              <p className="mt-2 text-xs text-teal-600 font-mono">{parental.mphFormula}</p>
+              {parental.derivedFromMph ? (
+                <p className="mt-1 text-xs text-teal-700/80">
+                  Entered directly. Optional MPH adjustment for TW3 PAH uses this value.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-teal-700/80">
+                  Used for optional TW3 MPH adjustment (standing vertical height in equation).
+                </p>
+              )}
+            </div>
+          ) : null}
           <div className="rounded-xl border border-teal-200 bg-white p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
-              MPS — Adjusted RWT
+              {boneAgeMode ? "MPS — RWT methods" : "MPS — Khamis-Roche"}
             </p>
             <p className="mt-1 text-2xl font-bold text-teal-900">
               {parental.mpsCm.toFixed(1)} cm
             </p>
             <p className="mt-2 text-xs text-teal-600 font-mono">{parental.mpsFormula}</p>
             <p className="mt-1 text-xs text-teal-700/80">
-              Parental average for adjusted RWT and Khamis-Roche (standing height model).
+              {boneAgeMode
+                ? "Parental average for original and adjusted RWT (supine height model)."
+                : "Parental average for Khamis-Roche (standing height model)."}
               {parental.derivedFromMph &&
                 ` From combined parental height ${parental.parentalSumCm.toFixed(1)} cm ÷ 2 — individual parent heights unknown.`}
             </p>
@@ -367,7 +401,11 @@ export default function AdultHeightPredictionSection({
       <div className="grid gap-4 sm:grid-cols-2">
         <UnitLengthInput
           label="Patient height"
-          hint="Standing height for TW3 and Khamis-Roche. Adjusted RWT uses supine length — see checkbox below."
+          hint={
+            boneAgeMode
+              ? "Standing height for TW3. RWT methods use supine length — see checkbox below."
+              : "Standing height for Khamis-Roche."
+          }
           valueCm={heightCm}
           onChangeCm={onHeightCmChange}
         />
@@ -378,7 +416,11 @@ export default function AdultHeightPredictionSection({
         />
         <AgeInput
           label="Chronological age"
-          hint={`Required for all methods. Khamis-Roche: ${KHAMIS_ROCHE_AGE_MIN}–${KHAMIS_ROCHE_AGE_MAX} y. CDC chart: 2–20 y.`}
+          hint={
+            boneAgeMode
+              ? "Required for all methods. CDC chart: 2–20 y."
+              : `Required for Khamis-Roche (${KHAMIS_ROCHE_AGE_MIN}–${KHAMIS_ROCHE_AGE_MAX} y). CDC chart: 2–20 y.`
+          }
           valueYears={chronAgeYears}
           onChangeYears={onChronAgeChange}
           modes={["decimal", "years-months", "months"]}
@@ -424,77 +466,96 @@ export default function AdultHeightPredictionSection({
         </fieldset>
       )}
 
-      <label className="flex items-center gap-3 rounded-xl border border-teal-100 bg-teal-50/40 px-4 py-3">
-        <input
-          type="checkbox"
-          checked={tw3ApplyMphAdjustment}
-          onChange={(e) => onTw3ApplyMphAdjustmentChange(e.target.checked)}
-          className="h-4 w-4 shrink-0 rounded border-teal-300 text-teal-700 focus:ring-teal-500"
-        />
-        <span className="flex items-center text-sm font-medium text-teal-900">
-          TW3 MPH adjustment
-          <InfoTooltip text="When checked, adds ⅓ × (MPH − 168 cm) to the TW3 prediction per Tanner et al. 1975. Does not affect adjusted RWT or Khamis-Roche." />
-        </span>
-      </label>
+      {boneAgeMode ? (
+        <>
+          <label className="flex items-center gap-3 rounded-xl border border-teal-100 bg-teal-50/40 px-4 py-3">
+            <input
+              type="checkbox"
+              checked={tw3ApplyMphAdjustment}
+              onChange={(e) => onTw3ApplyMphAdjustmentChange(e.target.checked)}
+              className="h-4 w-4 shrink-0 rounded border-teal-300 text-teal-700 focus:ring-teal-500"
+            />
+            <span className="flex items-center text-sm font-medium text-teal-900">
+              TW3 MPH adjustment
+              <InfoTooltip text="When checked, adds ⅓ × (MPH − 168 cm) to the TW3 prediction per Tanner et al. 1975. Does not affect RWT methods." />
+            </span>
+          </label>
 
-      <label className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/60 px-4 py-3">
-        <input
-          type="checkbox"
-          checked={heightIsStandingVertical}
-          onChange={(e) => onHeightIsStandingVerticalChange(e.target.checked)}
-          className="h-4 w-4 shrink-0 rounded border-teal-300 text-teal-700 focus:ring-teal-500"
-        />
-        <span className="flex items-center text-sm font-medium text-teal-900">
-          Height measured standing
-          <InfoTooltip
-            text={`Adjusted RWT uses supine length. When checked, ${RWT_SUPINE_HEIGHT_ADJUSTMENT_CM} cm is added to the entered height for the calculation. Uncheck if the value you entered is already supine length. TW3 method always uses the entered height without this adjustment.`}
+          <label className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/60 px-4 py-3">
+            <input
+              type="checkbox"
+              checked={heightIsStandingVertical}
+              onChange={(e) => onHeightIsStandingVerticalChange(e.target.checked)}
+              className="h-4 w-4 shrink-0 rounded border-teal-300 text-teal-700 focus:ring-teal-500"
+            />
+            <span className="flex items-center text-sm font-medium text-teal-900">
+              Height measured standing
+              <InfoTooltip
+                text={`RWT methods use supine length. When checked, ${RWT_SUPINE_HEIGHT_ADJUSTMENT_CM} cm is added to the entered height for the calculation. Uncheck if the value you entered is already supine length. TW3 method always uses the entered height without this adjustment.`}
+              />
+            </span>
+          </label>
+
+          <AgeInput
+            label="Bone age"
+            hint={
+              boneAgeFromTw3
+                ? "From TW3 calculator — required for TW3 and RWT methods. Decimal years or years + months."
+                : "Required for TW3 and RWT methods. Decimal years or years + months."
+            }
+            valueYears={boneAgeYears}
+            onChangeYears={onBoneAgeChange}
+            modes={["decimal", "years-months"]}
+            defaultMode="decimal"
           />
-        </span>
-      </label>
-
-      <AgeInput
-        label="Bone age"
-        hint={
-          boneAgeFromTw3
-            ? "From TW3 calculator — required for TW3 and adjusted RWT. Decimal years or years + months."
-            : "Required for TW3 and adjusted RWT. Decimal years or years + months."
-        }
-        valueYears={boneAgeYears}
-        onChangeYears={onBoneAgeChange}
-        modes={["decimal", "years-months"]}
-        defaultMode="decimal"
-      />
+        </>
+      ) : null}
 
       <div>
         <p className="mb-3 text-sm font-medium text-teal-900">
-          Select a prediction method, then view on the CDC growth chart
+          {boneAgeMode
+            ? "Select a prediction method, then view on the CDC growth chart"
+            : "Khamis-Roche predicted adult height (no bone age)"}
         </p>
-        <div className="grid gap-4 lg:grid-cols-3">
-          <SelectableResultCard
-            method="tw3"
-            title="TW3 method predicted height"
-            selected={selectedMethod === "tw3"}
-            onSelect={() => setSelectedMethod("tw3")}
-            result={tw3Result}
-            placeholder="TW3 method — enter height, bone age, chronological age, and parental stature. Girls 11–14 y: select menarchal status."
-          />
-          <SelectableResultCard
-            method="adjusted-rwt"
-            title="Adjusted RWT predicted height"
-            selected={selectedMethod === "adjusted-rwt"}
-            onSelect={() => setSelectedMethod("adjusted-rwt")}
-            result={rwtResult}
-            placeholder="Adjusted RWT — enter all fields above. MPS and supine height correction apply automatically."
-          />
-          <SelectableResultCard
-            method="khamis-roche"
-            title="Khamis-Roche predicted height"
-            selected={selectedMethod === "khamis-roche"}
-            onSelect={() => setSelectedMethod("khamis-roche")}
-            result={krResult}
-            placeholder={`Khamis-Roche — standing height, weight, MPS, and chronological age (${KHAMIS_ROCHE_AGE_MIN}–${KHAMIS_ROCHE_AGE_MAX} y). No bone age needed.`}
-          />
-        </div>
+        {boneAgeMode ? (
+          <div className="grid gap-4 lg:grid-cols-3">
+            <SelectableResultCard
+              method="tw3"
+              title="TW3 method predicted height"
+              selected={selectedMethod === "tw3"}
+              onSelect={() => setSelectedMethod("tw3")}
+              result={predictions.tw3Result}
+              missingInputs={missingInputs.tw3}
+            />
+            <SelectableResultCard
+              method="adjusted-rwt"
+              title="Adjusted RWT predicted height"
+              selected={selectedMethod === "adjusted-rwt"}
+              onSelect={() => setSelectedMethod("adjusted-rwt")}
+              result={predictions.rwtResult}
+              missingInputs={missingInputs["adjusted-rwt"]}
+            />
+            <SelectableResultCard
+              method="original-rwt"
+              title="Original RWT predicted height"
+              selected={selectedMethod === "original-rwt"}
+              onSelect={() => setSelectedMethod("original-rwt")}
+              result={predictions.originalRwtResult}
+              missingInputs={missingInputs["original-rwt"]}
+            />
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-1 lg:max-w-xl">
+            <SelectableResultCard
+              method="khamis-roche"
+              title="Khamis-Roche predicted height"
+              selected={selectedMethod === "khamis-roche"}
+              onSelect={() => setSelectedMethod("khamis-roche")}
+              result={predictions.krResult}
+              missingInputs={missingInputs["khamis-roche"]}
+            />
+          </div>
+        )}
       </div>
 
       {onContinueToChart && (

@@ -1,6 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { DISCLAIMER_SHORT } from "../content/disclaimer";
+import {
+  APP_LAST_UPDATED,
+  APP_VERSION,
+  formatAppLastUpdatedLabel,
+  formatAppVersionLabel,
+} from "../data/appVersion";
 import { useRouteFavicon } from "../hooks/useRouteFavicon";
 
 export function DisclaimerFooter() {
@@ -72,7 +78,15 @@ export function FeatureRequestLink() {
 export function HeaderFeedbackLinks({ className = "" }: { className?: string }) {
   return (
     <div className={`flex shrink-0 flex-col items-center ${className}`}>
-      <span className="text-[10px] font-medium leading-none text-teal-700">GitHub</span>
+      <div
+        className="text-center text-[10px] font-medium leading-tight text-teal-700"
+        title={`PHYSIS ${formatAppVersionLabel(APP_VERSION)} · last updated ${formatAppLastUpdatedLabel(APP_LAST_UPDATED)}`}
+      >
+        <div>{formatAppVersionLabel(APP_VERSION)}</div>
+        <div className="text-teal-600/90">
+          Last Updated: {formatAppLastUpdatedLabel(APP_LAST_UPDATED)}
+        </div>
+      </div>
       <div className="mt-0.5 flex items-center gap-0">
         <BugReportLink />
         <FeatureRequestLink />
