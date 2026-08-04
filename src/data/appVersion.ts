@@ -2,7 +2,7 @@
  * Displayed app version and last-update date in the header (above feedback icons).
  * Bump these when creating a release tag (`npm run release:tag`).
  */
-export const APP_VERSION = "0.7.1";
+export const APP_VERSION = "0.6.1";
 
 /** ISO date (YYYY-MM-DD) of the last tagged/released update. */
 export const APP_LAST_UPDATED = "2026-08-03";
