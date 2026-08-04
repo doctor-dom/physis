@@ -2,10 +2,14 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import CopyClinicalSummaryButton from "../CopyClinicalSummaryButton";
 import { CalculatorReferenceFooter } from "../FormFields";
-import { buildSteroidWeanClinicalSummary } from "@core/formatSteroidWeanClinicalSummary";
+import {
+  buildSteroidWeanClinicalSummary,
+  buildSteroidWeanOnlyClinicalSummary,
+} from "@core/formatSteroidWeanClinicalSummary";
 import {
   actualMgPerM2PerDay,
   formatDailyDoseWithMgM2,
+  formatDoseMgAndMgM2,
   formatIvSteroidDoseMg,
   formatMgM2PerDay,
   formatSteroidDoseMg,
@@ -91,6 +95,10 @@ export default function SteroidWeanScheduleView({
     () => buildSteroidWeanClinicalSummary(schedule),
     [schedule],
   );
+  const weanOnlySummary = useMemo(
+    () => buildSteroidWeanOnlyClinicalSummary(schedule),
+    [schedule],
+  );
 
   return (
     <div className="space-y-6">
@@ -102,15 +110,25 @@ export default function SteroidWeanScheduleView({
         >
           ← Edit patient inputs
         </button>
-        <CopyClinicalSummaryButton
-          summary={clinicalSummary}
-          className="sm:max-w-md"
-        />
+        <div className="flex flex-col gap-2 sm:max-w-md sm:items-end">
+          <CopyClinicalSummaryButton
+            summary={clinicalSummary}
+            buttonLabel="Copy full output for clinical documentation"
+          />
+          {schedule.includeWeanSchedule && (
+            <CopyClinicalSummaryButton
+              summary={weanOnlySummary}
+              buttonLabel="Copy wean for clinical documentation"
+            />
+          )}
+        </div>
       </div>
 
       <p className="text-sm text-teal-800">
-        BSA: <strong>{bsaM2.toFixed(3)} m²</strong> — PO hydrocortisone uses 1.25 mg
-        increments; IV hydrocortisone rounds to one decimal place.
+        BSA: <strong>{bsaM2.toFixed(3)} m²</strong> — PO hydrocortisone prefers equal
+        doses on 1.25 mg increments (AM-larger or BID when needed); IV hydrocortisone
+        rounds to one decimal place. Anesthesia follow-up uses 5 mg PO tablets and
+        whole-mg IV.
       </p>
 
       {transition && (
@@ -122,11 +140,17 @@ export default function SteroidWeanScheduleView({
             <p>
               <span className="font-medium">Current regimen:</span>{" "}
               {transition.currentSteroidLabel}{" "}
-              {formatMgM2PerDay(transition.currentSteroidMgPerM2PerDay)}
+              {formatDoseMgAndMgM2(
+                transition.currentSteroidDoseMg,
+                transition.currentSteroidMgPerM2PerDay,
+              )}
             </p>
             <p>
               <span className="font-medium">Hydrocortisone equivalent:</span>{" "}
-              {formatMgM2PerDay(transition.hctEquivalentMgPerM2PerDay)}
+              {formatDoseMgAndMgM2(
+                transition.hctEquivalentMgPerDay,
+                transition.hctEquivalentMgPerM2PerDay,
+              )}
             </p>
             <p className="text-teal-800">
               Steroid weans are recommended once hydrocortisone equivalent reaches{" "}
@@ -139,6 +163,7 @@ export default function SteroidWeanScheduleView({
                 wean schedule below.
               </p>
             ) : (
+              transition.thresholdCurrentSteroidDoseMg !== undefined &&
               transition.thresholdCurrentSteroidMgPerM2PerDay !== undefined &&
               transition.thresholdHctMgPerM2PerDay !== undefined && (
                 <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">
@@ -146,11 +171,19 @@ export default function SteroidWeanScheduleView({
                   Reduce to{" "}
                   <strong>
                     {transition.currentSteroidLabel}{" "}
-                    {formatMgM2PerDay(transition.thresholdCurrentSteroidMgPerM2PerDay)}
+                    {formatDoseMgAndMgM2(
+                      transition.thresholdCurrentSteroidDoseMg,
+                      transition.thresholdCurrentSteroidMgPerM2PerDay,
+                    )}
                   </strong>{" "}
                   (hydrocortisone equivalent{" "}
-                  {formatMgM2PerDay(transition.thresholdHctMgPerM2PerDay)}) before
-                  starting the structured wean.
+                  {transition.thresholdHctDoseMg !== undefined
+                    ? formatDoseMgAndMgM2(
+                        transition.thresholdHctDoseMg,
+                        transition.thresholdHctMgPerM2PerDay,
+                      )
+                    : formatMgM2PerDay(transition.thresholdHctMgPerM2PerDay)}
+                  ) before starting the structured wean.
                 </p>
               )
             )}
@@ -164,8 +197,8 @@ export default function SteroidWeanScheduleView({
 
         <div>
           <h4 className="mb-2 text-sm font-medium text-teal-800">
-            PO hydrocortisone (TID; BID for 8, 5, and 3 mg/m²/day — evening dose
-            omitted)
+            PO hydrocortisone (equal-preferred TID; BID when evening dose cannot
+            be formed)
           </h4>
           <ScheduleTable>
             <thead className="bg-teal-50 text-left text-xs font-semibold uppercase tracking-wide text-teal-700">
@@ -239,7 +272,7 @@ export default function SteroidWeanScheduleView({
 
         <div>
           <h4 className="mb-2 text-sm font-medium text-teal-800">
-            Maintenance — PO hydrocortisone 8–10 mg/m²/day (TID)
+            Maintenance — PO hydrocortisone 8–10 mg/m²/day (equal-preferred TID)
           </h4>
           <ScheduleTable>
             <thead className="bg-teal-50 text-left text-xs font-semibold uppercase tracking-wide text-teal-700">
@@ -267,7 +300,8 @@ export default function SteroidWeanScheduleView({
             </tbody>
           </ScheduleTable>
           <p className="mt-2 text-xs text-teal-700">
-            Morning dose is weighted higher when splitting across three daily doses.
+            Equal TID is preferred when the daily total divides evenly on 1.25 mg
+            steps; otherwise morning is largest, then BID if needed.
           </p>
         </div>
 
@@ -282,7 +316,8 @@ export default function SteroidWeanScheduleView({
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
               <p className="mb-1 text-xs font-semibold uppercase text-teal-600">
-                PO (TID) — actual {formatMgM2PerDay(stress.actualPoMgPerM2PerDay)}
+                PO (equal-preferred) — actual{" "}
+                {formatMgM2PerDay(stress.actualPoMgPerM2PerDay)}
               </p>
               <ScheduleTable>
                 <thead className="bg-teal-50 text-xs font-semibold text-teal-700">
@@ -332,21 +367,22 @@ export default function SteroidWeanScheduleView({
             <li>
               Give{" "}
               <strong>{formatIvSteroidDoseMg(anesthesia.singleDoseMg)}</strong>{" "}
-              ({anesthesia.singleDoseMgPerM2.toFixed(1)} mg/m²; max 100 mg)
+              (target {anesthesia.singleDoseTargetMgPerM2} mg/m²; actual{" "}
+              {formatMgM2PerDay(anesthesia.singleDoseMgPerM2)}; max 100 mg)
               hydrocortisone IV/IM once at induction of anesthesia or onset of
               severe illness/injury.
             </li>
             <li>
-              Then continue{" "}
+              Then continue hydrocortisone at follow-up target{" "}
               <strong>
-                {formatDailyDoseWithMgM2(anesthesia.followUpTotalDailyMg, bsaM2)}
+                {formatMgM2PerDay(anesthesia.followUpTargetMgPerM2PerDay)}
               </strong>{" "}
-              hydrocortisone (max 100 mg total): PO divided TID (AM{" "}
+              (max 100 mg total): PO divided TID on 5 mg tablets (AM{" "}
               {formatSteroidDoseMg(anesthesia.followUpPo.morning)}, midday{" "}
               {formatSteroidDoseMg(anesthesia.followUpPo.midday)}, PM{" "}
               {formatSteroidDoseMg(anesthesia.followUpPo.evening)}; actual{" "}
               {formatMgM2PerDay(anesthesia.followUpActualPoMgPerM2PerDay)}) or IV
-              divided QID (
+              divided QID whole mg (
               {[
                 anesthesia.followUpIv.dose1,
                 anesthesia.followUpIv.dose2,
@@ -363,8 +399,10 @@ export default function SteroidWeanScheduleView({
 
       <CalculatorReferenceFooter>
         BSA: Haycock method when height is available; Costeff formula for weight-only
-        estimation. PO hydrocortisone doses rounded to 1.25 mg increments (TID/BID); IV
-        hydrocortisone QID to one decimal place.
+        estimation. PO hydrocortisone: equal-preferred dosing on 1.25 mg increments
+        (AM-larger or BID when needed). IV wean/stress QID to one decimal place.
+        Anesthesia/severe illness: single dose ceiled (&lt;25 mg to whole mg; ≥25 mg
+        to 5 mg); follow-up PO on 5 mg tablets; follow-up IV whole mg.
       </CalculatorReferenceFooter>
     </div>
   );

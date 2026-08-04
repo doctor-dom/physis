@@ -27,7 +27,8 @@
 - [x] Add original RWT to the adj RWT for available APH estimation methods
   - [x] Make it so once bone age is input, Khamis-Roche is removed as an output method.
 - [x] Go through at make sure footer text is embedded as i tooltips or citations
-- [ ] steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
+- [x] consider adding steroid functionality to add inspired from [molony](https://molonych-source.github.io/steroid-wean-calculator-/): calculate current mg/m2/day equili then allow for X percent wean plan from current supraphysiologic (using current steroid or HCT) to stress dosing, followed by standard wean to off.
+- [x] Refine steroid wean equal-preferred PO dosing, anesthesia rounding, transition mg/day+mg/m² display, and short wean-only HCT clinical copy
 
 ++**Calculators and Tools to Add/ Consider during BETA phasing as a "y" update (v0.y.x)**++
 
@@ -42,6 +43,9 @@
   - [ ] Uterine/ov normative values [10.1007/s00247-019-04419-z](https://doi.org/10.1007/s00247-019-04419-z) 
 
 - [ ] Elemental Calcium Calculator (salt <> elemental based, and dosage calculator)
+- [ ] Review ENDO tools on [EndoBora](https://www.endobora.com/?lang=en) 
+  - [ ] Diagnostic criteria for PWS, BBS, Cohen Syndrome, Alstrom, Silver-Russel)
+  - [ ] Consider guides for Prader scoring, Quigley scoring, Sinnecker Scale, FGS hirsuitism scoring
 - [ ] Add ESOTERIX lab values (create as .MD file) as a search tool, and include unit converter tool  
 - [ ] IGF1 LMS/SMS (Z-score) calculator (Heliyon, Roche, Esoterix:  in /references). 
 - [ ] Esoterix Labcorp IGF1 SMS scraper tool, obtain LMS data (2.5%, 97.5%, 50% quantiles required)

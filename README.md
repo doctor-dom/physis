@@ -134,6 +134,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] BSA calculator — Haycock (weight + height) and Costeff weight-only estimate
 - [x] BSA input method labels and Costeff/Haycock formula hints on `/bsa-steroid`
 - [x] Steroid wean calculator / potency converter
+- [x] Steroid wean dosing refinements — equal-preferred PO splits (1.25 mg), anesthesia/severe-illness rounding (5 mg PO / whole-mg IV), transition mg/day + mg/m² display, and short wean-only clinical copy
 - [x] Gonad auxology — SPL (newborn and child) and clitoral dimension nomograms with reference charts
 - [x] Gonad auxology — click-to-enlarge zoomable nomograms; Feldman newborn GA reference; Feldman child −2.5 SD threshold; corrected Feldman percentile derivation from mean ± SD
 
@@ -171,8 +172,8 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 
 **Calculators to add or consider**
 
-- [ ] Steroid wean enhancements inspired by [Christian's steroid wean calculator](https://molonych-source.github.io/steroid-wean-calculator-/)
 - [ ] Elemental calcium calculator (salt ↔ elemental and dosage)
+- [ ] Review ENDO tools on [EndoBora](https://www.endobora.com/?lang=en) (syndrome criteria; Prader/Quigley/Sinnecker/FGS scoring)
 - [ ] ESOTERIX lab values search tool (`.md`) and unit converter
 - [ ] IGF-1 LMS/SMS (Z-score) calculator — Roche, Esoterix, Severance references in `data/references/`
 - [ ] Esoterix/Labcorp IGF-1 SMS scraper for LMS quantiles

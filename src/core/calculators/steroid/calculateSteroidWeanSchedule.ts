@@ -2,16 +2,20 @@ import type { SteroidDoseOutput } from "./calculateSteroidDose";
 
 /**
  * Steroid wean dosing rules:
- * - PO hydrocortisone: all doses rounded to 1.25 mg increments (tablet size).
- * - IV hydrocortisone: split to target daily dose, each dose rounded to 1 decimal place.
+ * - PO hydrocortisone (wean/maintenance/stress): 1.25 mg increments; prefer equal TID,
+ *   then AM-larger TID, then BID (omit evening), then morning-only.
+ * - IV hydrocortisone (wean/stress): equal QID, each dose to 1 decimal place.
+ * - Anesthesia / severe illness (100 mg/m², max 100 mg): single-dose ceil rules;
+ *   follow-up PO on 5 mg tablets (equal-first); follow-up IV QID whole mg.
  */
 
 export const HCT_WEAN_THRESHOLD_MG_M2 = 30;
 export const WEAN_STAGE_MG_M2 = [30, 20, 10, 8, 5, 3] as const;
-export const BID_WEAN_STAGES_MG_M2 = new Set<number>([8, 5, 3]);
 export const PO_HCT_DOSE_INCREMENT_MG = 1.25;
 /** @deprecated Use PO_HCT_DOSE_INCREMENT_MG — PO-only rule. */
 export const DOSE_INCREMENT_MG = PO_HCT_DOSE_INCREMENT_MG;
+/** Anesthesia / severe-illness PO tablet increment (ceil). */
+export const PO_ANESTHESIA_TABLET_MG = 5;
 
 export const IV_DOSE_DECIMAL_PLACES = 1;
 
@@ -20,6 +24,8 @@ export const MAINTENANCE_MG_M2_MAX = 10;
 export const STRESS_MG_M2 = 30;
 export const ANESTHESIA_MG_M2 = 100;
 export const ANESTHESIA_MAX_MG = 100;
+/** Below this raw single dose (mg), ceil to whole mg; at/above, ceil to 5 mg. */
+export const ANESTHESIA_WHOLE_MG_CEIL_BELOW = 25;
 
 export const STRESS_DOSE_INDICATIONS =
   "Use stress dosing for fever, emesis, significant injury, or severe diarrhea.";
@@ -55,15 +61,21 @@ export interface WeanStageRow {
 
 export interface TransitionToWean {
   currentSteroidLabel: string;
+  /** Current steroid total daily dose (mg/day). */
+  currentSteroidDoseMg: number;
   /** Current steroid dose (mg/m²/day). */
   currentSteroidMgPerM2PerDay: number;
   /** Hydrocortisone-equivalent dose (mg/m²/day). */
   hctEquivalentMgPerM2PerDay: number;
+  /** Hydrocortisone-equivalent total daily (mg/day). */
+  hctEquivalentMgPerDay: number;
   atOrBelowWeanThreshold: boolean;
   /** Rounded daily dose of current steroid to reach wean threshold (prescribing). */
   thresholdCurrentSteroidDoseMg?: number;
   /** mg/m²/day of current steroid at recommended dose. */
   thresholdCurrentSteroidMgPerM2PerDay?: number;
+  /** HCT-equivalent mg/day at recommended dose. */
+  thresholdHctDoseMg?: number;
   /** HCT-equivalent mg/m²/day at recommended dose (≥ 30). */
   thresholdHctMgPerM2PerDay?: number;
 }
@@ -86,6 +98,9 @@ export interface StressDosing {
 
 export interface AnesthesiaDosing {
   singleDoseMg: number;
+  /** Target intensity for single dose (mg/m²), before absolute max. */
+  singleDoseTargetMgPerM2: number;
+  /** Actual single-dose intensity after rounding (mg/m²). */
   singleDoseMgPerM2: number;
   followUpTotalDailyMg: number;
   followUpTargetMgPerM2PerDay: number;
@@ -106,6 +121,10 @@ export interface SteroidWeanSchedule {
   anesthesia: AnesthesiaDosing;
 }
 
+function nearlyEqual(a: number, b: number, eps = 1e-9): boolean {
+  return Math.abs(a - b) < eps;
+}
+
 /** Round PO hydrocortisone to nearest 1.25 mg; values below 1.25 mg become 0. */
 export function roundPoSteroidDoseMg(doseMg: number): number {
   if (doseMg < PO_HCT_DOSE_INCREMENT_MG) return 0;
@@ -117,12 +136,16 @@ export function roundPoSteroidDoseMg(doseMg: number): number {
 /** @deprecated Use roundPoSteroidDoseMg */
 export const roundSteroidDoseMg = roundPoSteroidDoseMg;
 
-function roundPoTotalDailyMg(doseMg: number): number {
+export function roundToDoseIncrement(
+  doseMg: number,
+  increment: number,
+  mode: "nearest" | "ceil" = "nearest",
+): number {
   if (doseMg <= 0) return 0;
-  return Math.max(
-    PO_HCT_DOSE_INCREMENT_MG,
-    Math.round(doseMg / PO_HCT_DOSE_INCREMENT_MG) * PO_HCT_DOSE_INCREMENT_MG,
-  );
+  if (mode === "ceil") {
+    return Math.ceil(doseMg / increment - 1e-12) * increment;
+  }
+  return Math.round(doseMg / increment) * increment;
 }
 
 /** IV doses round to one decimal place (formulation constraint; not PO 1.25 mg increments). */
@@ -130,6 +153,12 @@ export function roundIvSteroidDoseMg(doseMg: number): number {
   if (doseMg <= 0) return 0;
   const factor = 10 ** IV_DOSE_DECIMAL_PLACES;
   return Math.round(doseMg * factor) / factor;
+}
+
+/** Anesthesia follow-up IV: nearest whole mg. */
+export function roundIvWholeMg(doseMg: number): number {
+  if (doseMg <= 0) return 0;
+  return Math.round(doseMg);
 }
 
 export function dailyMgFromMgM2(mgPerM2: number, bsaM2: number): number {
@@ -140,104 +169,109 @@ export function actualMgPerM2PerDay(totalDailyMg: number, bsaM2: number): number
   return totalDailyMg / bsaM2;
 }
 
-/** PO hydrocortisone TID, or BID (evening omitted) for lower wean stages. */
-export function splitPoHydrocortisoneTid(
+/**
+ * Prefer equal doses on an increment grid:
+ * 1) equal TID when total units divisible by 3
+ * 2) unequal TID with morning ≥ midday ≥ evening
+ * 3) equal BID, else morning-larger BID
+ * 4) morning-only
+ */
+export function splitPoEqualPreferred(
   totalDailyMg: number,
-  useBid: boolean,
+  increment: number,
+  options?: { totalRounding?: "nearest" | "ceil" },
 ): PoTidDoses {
-  const total = roundPoTotalDailyMg(totalDailyMg);
+  const totalRounding = options?.totalRounding ?? "nearest";
+  let total = roundToDoseIncrement(totalDailyMg, increment, totalRounding);
+  if (totalRounding === "nearest" && total > 0 && total < increment) {
+    total = 0;
+  }
+  if (total <= 0) {
+    return { morning: 0, midday: 0, evening: 0, totalDaily: 0, schedule: "tid" };
+  }
 
-  if (useBid) {
-    let morning = roundPoSteroidDoseMg(total * 0.55);
-    if (morning === 0 && total >= PO_HCT_DOSE_INCREMENT_MG) {
-      morning = PO_HCT_DOSE_INCREMENT_MG;
-    }
-    let midday = roundPoSteroidDoseMg(total - morning);
-    if (midday === 0 && total - morning >= PO_HCT_DOSE_INCREMENT_MG) {
-      midday = roundPoSteroidDoseMg(total - morning);
-    }
-    if (morning + midday !== total) {
-      midday = Math.max(0, roundPoSteroidDoseMg(total - morning));
-      if (midday === 0 && total > morning) {
-        morning = total;
-      }
-    }
-    if (midday > morning) {
-      const swap = morning;
-      morning = midday;
-      midday = swap;
-    }
+  const units = Math.round(total / increment);
 
+  if (units >= 3 && units % 3 === 0) {
+    const each = (units / 3) * increment;
     return {
-      morning,
-      midday,
+      morning: each,
+      midday: each,
+      evening: each,
+      totalDaily: each * 3,
+      schedule: "tid",
+    };
+  }
+
+  if (units >= 3) {
+    const base = Math.floor(units / 3);
+    let rem = units % 3;
+    let mU = base;
+    let midU = base;
+    let eU = base;
+    while (rem > 0) {
+      if (mU <= midU && mU <= eU) {
+        mU += 1;
+      } else if (midU <= eU) {
+        midU += 1;
+      } else {
+        eU += 1;
+      }
+      rem -= 1;
+    }
+    const sorted = [mU, midU, eU].sort((a, b) => b - a);
+    return {
+      morning: sorted[0] * increment,
+      midday: sorted[1] * increment,
+      evening: sorted[2] * increment,
+      totalDaily: units * increment,
+      schedule: "tid",
+    };
+  }
+
+  if (units >= 2) {
+    if (units % 2 === 0) {
+      const each = (units / 2) * increment;
+      return {
+        morning: each,
+        midday: each,
+        evening: 0,
+        totalDaily: each * 2,
+        schedule: "bid",
+      };
+    }
+    const morningU = Math.ceil(units / 2);
+    const middayU = units - morningU;
+    return {
+      morning: morningU * increment,
+      midday: middayU * increment,
       evening: 0,
-      totalDaily: morning + midday,
+      totalDaily: units * increment,
       schedule: "bid",
     };
   }
 
-  let morning = roundPoSteroidDoseMg(total * 0.5);
-  if (morning === 0 && total >= PO_HCT_DOSE_INCREMENT_MG) {
-    morning = PO_HCT_DOSE_INCREMENT_MG;
-  }
-
-  let midday = roundPoSteroidDoseMg((total - morning) / 2);
-  let evening = roundPoSteroidDoseMg(total - morning - midday);
-
-  if (evening > 0 && evening < PO_HCT_DOSE_INCREMENT_MG) {
-    evening = 0;
-  }
-  if (midday > 0 && midday < PO_HCT_DOSE_INCREMENT_MG) {
-    midday = 0;
-  }
-
-  if (midday === 0 && evening === 0) {
-    morning = total;
-  } else if (evening === 0) {
-    midday = roundPoSteroidDoseMg(total - morning);
-    if (midday === 0) {
-      morning = total;
-    }
-  } else {
-    const adjustedEvening = total - morning - midday;
-    evening =
-      adjustedEvening >= PO_HCT_DOSE_INCREMENT_MG
-        ? roundPoSteroidDoseMg(adjustedEvening)
-        : 0;
-    if (evening === 0) {
-      midday = roundPoSteroidDoseMg(total - morning);
-    }
-  }
-
-  if (midday > morning) {
-    const swap = morning;
-    morning = midday;
-    midday = swap;
-  }
-  if (evening > morning) {
-    const swap = morning;
-    morning = evening;
-    evening = swap;
-  }
-  if (evening > midday && evening > 0) {
-    const swap = midday;
-    midday = evening;
-    evening = swap;
-  }
-
-  const sum = morning + midday + evening;
-  if (sum !== total && total > 0) {
-    morning = Math.max(morning, roundPoSteroidDoseMg(total - midday - evening));
-  }
-
   return {
-    morning,
-    midday,
-    evening,
-    totalDaily: morning + midday + evening,
-    schedule: "tid",
+    morning: units * increment,
+    midday: 0,
+    evening: 0,
+    totalDaily: units * increment,
+    schedule: "bid",
   };
+}
+
+/** PO hydrocortisone for wean / maintenance / stress — equal-first on 1.25 mg. */
+export function splitPoHydrocortisoneTid(totalDailyMg: number): PoTidDoses {
+  return splitPoEqualPreferred(totalDailyMg, PO_HCT_DOSE_INCREMENT_MG, {
+    totalRounding: "nearest",
+  });
+}
+
+/** Anesthesia follow-up PO — equal-first on 5 mg tablet steps (ceil total). */
+export function splitPoAnesthesiaTid(totalDailyMg: number): PoTidDoses {
+  return splitPoEqualPreferred(totalDailyMg, PO_ANESTHESIA_TABLET_MG, {
+    totalRounding: "ceil",
+  });
 }
 
 /**
@@ -264,9 +298,38 @@ export function splitIvHydrocortisoneQid(totalDailyMg: number): IvQidDoses {
   };
 }
 
+/** Anesthesia follow-up IV QID — equal split, each dose nearest whole mg. */
+export function splitIvHydrocortisoneQidWholeMg(totalDailyMg: number): IvQidDoses {
+  if (totalDailyMg <= 0) {
+    return { dose1: 0, dose2: 0, dose3: 0, dose4: 0, totalDaily: 0 };
+  }
+
+  const perDose = totalDailyMg / 4;
+  const dose1 = roundIvWholeMg(perDose);
+  const dose2 = roundIvWholeMg(perDose);
+  const dose3 = roundIvWholeMg(perDose);
+  const dose4 = Math.max(0, roundIvWholeMg(totalDailyMg - dose1 - dose2 - dose3));
+
+  return {
+    dose1,
+    dose2,
+    dose3,
+    dose4,
+    totalDaily: dose1 + dose2 + dose3 + dose4,
+  };
+}
+
+/**
+ * Anesthesia / severe illness single IV/IM dose:
+ * raw = min(100, 100 × BSA); if raw < 25 ceil to integer, else ceil to 5 mg.
+ */
 export function anesthesiaSingleDoseMg(bsaM2: number): number {
   const raw = Math.min(ANESTHESIA_MAX_MG, ANESTHESIA_MG_M2 * bsaM2);
-  return roundIvSteroidDoseMg(raw);
+  if (raw <= 0) return 0;
+  if (raw < ANESTHESIA_WHOLE_MG_CEIL_BELOW) {
+    return Math.ceil(raw - 1e-12);
+  }
+  return Math.ceil(raw / 5 - 1e-12) * 5;
 }
 
 /** Prefer whole numbers; otherwise one decimal place. */
@@ -285,6 +348,7 @@ export function recommendWeanThresholdCurrentSteroidDose(
   doseMg: number;
   steroidMgPerM2PerDay: number;
   hctMgPerM2PerDay: number;
+  hctDoseMg: number;
 } {
   let doseMg = roundPreferWholeOrOneDecimal(
     (HCT_WEAN_THRESHOLD_MG_M2 * bsaM2) / hctPotency,
@@ -314,6 +378,7 @@ export function recommendWeanThresholdCurrentSteroidDose(
     doseMg,
     steroidMgPerM2PerDay: doseMg / bsaM2,
     hctMgPerM2PerDay,
+    hctDoseMg: doseMg * hctPotency,
   };
 }
 
@@ -326,8 +391,10 @@ export function buildTransitionToWean(
 
   const base: TransitionToWean = {
     currentSteroidLabel: steroid.steroid.label,
+    currentSteroidDoseMg: steroid.dailyDoseMg,
     currentSteroidMgPerM2PerDay: steroid.dailyDoseMg / bsaM2,
     hctEquivalentMgPerM2PerDay: steroid.hctEquivalentMgPerM2PerDay,
+    hctEquivalentMgPerDay: steroid.hctEquivalentMgPerDay,
     atOrBelowWeanThreshold,
   };
 
@@ -344,6 +411,7 @@ export function buildTransitionToWean(
     ...base,
     thresholdCurrentSteroidDoseMg: recommendation.doseMg,
     thresholdCurrentSteroidMgPerM2PerDay: recommendation.steroidMgPerM2PerDay,
+    thresholdHctDoseMg: recommendation.hctDoseMg,
     thresholdHctMgPerM2PerDay: recommendation.hctMgPerM2PerDay,
   };
 }
@@ -358,8 +426,7 @@ export function buildSteroidWeanSchedule(
 
   const weanStages: WeanStageRow[] = WEAN_STAGE_MG_M2.map((mgPerM2) => {
     const targetTotalDailyMg = dailyMgFromMgM2(mgPerM2, bsaM2);
-    const useBid = BID_WEAN_STAGES_MG_M2.has(mgPerM2);
-    const po = splitPoHydrocortisoneTid(targetTotalDailyMg, useBid);
+    const po = splitPoHydrocortisoneTid(targetTotalDailyMg);
     const iv = splitIvHydrocortisoneQid(targetTotalDailyMg);
     return {
       targetMgPerM2PerDay: mgPerM2,
@@ -376,7 +443,7 @@ export function buildSteroidWeanSchedule(
     MAINTENANCE_MG_M2_MAX,
   ].map((mgPerM2) => {
     const targetTotalDailyMg = dailyMgFromMgM2(mgPerM2, bsaM2);
-    const po = splitPoHydrocortisoneTid(targetTotalDailyMg, false);
+    const po = splitPoHydrocortisoneTid(targetTotalDailyMg);
     return {
       targetMgPerM2PerDay: mgPerM2,
       targetTotalDailyMg,
@@ -386,7 +453,7 @@ export function buildSteroidWeanSchedule(
   });
 
   const stressTargetTotal = dailyMgFromMgM2(STRESS_MG_M2, bsaM2);
-  const stressPo = splitPoHydrocortisoneTid(stressTargetTotal, false);
+  const stressPo = splitPoHydrocortisoneTid(stressTargetTotal);
   const stressIv = splitIvHydrocortisoneQid(stressTargetTotal);
   const stress: StressDosing = {
     targetMgPerM2PerDay: STRESS_MG_M2,
@@ -398,12 +465,16 @@ export function buildSteroidWeanSchedule(
   };
 
   const followUpTotal = anesthesiaSingleDoseMg(bsaM2);
-  const followUpPo = splitPoHydrocortisoneTid(followUpTotal, false);
-  const followUpIv = splitIvHydrocortisoneQid(followUpTotal);
-  const anesthesiaTargetMgM2 = Math.min(ANESTHESIA_MG_M2, ANESTHESIA_MAX_MG / bsaM2);
+  const followUpPo = splitPoAnesthesiaTid(followUpTotal);
+  const followUpIv = splitIvHydrocortisoneQidWholeMg(followUpTotal);
+  const anesthesiaTargetMgM2 = Math.min(
+    ANESTHESIA_MG_M2,
+    ANESTHESIA_MAX_MG / bsaM2,
+  );
   const anesthesia: AnesthesiaDosing = {
     singleDoseMg: followUpTotal,
-    singleDoseMgPerM2: Math.min(ANESTHESIA_MG_M2, followUpTotal / bsaM2),
+    singleDoseTargetMgPerM2: ANESTHESIA_MG_M2,
+    singleDoseMgPerM2: followUpTotal / bsaM2,
     followUpTotalDailyMg: followUpTotal,
     followUpTargetMgPerM2PerDay: anesthesiaTargetMgM2,
     followUpActualPoMgPerM2PerDay: actualMgPerM2PerDay(followUpPo.totalDaily, bsaM2),
@@ -432,9 +503,19 @@ export function formatSteroidDoseMg(doseMg: number): string {
   return `${rounded} mg`;
 }
 
+export function formatDailyMg(doseMg: number): string {
+  if (doseMg === 0) return "0 mg/day";
+  const rounded =
+    doseMg % 1 === 0 ? doseMg.toFixed(0) : doseMg.toFixed(2).replace(/\.?0+$/, "");
+  return `${rounded} mg/day`;
+}
+
 export function formatIvSteroidDoseMg(doseMg: number): string {
   if (doseMg <= 0) return "0 mg";
-  const rounded = roundIvSteroidDoseMg(doseMg);
+  const rounded =
+    Number.isInteger(doseMg) || nearlyEqual(doseMg, Math.round(doseMg))
+      ? Math.round(doseMg)
+      : roundIvSteroidDoseMg(doseMg);
   const text =
     rounded % 1 === 0
       ? rounded.toFixed(0)
@@ -461,4 +542,11 @@ export function formatIvDailyDoseWithMgM2(
   bsaM2: number,
 ): string {
   return formatMgM2PerDay(actualMgPerM2PerDay(totalDailyMg, bsaM2));
+}
+
+export function formatDoseMgAndMgM2(
+  doseMg: number,
+  mgPerM2PerDay: number,
+): string {
+  return `${formatDailyMg(doseMg)} (${formatMgM2PerDay(mgPerM2PerDay)})`;
 }

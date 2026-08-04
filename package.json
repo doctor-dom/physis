@@ -8,6 +8,7 @@
     "build": "npm run import:data && tsc -b && vite build",
     "import:data": "node scripts/import-tw3-individual-stages.mjs && node scripts/import-clinical-data.mjs && node scripts/import-bp-data.mjs && node scripts/import-gonad-auxology-data.mjs",
     "import:kr": "node scripts/generate-khamis-roche-data.mjs",
+    "test:steroid-wean": "node scripts/verify-steroid-wean-rounding.mjs",
     "test:cdc-calibration": "node scripts/test-cdc-chart-calibration.mjs",
     "test:cdc-landmark-plot": "node scripts/test-cdc-landmark-plot.mjs data/cdc/landmarks/cdc-landmarks-boys.json && node scripts/test-cdc-landmark-plot.mjs data/cdc/landmarks/cdc-landmarks-girls.json",
     "apply:cdc-landmarks": "node scripts/apply-cdc-landmarks.mjs",
