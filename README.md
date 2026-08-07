@@ -82,7 +82,35 @@ Legacy routes `/trp` and `/ccr` redirect to `/renal-electrolytes`.
 | Clitoral length/width (neonate) — Alaei et al. nomogram                        | `/clitoral-dimension` |
 
 
+## Planned Updates (from [`predeployPHYSIS.md`](predeployPHYSIS.md))
 
+### Larger tasks
+
+- [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
+- [ ] PHYSIS / CALCS logo
+- [ ] Google Analytics optimization for search and reach
+- [ ] RedCAP pre-test cohort data (PES survey dispersal)
+- [ ] RedCAP post-test QR code on TW3/APH pages
+
+### Patch polish
+
+- [ ] QC / “show calculations” footer for each tool
+- [ ] Link planned updates on calc.dom site
+- [ ] Improve PHYSIS favicon
+- [ ] Clean up footer text into info tooltips; references in copy-paste output
+- [ ] Confirm copy-paste functionality for each calculator
+- [ ] UD radius / DXA BMD scoring tools
+- [ ] Consider better calculator organization by organ system
+
+### Calculators to add or consider
+
+- [ ] Elemental calcium calculator (salt ↔ elemental and dosage)
+- [ ] Consider tools from [EndoBora](https://www.endobora.com/?lang=en) (syndrome criteria; SMR/Tanner, Prader/Quigley/Sinnecker/FGS scoring)
+- [ ] ESOTERIX lab values search tool (`.md`) and unit converter
+- [ ] IGF-1 LMS/SMS (Z-score) calculator — Roche, Esoterix, Severance references in `data/references/`
+- [ ] Esoterix/Labcorp IGF-1 SMS scraper for LMS quantiles
+- [ ] Time-based IGF-1 interpretation calculator for long-acting GH
+- [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
 
 ## Changelog
 
@@ -105,8 +133,6 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] TW3 workflow — Ulna-first landmark order (Ulna → Radius → thumb → 3/5 groups), dedicated Enter to save stage and advance, mobile two-column layout with vertical slider under the hand XR map
 - [x] CDC growth chart viewer — click chart to open zoom/pan/print window with margin legend
 
-
-
 ### Electrolytes & calcium
 
 - [x] Free water deficit (hypernatremia)
@@ -126,8 +152,6 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Maintenance IVF (mIVF) — Holliday–Segar calculations
 - [x] GIR calculator — IV and enteral, with combined total
 
-
-
 ### General pediatrics
 
 - [x] Pediatric age-based hypertension guideline calculator (BP percentiles)
@@ -139,8 +163,6 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Gonad auxology — SPL (newborn and child) and clitoral dimension nomograms with reference charts
 - [x] Gonad auxology — click-to-enlarge zoomable nomograms; Feldman newborn GA reference; Feldman child −2.5 SD threshold; corrected Feldman percentile derivation from mean ± SD
 
-
-
 ### Platform & data
 
 - [x] CDC plotting logic fixes
@@ -151,39 +173,6 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Release planning checklist moved from `predeployPHYSIS.txt` to [`predeployPHYSIS.md`](predeployPHYSIS.md)
 - [x] Sequential release tagging script (`npm run release:tag`) using `vMAJOR.MINOR.PATCH` (`0.y.x` during beta)
 - [x] Header version + last-updated date above feedback icons (`src/data/appVersion.ts`)
-
-
-
-### Planned (from [`predeployPHYSIS.md`](predeployPHYSIS.md))
-
-**Larger tasks**
-
-- [ ] CHP X-ray atlas images per landmark/stage (`data/atlas/xr/`)
-- [ ] PHYSIS / CALCS logo
-- [ ] Google Analytics optimization for search and reach
-- [ ] RedCAP pre-test cohort data (PES survey dispersal)
-- [ ] RedCAP post-test QR code on TW3/APH pages
-
-**Patch polish**
-
-- [ ] QC / “show calculations” footer for each tool
-- [ ] Link planned updates on calc.dom site
-- [ ] Improve PHYSIS favicon
-- [ ] Clean up footer text into info tooltips; references in copy-paste output
-- [ ] Confirm copy-paste functionality for each calculator
-- [ ] UD radius / DXA BMD scoring tools
-- [ ] Consider better calculator organization by organ system
-
-**Calculators to add or consider**
-
-- [ ] Elemental calcium calculator (salt ↔ elemental and dosage)
-- [ ] Consider tools from [EndoBora](https://www.endobora.com/?lang=en) (syndrome criteria; SMR/Tanner, Prader/Quigley/Sinnecker/FGS scoring)
-- [ ] ESOTERIX lab values search tool (`.md`) and unit converter
-- [ ] IGF-1 LMS/SMS (Z-score) calculator — Roche, Esoterix, Severance references in `data/references/`
-- [ ] Esoterix/Labcorp IGF-1 SMS scraper for LMS quantiles
-- [ ] Time-based IGF-1 interpretation calculator for long-acting GH
-- [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
-
 
 
 ## Development
