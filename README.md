@@ -102,6 +102,7 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [x] Age input fixes — no auto-padding of decimals/zeros until blur; improved years+months entry
 - [x] TW3 stage slider stability, discrete stage picker, and refreshed stage-v2 atlas images
 - [x] Bone age calculator UX — stage slider, image preloading, and layout improvements
+- [x] TW3 workflow — Ulna-first landmark order (Ulna → Radius → thumb → 3/5 groups), dedicated Enter to save stage and advance, mobile two-column layout with vertical slider under the hand XR map
 - [x] CDC growth chart viewer — click chart to open zoom/pan/print window with margin legend
 
 
@@ -161,23 +162,27 @@ Completed work tracked in [`predeployPHYSIS.md`](predeployPHYSIS.md) ([x] items)
 - [ ] PHYSIS / CALCS logo
 - [ ] Google Analytics optimization for search and reach
 - [ ] RedCAP pre-test cohort data (PES survey dispersal)
-- [ ] RedCAP post-test QR code on APH/CDC page
+- [ ] RedCAP post-test QR code on TW3/APH pages
 
-**Small tasks & polish**
+**Patch polish**
 
-- [ ] Audit calculator references and copy-paste clinical outputs
-- [ ] Manually remake cropped TW3 stage images from original scans
+- [ ] QC / “show calculations” footer for each tool
+- [ ] Link planned updates on calc.dom site
+- [ ] Improve PHYSIS favicon
+- [ ] Clean up footer text into info tooltips; references in copy-paste output
+- [ ] Confirm copy-paste functionality for each calculator
 - [ ] UD radius / DXA BMD scoring tools
-- [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
+- [ ] Consider better calculator organization by organ system
 
 **Calculators to add or consider**
 
 - [ ] Elemental calcium calculator (salt ↔ elemental and dosage)
-- [ ] Review ENDO tools on [EndoBora](https://www.endobora.com/?lang=en) (syndrome criteria; Prader/Quigley/Sinnecker/FGS scoring)
+- [ ] Consider tools from [EndoBora](https://www.endobora.com/?lang=en) (syndrome criteria; SMR/Tanner, Prader/Quigley/Sinnecker/FGS scoring)
 - [ ] ESOTERIX lab values search tool (`.md`) and unit converter
 - [ ] IGF-1 LMS/SMS (Z-score) calculator — Roche, Esoterix, Severance references in `data/references/`
 - [ ] Esoterix/Labcorp IGF-1 SMS scraper for LMS quantiles
 - [ ] Time-based IGF-1 interpretation calculator for long-acting GH
+- [ ] Consider TSPED website features ([ceddcozum](https://www.ceddcozum.com/))
 
 
 

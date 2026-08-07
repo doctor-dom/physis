@@ -48,12 +48,18 @@ export default function Tw3BoneAgeSection({
   onRatingsChange,
   onContinueToPrediction,
 }: Tw3BoneAgeSectionProps) {
-  const [activeLandmark, setActiveLandmark] = useState<Tw3LandmarkId>("radius");
+  const [activeLandmark, setActiveLandmark] = useState<Tw3LandmarkId>(
+    TW3_RUS_LANDMARKS[0].id,
+  );
   const [lastSelectedRating, setLastSelectedRating] = useState<
     Tw3MaturityRating | undefined
   >();
   const resultsRef = useRef<HTMLDivElement>(null);
   const hasScrolledToResults = useRef(false);
+  /** Mobile-only host under the hand for the vertical stage slider. */
+  const [mobileSliderHost, setMobileSliderHost] = useState<HTMLDivElement | null>(
+    null,
+  );
 
   const smsScores = sex ? getTw3SmsScores(sex) : null;
   const smsChart = sex ? getTw3SmsToBoneAgeChart(sex) : null;
@@ -155,6 +161,8 @@ export default function Tw3BoneAgeSection({
           <span className="h-2 w-2 rounded-sm bg-green-500" /> Done
         </span>
       </div>
+      {/* Vertical stage slider portals here on mobile only (sm:hidden host). */}
+      <div ref={setMobileSliderHost} className="sm:hidden" />
     </aside>
   );
 
@@ -239,6 +247,7 @@ export default function Tw3BoneAgeSection({
             availableRatings={available}
             onSelectRating={(rating) => setRating(activeLandmark, rating)}
             initialScrollRating={lastSelectedRating}
+            mobileSliderHost={mobileSliderHost}
             score={
               result && !("error" in result)
                 ? result.value.landmarkScores[activeLandmark]

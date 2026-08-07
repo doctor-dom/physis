@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import type { Tw3LandmarkId, Tw3MaturityRating } from "@core/calculators/tw3/types";
 import { getStageImagesForLandmark } from "../../data/tw3/atlasStageManifest";
 import { Tw3AtlasRatingAChip } from "./Tw3AtlasStageRadioOverlay";
 
 const DRAW_ORDER: Tw3MaturityRating[] = ["B", "C", "D", "E", "F", "G", "H", "I"];
+
+/** Tailwind `sm` breakpoint — horizontal slider / side-by-side layout at and above this width. */
+const SM_MEDIA_QUERY = "(min-width: 640px)";
 
 function ratingIndex(ratings: Tw3MaturityRating[], rating?: Tw3MaturityRating): number {
   if (!rating) return 0;
@@ -16,11 +20,30 @@ function clampIndex(index: number, max: number): number {
   return Math.min(Math.max(0, index), max);
 }
 
+function useIsSmUp(): boolean {
+  const [isSmUp, setIsSmUp] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(SM_MEDIA_QUERY).matches : true,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(SM_MEDIA_QUERY);
+    const update = () => setIsSmUp(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return isSmUp;
+}
+
+type SliderOrientation = "horizontal" | "vertical";
+
 interface Tw3DiscreteStageSliderProps {
   stages: { rating: Tw3MaturityRating }[];
   index: number;
   onIndexChange: (index: number) => void;
   scoringTitle: string;
+  orientation?: SliderOrientation;
 }
 
 function Tw3DiscreteStageSlider({
@@ -28,6 +51,7 @@ function Tw3DiscreteStageSlider({
   index,
   onIndexChange,
   scoringTitle,
+  orientation = "horizontal",
 }: Tw3DiscreteStageSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
@@ -37,6 +61,7 @@ function Tw3DiscreteStageSlider({
   const current = stages[safeIndex];
   const snapPercent = sliderMax === 0 ? 0 : (safeIndex / sliderMax) * 100;
   const [visualPercent, setVisualPercent] = useState(snapPercent);
+  const vertical = orientation === "vertical";
 
   useEffect(() => {
     if (!draggingRef.current) {
@@ -44,29 +69,38 @@ function Tw3DiscreteStageSlider({
     }
   }, [snapPercent]);
 
-  const indexFromClientX = useCallback(
-    (clientX: number) => {
+  const indexFromClient = useCallback(
+    (clientX: number, clientY: number) => {
       const track = containerRef.current;
       if (!track || stages.length <= 1) return 0;
       const rect = track.getBoundingClientRect();
+      if (vertical) {
+        if (rect.height <= 0) return 0;
+        const y = Math.min(Math.max(clientY - rect.top, 0), rect.height);
+        return clampIndex(Math.round((y / rect.height) * sliderMax), sliderMax);
+      }
       if (rect.width <= 0) return 0;
       const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      const ratio = x / rect.width;
-      return clampIndex(Math.round(ratio * sliderMax), sliderMax);
+      return clampIndex(Math.round((x / rect.width) * sliderMax), sliderMax);
     },
-    [sliderMax, stages.length],
+    [sliderMax, stages.length, vertical],
   );
 
-  const percentFromClientX = useCallback(
-    (clientX: number) => {
+  const percentFromClient = useCallback(
+    (clientX: number, clientY: number) => {
       const track = containerRef.current;
       if (!track || stages.length <= 1) return 0;
       const rect = track.getBoundingClientRect();
+      if (vertical) {
+        if (rect.height <= 0) return snapPercent;
+        const y = Math.min(Math.max(clientY - rect.top, 0), rect.height);
+        return (y / rect.height) * 100;
+      }
       if (rect.width <= 0) return snapPercent;
       const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
       return (x / rect.width) * 100;
     },
-    [snapPercent, stages.length],
+    [snapPercent, stages.length, vertical],
   );
 
   const commitIndex = useCallback(
@@ -77,11 +111,11 @@ function Tw3DiscreteStageSlider({
   );
 
   const updateFromPointer = useCallback(
-    (clientX: number, snapIndex?: number) => {
-      setVisualPercent(percentFromClientX(clientX));
-      commitIndex(snapIndex ?? indexFromClientX(clientX));
+    (clientX: number, clientY: number, snapIndex?: number) => {
+      setVisualPercent(percentFromClient(clientX, clientY));
+      commitIndex(snapIndex ?? indexFromClient(clientX, clientY));
     },
-    [commitIndex, indexFromClientX, percentFromClientX],
+    [commitIndex, indexFromClient, percentFromClient],
   );
 
   const beginDrag = useCallback(
@@ -92,7 +126,7 @@ function Tw3DiscreteStageSlider({
         setVisualPercent(markPercent);
         commitIndex(nextIndex);
       } else {
-        updateFromPointer(event.clientX);
+        updateFromPointer(event.clientX, event.clientY);
       }
       draggingRef.current = true;
       setDragging(true);
@@ -104,7 +138,7 @@ function Tw3DiscreteStageSlider({
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       if (!draggingRef.current) return;
-      updateFromPointer(event.clientX);
+      updateFromPointer(event.clientX, event.clientY);
     },
     [updateFromPointer],
   );
@@ -134,23 +168,125 @@ function Tw3DiscreteStageSlider({
     [beginDrag],
   );
 
+  const header = (
+    <div
+      className={`mb-2 flex items-center text-[10px] text-teal-600 ${
+        vertical ? "flex-col gap-1" : "justify-between"
+      }`}
+    >
+      <span>Stage</span>
+      <span className="font-semibold tabular-nums text-teal-800">
+        {current?.rating ?? "—"}
+        {stages.length > 1 && (
+          <span className="ml-1 font-normal text-teal-500">
+            ({safeIndex + 1}/{stages.length})
+          </span>
+        )}
+      </span>
+    </div>
+  );
+
+  if (vertical) {
+    return (
+      <div className="flex select-none flex-col items-center px-0.5">
+        {header}
+        <div
+          ref={containerRef}
+          role="slider"
+          aria-orientation="vertical"
+          aria-label={`Scan ${scoringTitle} maturity stages`}
+          aria-valuemin={0}
+          aria-valuemax={sliderMax}
+          aria-valuenow={safeIndex}
+          aria-valuetext={current ? `Stage ${current.rating}` : undefined}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            event.stopPropagation();
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              commitIndex(safeIndex - 1);
+            } else if (event.key === "ArrowDown") {
+              event.preventDefault();
+              commitIndex(safeIndex + 1);
+            } else if (event.key === "Home") {
+              event.preventDefault();
+              commitIndex(0);
+            } else if (event.key === "End") {
+              event.preventDefault();
+              commitIndex(sliderMax);
+            }
+          }}
+          onPointerDown={handleTrackPointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={() => {
+            draggingRef.current = false;
+            setDragging(false);
+            setVisualPercent(snapVisualPercent);
+          }}
+          className={`relative h-52 w-12 touch-none outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 rounded-full ${
+            dragging ? "cursor-grabbing" : "cursor-pointer"
+          }`}
+        >
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-4 -translate-x-1/2 rounded-full bg-teal-100">
+            <div
+              className={`absolute inset-x-0 top-0 rounded-full bg-teal-300/40 ${
+                dragging ? "" : "transition-[height] duration-200 ease-out"
+              }`}
+              style={{ height: `${visualPercent}%` }}
+            />
+          </div>
+
+          {stages.map((stage, stageIndex) => {
+            const markPercent = sliderMax === 0 ? 0 : (stageIndex / sliderMax) * 100;
+            return (
+              <button
+                key={stage.rating}
+                type="button"
+                data-stage-mark
+                onPointerDown={(event) => {
+                  event.stopPropagation();
+                  beginDrag(event, stageIndex);
+                }}
+                className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 p-0"
+                style={{ top: `${markPercent}%` }}
+                aria-label={`Jump to stage ${stage.rating}`}
+                aria-current={stageIndex === safeIndex ? "true" : undefined}
+              >
+                <span className="flex h-7 w-10 items-center justify-center rounded-full bg-teal-100 text-[11px] font-bold leading-none text-black">
+                  {stage.rating}
+                </span>
+              </button>
+            );
+          })}
+
+          <div
+            data-slider-thumb
+            onPointerDown={(event) => {
+              event.stopPropagation();
+              beginDrag(event);
+            }}
+            className={`absolute left-1/2 z-30 flex h-7 w-10 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full bg-white text-[11px] font-bold leading-none text-black shadow-[0_1px_5px_rgba(15,118,110,0.3)] touch-none ${
+              dragging ? "cursor-grabbing scale-[1.04]" : ""
+            } ${dragging ? "" : "transition-[top,transform] duration-200 ease-out"}`}
+            style={{ top: `${visualPercent}%` }}
+            aria-hidden
+          >
+            {current?.rating}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-0.5 select-none">
-      <div className="mb-2 flex items-center justify-between text-[10px] text-teal-600">
-        <span>Stage</span>
-        <span className="font-semibold tabular-nums text-teal-800">
-          {current?.rating ?? "—"}
-          {stages.length > 1 && (
-            <span className="ml-1 font-normal text-teal-500">
-              ({safeIndex + 1}/{stages.length})
-            </span>
-          )}
-        </span>
-      </div>
-
+      {header}
       <div
         ref={containerRef}
         role="slider"
+        aria-orientation="horizontal"
         aria-label={`Scan ${scoringTitle} maturity stages`}
         aria-valuemin={0}
         aria-valuemax={sliderMax}
@@ -244,6 +380,8 @@ interface Tw3StageSliderPickerProps {
   selectedRating?: Tw3MaturityRating;
   onSelectRating: (rating: Tw3MaturityRating) => void;
   initialRating?: Tw3MaturityRating;
+  /** Under-hand host for the vertical slider on mobile (<sm). */
+  mobileSliderHost?: HTMLElement | null;
 }
 
 export default function Tw3StageSliderPicker({
@@ -253,7 +391,11 @@ export default function Tw3StageSliderPicker({
   selectedRating,
   onSelectRating,
   initialRating,
+  mobileSliderHost = null,
 }: Tw3StageSliderPickerProps) {
+  const isSmUp = useIsSmUp();
+  const sliderOrientation: SliderOrientation = isSmUp ? "horizontal" : "vertical";
+
   const stageImages = getStageImagesForLandmark(landmarkId);
   const drawableStages = useMemo(
     () =>
@@ -311,6 +453,12 @@ export default function Tw3StageSliderPicker({
       } else if (e.key === "ArrowRight" && safeSliderIndex < sliderMax) {
         e.preventDefault();
         setStageIndex(safeSliderIndex + 1);
+      } else if (e.key === "ArrowUp" && !isSmUp && safeSliderIndex > 0) {
+        e.preventDefault();
+        setStageIndex(safeSliderIndex - 1);
+      } else if (e.key === "ArrowDown" && !isSmUp && safeSliderIndex < sliderMax) {
+        e.preventDefault();
+        setStageIndex(safeSliderIndex + 1);
       } else if (e.key === "Enter" && current) {
         e.preventDefault();
         onSelectRating(current.rating);
@@ -318,7 +466,15 @@ export default function Tw3StageSliderPicker({
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [current, onSelectRating, safeSliderIndex, setStageIndex, sliderMax, zoomOpen]);
+  }, [
+    current,
+    isSmUp,
+    onSelectRating,
+    safeSliderIndex,
+    setStageIndex,
+    sliderMax,
+    zoomOpen,
+  ]);
 
   if (drawableStages.length === 0) {
     if (availableRatings.length === 0) {
@@ -341,6 +497,7 @@ export default function Tw3StageSliderPicker({
       index={safeSliderIndex}
       onIndexChange={setStageIndex}
       scoringTitle={scoringTitle}
+      orientation={sliderOrientation}
     />
   );
 
@@ -357,6 +514,17 @@ export default function Tw3StageSliderPicker({
         <p className="mt-2 text-xs text-teal-600">No description available for this stage.</p>
       )}
     </div>
+  );
+
+  const enterButton = (
+    <button
+      type="button"
+      onClick={handleSelectCurrent}
+      disabled={!current}
+      className="w-full rounded-lg border border-teal-600 bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:border-teal-200 disabled:bg-teal-200 disabled:text-teal-500 sm:w-auto"
+    >
+      Enter{current ? ` — stage ${current.rating}` : ""}
+    </button>
   );
 
   return (
@@ -383,6 +551,16 @@ export default function Tw3StageSliderPicker({
         />
       )}
 
+      {/* Mobile: portal vertical slider into left column under the hand XR map. */}
+      {!isSmUp &&
+        mobileSliderHost &&
+        createPortal(
+          <div className="rounded-lg border border-teal-100 bg-white px-1 py-2">
+            {stageSlider}
+          </div>,
+          mobileSliderHost,
+        )}
+
       <div
         className={`overflow-hidden rounded-lg border bg-white ${
           isCurrentSelected ? "border-teal-500 ring-2 ring-teal-200" : "border-teal-100"
@@ -390,7 +568,8 @@ export default function Tw3StageSliderPicker({
       >
         {current && (
           <div className="flex flex-col">
-            <div className="grid gap-0 sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
+            {/* Mobile: image above description. sm+: image | description side-by-side. */}
+            <div className="flex flex-col sm:grid sm:grid-cols-[minmax(7rem,32%)_minmax(0,1fr)]">
               <label
                 className="group relative flex h-44 shrink-0 cursor-pointer items-center justify-center border-b border-teal-100 bg-white p-3 sm:h-56 sm:border-b-0 sm:border-r"
                 title={`Select stage ${current.rating}`}
@@ -417,15 +596,21 @@ export default function Tw3StageSliderPicker({
               {stageDescription}
             </div>
 
-            <div className="shrink-0 border-t border-teal-100 px-3 py-2.5">{stageSlider}</div>
+            {isSmUp && (
+              <div className="shrink-0 border-t border-teal-100 px-3 py-2.5">{stageSlider}</div>
+            )}
           </div>
         )}
       </div>
 
-      <p className="text-[10px] text-teal-600">
-        Slide to scan stages, then tap the drawing to select{" "}
-        {current ? `stage ${current.rating}` : ""} and continue.
-      </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        {enterButton}
+        <p className="text-[10px] text-teal-600 sm:text-right">
+          Slide to scan stages, then press Enter
+          {current ? ` to select stage ${current.rating}` : ""} and continue. You can
+          also tap the drawing.
+        </p>
+      </div>
 
       {zoomOpen && current && (
         <div

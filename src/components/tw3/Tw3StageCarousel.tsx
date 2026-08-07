@@ -9,6 +9,8 @@ interface Tw3StageCarouselProps {
   onSelectRating: (rating: Tw3MaturityRating) => void;
   score?: number;
   initialScrollRating?: Tw3MaturityRating;
+  /** DOM node under the hand XR map; mobile vertical slider portals here. */
+  mobileSliderHost?: HTMLElement | null;
 }
 
 export default function Tw3StageCarousel({
@@ -19,6 +21,7 @@ export default function Tw3StageCarousel({
   onSelectRating,
   score,
   initialScrollRating,
+  mobileSliderHost = null,
 }: Tw3StageCarouselProps) {
   return (
     <div className="rounded-2xl border border-teal-200 bg-white shadow-sm overflow-hidden">
@@ -41,6 +44,7 @@ export default function Tw3StageCarousel({
           availableRatings={availableRatings}
           onSelectRating={onSelectRating}
           initialRating={initialScrollRating}
+          mobileSliderHost={mobileSliderHost}
         />
       </div>
     </div>
