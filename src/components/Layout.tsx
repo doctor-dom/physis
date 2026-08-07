@@ -27,6 +27,8 @@ export function DisclaimerFooter() {
 
 export const BUG_REPORT_URL = "https://github.com/doctor-dom/physis/issues";
 export const FEATURE_REQUEST_URL = "https://github.com/doctor-dom/physis/discussions";
+export const PLANNED_UPDATES_URL =
+  "https://github.com/doctor-dom/physis#planned-updates-from-predeployphysismd";
 
 function HeaderFeedbackLink({
   href,
@@ -75,9 +77,20 @@ export function FeatureRequestLink() {
   );
 }
 
+export function PlannedUpdatesLink() {
+  return (
+    <HeaderFeedbackLink
+      href={PLANNED_UPDATES_URL}
+      emoji="🔭"
+      title="Planned Updates"
+      ariaLabel="Planned updates on GitHub README"
+    />
+  );
+}
+
 export function HeaderFeedbackLinks({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex shrink-0 flex-col items-center ${className}`}>
+    <div className={`flex min-w-[7.5rem] shrink-0 flex-col items-center ${className}`}>
       <div
         className="text-center text-[10px] font-medium leading-tight text-teal-700"
         title={`PHYSIS ${formatAppVersionLabel(APP_VERSION)} · last updated ${formatAppLastUpdatedLabel(APP_LAST_UPDATED)}`}
@@ -87,9 +100,10 @@ export function HeaderFeedbackLinks({ className = "" }: { className?: string }) 
           Last Updated: {formatAppLastUpdatedLabel(APP_LAST_UPDATED)}
         </div>
       </div>
-      <div className="mt-0.5 flex items-center gap-0">
+      <div className="mt-0.5 flex items-center justify-center gap-0.5">
         <BugReportLink />
         <FeatureRequestLink />
+        <PlannedUpdatesLink />
       </div>
     </div>
   );
